@@ -90,6 +90,9 @@ export const lines = {
 	storeOwned: (_s) => 'In your room!',
 	dreamStands: dreamStandsText,
 
+	// My Toys: the room behind the title door. Empty is a hint, never a scold.
+	toysEmpty: (_s) => 'No toys yet! Do chores, then visit the store.',
+
 	// The dream celebration and the dream-state voice.
 	dreamReached: (s) =>
 		`You did it, ${buddyName(s)}! You saved ${TOY_PRICES[s.goal]} coins for your very own ${TOY_LABELS[s.goal]}!`,

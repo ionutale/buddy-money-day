@@ -111,6 +111,12 @@ describe('the dream celebration', () => {
 	});
 });
 
+describe('the toys room', () => {
+	it('hints gently when the rug is empty', () => {
+		expect(lines.toysEmpty(s({}))).toBe('No toys yet! Do chores, then visit the store.');
+	});
+});
+
 describe('the tuck-in recap', () => {
 	it('tells the whole story when a dream was completed today', () => {
 		const completed = s({

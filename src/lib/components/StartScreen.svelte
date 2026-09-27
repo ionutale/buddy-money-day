@@ -1,14 +1,25 @@
 <script lang="ts">
+	import type { ToyId } from '$lib/game/economy';
 	import { actions, game } from '$lib/game/game.svelte';
 	import { lines } from '$lib/game/lines';
 	import { speak } from '$lib/game/speech';
 	import { unlock } from '$lib/game/sounds';
 	import Buddy from './Buddy.svelte';
 	import GoalBanner from './GoalBanner.svelte';
+	import MiniGameBall from './MiniGameBall.svelte';
 	import OwnedStrip from './OwnedStrip.svelte';
 	import Setup from './Setup.svelte';
+	import ToysRoom from './ToysRoom.svelte';
 
 	let showSetup = $state(false);
+	// Play mode is UI state, not a phase: the engine never hears about it.
+	let roomOpen = $state(false);
+	let playing = $state(false);
+
+	function playToy(id: ToyId): void {
+		// Slice 1 ships the ball's game; the room hops the rest until slice 2.
+		if (id === 'ball') playing = true;
+	}
 
 	let spoke = $state(false);
 	$effect(() => {
@@ -66,7 +77,12 @@
 
 	<OwnedStrip items={game.state.owned} />
 
-	<button type="button" class="btn btn-mint" data-testid="toys-door">
+	<button
+		type="button"
+		class="btn btn-mint"
+		data-testid="toys-door"
+		onclick={() => (roomOpen = true)}
+	>
 		<svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true">
 			<circle cx="8" cy="9" r="4.5" fill="#d9a869" stroke="#4a3728" stroke-width="1.6" />
 			<circle cx="24" cy="9" r="4.5" fill="#d9a869" stroke="#4a3728" stroke-width="1.6" />
@@ -83,6 +99,14 @@
 		<Setup mode="reset" onclose={() => (showSetup = false)} />
 	{/if}
 </div>
+
+{#if roomOpen}
+	<ToysRoom items={game.state.owned} onplay={playToy} onexit={() => (roomOpen = false)} />
+{/if}
+
+{#if playing}
+	<MiniGameBall onexit={() => (playing = false)} />
+{/if}
 
 <style>
 	.start-screen {
