@@ -1,5 +1,7 @@
 # Buddy's Money Day
 
+**Live: [buddy-money-day.vercel.app](https://buddy-money-day.vercel.app)** — open it on a phone; "Add to Home Screen" makes it feel like a real app.
+
 A 5-minute, fully-voiced phone game that teaches a 4-year-old the first principles of money: effort earns coins, saving is for a goal you chose, needs come before wants, and sharing is its own reward.
 
 - **Design language:** [CONTEXT.md](./CONTEXT.md) (glossary) and [docs/adr](./docs/adr) (decisions)
@@ -31,6 +33,7 @@ pnpm preview
 ## Deploy
 
 Deployed on Vercel, auto-deploying from `main` on every push. Manual deploy: `vercel deploy --prod`.
+Rollback: `vercel rollback` or redeploy a previous commit from the Vercel dashboard.
 
 The app is a fully static build output in `build/`, so any static host works the same way.
 

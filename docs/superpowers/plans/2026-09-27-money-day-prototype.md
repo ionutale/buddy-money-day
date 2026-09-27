@@ -169,7 +169,7 @@ One component per phase, `$page` switches on `game.state.phase`; shared props (`
 - [x] `pnpm check` (svelte-check), `pnpm test`, `pnpm build` all green
 - [x] `pnpm test:e2e` green against the production build (12/12)
 - [x] Manual smoke: `pnpm preview` + curl `/` → 200 with app HTML
-- [ ] E2E suite green against the live Vercel URL (git deploys)
+- [x] E2E suite green against the live Vercel URL (git deploys) — 12/12 on buddy-money-day.vercel.app
 - [x] Fix anything found, rerun, then final commit
 
 ## Deferred to the polish phase (conscious cuts, not omissions)
