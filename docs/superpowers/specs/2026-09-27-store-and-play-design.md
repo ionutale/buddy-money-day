@@ -58,7 +58,7 @@ Never sad. Mood set shrinks to `happy | hungry | sleepy | celebrate`. `greetingS
 - **Prices:** Ball **2** · Car **4** · Blocks **6** · Wagon (dream) **12**. Chores pay max **4/day** → the wagon is ≈3 clean days, 4–5 with a toy purchase in between.
 - **Buying:** tap an affordable toy → coins fly to the shop → celebration → the toy lands in **My Toys** with its game unlocked (*"It's in your room!"*). Unaffordable → honest compare + progress (*"That's 4 coins — you have 2. Two more chores tomorrow!"*), tag shows `2 of 4`. Owned → *"In your room!"*.
 - **Default path stays saving** (ADR-0002): the primary button jars the remainder; buying is deliberate.
-- **Dream cycle:** jar ≥ 12 → wagon celebration → wagon joins the room; the pedestal then offers the **next dream** (slice 1 ships one more: the **Big Teddy**, 12 — so the loop never dead-ends; slice 2 adds their games and more dreams). Remainder coins stay in the jar.
+- **Dream cycle:** jar ≥ 12 → wagon celebration → wagon joins the room; the pedestal then offers the **next dream** — slice 1 ships one more: the **Big Teddy**, 12 — and when every dream is owned the list **cycles again** (like the old goals did; a second teddy is a real thing), so the loop never dead-ends. Slice 2 adds their games and richer dream lists. Remainder coins stay in the jar.
 - **Slice-1 shelf:** Ball only (so nothing is ever sold without its game) + the Wagon dream (celebration now, its pull-around game in slice 2). Car & Blocks join the shelf in slice 2, each shipped **with** its game.
 
 ## 8. Play room & mini-games
