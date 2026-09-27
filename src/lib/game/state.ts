@@ -30,7 +30,8 @@ export function resetDayTransients(s: GameState): GameState {
 		waterDone: 0,
 		fedToday: false,
 		gaveToday: 0,
-		lollipopToday: false
+		lollipopToday: false,
+		goalCompletedToday: false
 	});
 }
 
@@ -47,6 +48,7 @@ export function newGame(): GameState {
 		buddySad: false,
 		lollipopsTotal: 0,
 		phase: 'setup',
+		goalCompletedToday: false,
 		coins: 0,
 		tidyDone: 0,
 		waterDone: 0,
@@ -160,7 +162,7 @@ export function jarsDone(s: GameState): GameState {
 
 export function goalCelebrated(s: GameState): GameState {
 	if (s.phase !== 'goal-reached') return s;
-	return withState(s, { phase: 'goal-pick' });
+	return withState(s, { goalCompletedToday: true, phase: 'goal-pick' });
 }
 
 export function pickGoal(s: GameState, goal: GoalId): GameState {
@@ -187,4 +189,17 @@ export function nextGoalOptions(s: GameState): GoalId[] {
 	const uncollected = GOALS.filter((g) => !s.homeItems.includes(g));
 	const collected = GOALS.filter((g) => s.homeItems.includes(g));
 	return [...uncollected, ...collected].slice(0, GOALS.length);
+}
+
+/** What today has earned so far, however it has been spent. Max TIDY_REWARD + WATER_REWARD. */
+export function earnedToday(s: GameState): number {
+	return (
+		s.coins + (s.fedToday ? FEED_COST : 0) + s.gaveToday + (s.lollipopToday ? LOLLIPOP_COST : 0)
+	);
+}
+
+/** What the Save Jar would hold if the hand's coins were saved right now. */
+export function savePreview(s: GameState): { filled: number; completes: boolean } {
+	const total = s.jarCoins + s.coins;
+	return { filled: Math.min(total, GOAL_COST), completes: total >= GOAL_COST };
 }

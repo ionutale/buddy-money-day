@@ -39,6 +39,8 @@ export type GameState = {
 
 	/** Transient day state — reset at every beginDay and on load. */
 	phase: Phase;
+	/** True from the Goal celebration until tuck-in; drives the recap. */
+	goalCompletedToday: boolean;
 	coins: number;
 	tidyDone: number;
 	waterDone: number;

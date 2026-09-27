@@ -4,6 +4,7 @@ import {
 	beginDay,
 	buyLollipop,
 	continueAfterLollipop,
+	earnedToday,
 	feedBuddy,
 	friendDone,
 	giveCoin,
@@ -13,7 +14,9 @@ import {
 	newGame,
 	nextGoalOptions,
 	pickGoal,
+	resetDayTransients,
 	saveAll,
+	savePreview,
 	skipFeed,
 	skipName,
 	submitName,
@@ -362,5 +365,58 @@ describe('whole days, end to end', () => {
 			expect(s.tidyDone).toBeLessThanOrEqual(3);
 			expect(s.waterDone).toBeLessThanOrEqual(3);
 		}
+	});
+});
+
+describe('the meaning layer', () => {
+	it('starts every game with no goal completed today', () => {
+		expect(newGame().goalCompletedToday).toBe(false);
+	});
+
+	it('marks a goal completed only from celebration until tuck-in', () => {
+		const celebrated = goalCelebrated(withPatch(newGame(), { phase: 'goal-reached' }));
+		expect(celebrated.goalCompletedToday).toBe(true);
+
+		// the flag survives picking the next goal, so the recap can tell the story
+		const picked = pickGoal(celebrated, 'hat');
+		expect(picked.goalCompletedToday).toBe(true);
+
+		const tucked = tuckInDone(picked);
+		expect(tucked.goalCompletedToday).toBe(false);
+	});
+
+	it('clears the completed flag when a day restarts from a reload', () => {
+		const dirty = withPatch(newGame(), { phase: 'tuck-in', goalCompletedToday: true });
+		expect(resetDayTransients(dirty).goalCompletedToday).toBe(false);
+	});
+
+	it('counts what was earned today, however it was spent', () => {
+		expect(earnedToday(freshDay())).toBe(0);
+		const withCoins = withTasks(freshDay());
+		expect(earnedToday(withCoins)).toBe(3);
+		expect(earnedToday(feedBuddy(withCoins))).toBe(3); // 2 in hand + 1 fed
+		expect(earnedToday(withPatch(withCoins, { coins: 1, gaveToday: 2 }))).toBe(3);
+		expect(earnedToday(withPatch(withCoins, { coins: 1, lollipopToday: true }))).toBe(3);
+		expect(
+			earnedToday(
+				withPatch(withCoins, { coins: 0, fedToday: true, lollipopToday: true, gaveToday: 1 })
+			)
+		).toBe(4);
+	});
+
+	it('previews exactly what saving would put in the jar, capped at the goal', () => {
+		expect(savePreview(withPatch(newGame(), { jarCoins: 4, coins: 3 }))).toEqual({
+			filled: 6,
+			completes: true
+		});
+		expect(savePreview(withPatch(newGame(), { jarCoins: 5, coins: 3 }))).toEqual({
+			filled: 6,
+			completes: true
+		});
+		expect(savePreview(withPatch(newGame(), { jarCoins: 0, coins: 2 }))).toEqual({
+			filled: 2,
+			completes: false
+		});
+		expect(savePreview(newGame())).toEqual({ filled: 0, completes: false });
 	});
 });
