@@ -14,17 +14,23 @@ export async function openGame(page: Page): Promise<void> {
 /** First run: a parent types the child's name (or it was already skipped). */
 export async function completeSetup(page: Page, name = 'Sam'): Promise<void> {
 	const nameInput = page.getByTestId('name-input');
+	const startButton = page.getByTestId('start-button');
+	// The app may still be rendering — a slow first load must never be
+	// mistaken for an already-completed setup (this raced on the live site).
+	await expect(nameInput.or(startButton)).toBeVisible();
 	if (await nameInput.isVisible()) {
 		await nameInput.fill(name);
 		await page.getByTestId('name-submit').click();
 	}
-	await expect(page.getByTestId('start-button')).toBeVisible();
+	await expect(startButton).toBeVisible();
 }
 
 export async function startMoneyDay(page: Page): Promise<void> {
-	await page.getByTestId('start-button').click();
+	// Continue buttons sit inside continuously animated scenes; force taps skip
+	// Playwright's stability gate, exactly like the bobbing water drops.
+	await page.getByTestId('start-button').click({ force: true });
 	await expect(page.getByTestId('greeting-start')).toBeVisible();
-	await page.getByTestId('greeting-start').click();
+	await page.getByTestId('greeting-start').click({ force: true });
 	await expect(page.getByTestId('toy-0')).toBeVisible();
 }
 
@@ -103,8 +109,8 @@ export async function tuckIn(page: Page): Promise<void> {
 
 /** From the start screen, begin the next Money Day and arrive at the toys. */
 export async function nextDay(page: Page): Promise<void> {
-	await page.getByTestId('start-button').click();
+	await page.getByTestId('start-button').click({ force: true });
 	await expect(page.getByTestId('greeting-start')).toBeVisible();
-	await page.getByTestId('greeting-start').click();
+	await page.getByTestId('greeting-start').click({ force: true });
 	await expect(page.getByTestId('toy-0')).toBeVisible();
 }
