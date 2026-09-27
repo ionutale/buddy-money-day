@@ -31,7 +31,7 @@ export async function startMoneyDay(page: Page): Promise<void> {
 	await page.getByTestId('start-button').click({ force: true });
 	await expect(page.getByTestId('greeting-start')).toBeVisible();
 	await page.getByTestId('greeting-start').click({ force: true });
-	await expect(page.getByTestId('toy-0')).toBeVisible();
+	await expect(page.getByTestId('job-board')).toBeVisible();
 }
 
 export async function dragLocator(page: Page, from: Locator, to: Locator): Promise<void> {
@@ -51,7 +51,6 @@ export async function tidyAllToys(page: Page): Promise<void> {
 		await expect(toy).toBeVisible();
 		await dragLocator(page, toy, box);
 	}
-	await expect(page.getByTestId('drop-0')).toBeVisible();
 }
 
 export async function waterAllDrops(page: Page): Promise<void> {
@@ -60,7 +59,27 @@ export async function waterAllDrops(page: Page): Promise<void> {
 	for (const i of [0, 1, 2]) {
 		await page.getByTestId(`drop-${i}`).click({ force: true });
 	}
-	await expect(page.getByTestId('hunger-skip')).toBeVisible();
+}
+
+export type Chore = 'tidy' | 'water' | 'feed';
+
+/**
+ * Play one chore from the job board and wait until it lands: the board is
+ * back and its card is checked. Tidy drags its toys to the box; water taps
+ * its drops; feed clicks the placeholder's single give action (Task 4 swaps
+ * this branch to three `feed-snack-*` drags into `bear-bowl`).
+ */
+export async function doChore(page: Page, chore: Chore): Promise<void> {
+	await page.getByTestId(`job-card-${chore}`).click();
+	if (chore === 'tidy') {
+		await tidyAllToys(page);
+	} else if (chore === 'water') {
+		await waterAllDrops(page);
+	} else {
+		await page.getByTestId('feed-give').click();
+	}
+	await expect(page.getByTestId('job-board')).toBeVisible();
+	await expect(page.getByTestId(`job-card-${chore}`)).toHaveAttribute('data-done', 'true');
 }
 
 export type DayChoices = {
@@ -107,10 +126,10 @@ export async function tuckIn(page: Page): Promise<void> {
 	await expect(page.getByTestId('start-button')).toBeVisible();
 }
 
-/** From the start screen, begin the next Money Day and arrive at the toys. */
+/** From the start screen, begin the next Money Day and arrive at the job board. */
 export async function nextDay(page: Page): Promise<void> {
 	await page.getByTestId('start-button').click({ force: true });
 	await expect(page.getByTestId('greeting-start')).toBeVisible();
 	await page.getByTestId('greeting-start').click({ force: true });
-	await expect(page.getByTestId('toy-0')).toBeVisible();
+	await expect(page.getByTestId('job-board')).toBeVisible();
 }
