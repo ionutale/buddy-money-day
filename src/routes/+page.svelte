@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { game } from '$lib/game/game.svelte';
+	import CoinFlights from '$lib/components/CoinFlights.svelte';
 	import Friend from '$lib/components/Friend.svelte';
 	import GoalPick from '$lib/components/GoalPick.svelte';
 	import GoalReached from '$lib/components/GoalReached.svelte';
@@ -13,6 +14,7 @@
 	import TaskTidy from '$lib/components/TaskTidy.svelte';
 	import TaskWater from '$lib/components/TaskWater.svelte';
 	import TuckIn from '$lib/components/TuckIn.svelte';
+	import Toasts from '$lib/components/Toasts.svelte';
 
 	const phase = $derived(game.state.phase);
 
@@ -54,4 +56,7 @@
 			{/if}
 		{/key}
 	</main>
+
+	<Toasts />
+	<CoinFlights />
 </div>
