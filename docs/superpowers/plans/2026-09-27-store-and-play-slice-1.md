@@ -85,7 +85,7 @@ The product default flips: new installs are **silent**; the existing Voice switc
 **Files:** `src/lib/components/JobBoard.svelte` (real), `Greeting.svelte`, `e2e/helpers.ts`, `e2e/chores.spec.ts` (new)
 
 - [ ] **Step 1: failing e2e** (dev server at `E2E_BASE_URL=http://127.0.0.1:43118`): jobs in any order (feed → water → tidy), each pays and checks its card (`job-card-tidy|water|feed`, price badges kept); `cap-line` + `to-store-button` appear only when all three are done.
-- [ ] **Step 2: red → implement.** Helper `doChore(page, 'tidy'|'water'|'feed')` (tidy = existing drags; water = taps; feed = three snack drags to `bear-bowl`). Greeting keeps the plan line, cards move to the board.
+- [ ] **Step 2: red → implement.** Helper `doChore(page, 'tidy'|'water'|'feed')` (tidy = existing drags; water = taps; feed = the placeholder's `feed-give` action in this task — Task 4 replaces it with three snack drags and updates this helper and spec). Greeting keeps the plan line, cards move to the board.
 - [ ] **Step 3: green + commit** — `feat: the job board — pick a chore, any chore`.
 
 ### Task 4 — Feed the bear (real scene): three snack drags
