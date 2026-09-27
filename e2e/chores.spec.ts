@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { completeSetup, doChore, openGame, startMoneyDay } from './helpers';
+import { completeSetup, doChore, dragLocator, openGame, startMoneyDay } from './helpers';
 
 /**
  * The job board is the day's hub: three jobs, any order, each once.
@@ -90,5 +90,51 @@ test.describe('the job board', () => {
 		await expect(page.getByTestId('job-card-tidy')).toBeVisible();
 		await expect(page.getByTestId('job-card-water')).toBeVisible();
 		await expect(page.getByTestId('job-card-feed')).toBeVisible();
+	});
+
+	test('feeding the bear: three bites, each one munches, the third pays', async ({ page }) => {
+		await openGame(page);
+		await completeSetup(page);
+		await startMoneyDay(page);
+		await page.getByTestId('job-card-feed').click();
+
+		// The deal: a hungry bear, a bowl, three snacks — and no way to skip.
+		const bowl = page.getByTestId('bear-bowl');
+		await expect(bowl).toBeVisible();
+		await expect(bowl).toHaveAttribute('data-bites', '0');
+		for (const i of [0, 1, 2]) {
+			await expect(page.getByTestId(`feed-snack-${i}`)).toBeVisible();
+		}
+		await expect(page.getByTestId('hunger-skip')).toHaveCount(0);
+		await expect(page.getByTestId('feed-give')).toHaveCount(0);
+		const bear = page.getByTestId('buddy');
+		await expect(bear).toHaveAttribute('data-mood', 'hungry');
+
+		// First bite: the snack lands, the bear munches and cheers up.
+		const first = page.getByTestId('feed-snack-0');
+		await dragLocator(page, first, bowl);
+		await expect(first).toHaveClass(/accepted/);
+		await expect(bowl).toHaveAttribute('data-bites', '1');
+		await expect(bear).toHaveAttribute('data-mood', 'happy');
+		await expect(page.getByTestId('coin-count')).toHaveText('0');
+
+		// Re-dragging an accepted snack is a no-op.
+		await dragLocator(page, first, bowl);
+		await expect(bowl).toHaveAttribute('data-bites', '1');
+		await expect(bear).toHaveAttribute('data-mood', 'happy');
+		await expect(page.getByTestId('coin-count')).toHaveText('0');
+
+		// Second bite: another munch.
+		await dragLocator(page, page.getByTestId('feed-snack-1'), bowl);
+		await expect(bowl).toHaveAttribute('data-bites', '2');
+
+		// Third bite: the bear celebrates, pays one coin, and the board returns.
+		await dragLocator(page, page.getByTestId('feed-snack-2'), bowl);
+		await expect(bowl).toHaveAttribute('data-bites', '3');
+		await expect(bear).toHaveAttribute('data-mood', 'celebrate');
+		await expect(page.getByTestId('goal-toast')).toContainText('One coin earned!');
+		await expect(page.getByTestId('coin-count')).toHaveText('1');
+		await expect(page.getByTestId('job-board')).toBeVisible();
+		await expect(page.getByTestId('job-card-feed')).toHaveAttribute('data-done', 'true');
 	});
 });

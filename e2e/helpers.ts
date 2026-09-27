@@ -61,13 +61,21 @@ export async function waterAllDrops(page: Page): Promise<void> {
 	}
 }
 
+export async function feedAllSnacks(page: Page): Promise<void> {
+	const bowl = page.getByTestId('bear-bowl');
+	for (const i of [0, 1, 2]) {
+		const snack = page.getByTestId(`feed-snack-${i}`);
+		await expect(snack).toBeVisible();
+		await dragLocator(page, snack, bowl);
+	}
+}
+
 export type Chore = 'tidy' | 'water' | 'feed';
 
 /**
  * Play one chore from the job board and wait until it lands: the board is
  * back and its card is checked. Tidy drags its toys to the box; water taps
- * its drops; feed clicks the placeholder's single give action (Task 4 swaps
- * this branch to three `feed-snack-*` drags into `bear-bowl`).
+ * its drops; feed drags its three snacks into the bear's bowl.
  */
 export async function doChore(page: Page, chore: Chore): Promise<void> {
 	await page.getByTestId(`job-card-${chore}`).click();
@@ -76,7 +84,7 @@ export async function doChore(page: Page, chore: Chore): Promise<void> {
 	} else if (chore === 'water') {
 		await waterAllDrops(page);
 	} else {
-		await page.getByTestId('feed-give').click();
+		await feedAllSnacks(page);
 	}
 	await expect(page.getByTestId('job-board')).toBeVisible();
 	await expect(page.getByTestId(`job-card-${chore}`)).toHaveAttribute('data-done', 'true');
