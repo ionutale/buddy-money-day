@@ -1,0 +1,25 @@
+{
+	"name": "Buddy's Money Day",
+	"short_name": "Money Day",
+	"description": "A five-minute money adventure with Buddy, for little kids.",
+	"start_url": "/",
+	"scope": "/",
+	"display": "standalone",
+	"orientation": "portrait",
+	"background_color": "#fff6e5",
+	"theme_color": "#fff6e5",
+	"icons": [
+		{
+			"src": "/icon.svg",
+			"sizes": "any",
+			"type": "image/svg+xml",
+			"purpose": "any"
+		},
+		{
+			"src": "/icon.svg",
+			"sizes": "any",
+			"type": "image/svg+xml",
+			"purpose": "maskable"
+		}
+	]
+}

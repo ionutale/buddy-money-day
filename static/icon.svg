@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Buddy's Money Day">
+	<defs>
+		<radialGradient id="bg" cx="50%" cy="30%" r="90%">
+			<stop offset="0%" stop-color="#e8f6ff" />
+			<stop offset="100%" stop-color="#fff6e5" />
+		</radialGradient>
+		<radialGradient id="body" cx="38%" cy="28%" r="85%">
+			<stop offset="0%" stop-color="#b6ebdd" />
+			<stop offset="100%" stop-color="#8ed4c0" />
+		</radialGradient>
+	</defs>
+	<rect width="512" height="512" rx="116" fill="url(#bg)" />
+	<!-- ears -->
+	<ellipse cx="152" cy="150" rx="58" ry="68" fill="#8ed4c0" transform="rotate(-16 152 150)" />
+	<ellipse cx="360" cy="150" rx="58" ry="68" fill="#8ed4c0" transform="rotate(16 360 150)" />
+	<ellipse cx="154" cy="154" rx="32" ry="38" fill="#b6ebdd" transform="rotate(-16 154 154)" />
+	<ellipse cx="358" cy="154" rx="32" ry="38" fill="#b6ebdd" transform="rotate(16 358 154)" />
+	<!-- body -->
+	<ellipse cx="256" cy="288" rx="182" ry="168" fill="url(#body)" />
+	<ellipse cx="256" cy="330" rx="100" ry="88" fill="#fff6e5" opacity="0.75" />
+	<!-- eyes -->
+	<ellipse cx="186" cy="262" rx="33" ry="36" fill="#fffdf8" />
+	<ellipse cx="326" cy="262" rx="33" ry="36" fill="#fffdf8" />
+	<circle cx="190" cy="270" r="17" fill="#4a3728" />
+	<circle cx="322" cy="270" r="17" fill="#4a3728" />
+	<circle cx="182" cy="262" r="6.5" fill="#fffdf8" />
+	<circle cx="314" cy="262" r="6.5" fill="#fffdf8" />
+	<!-- cheeks -->
+	<circle cx="148" cy="322" r="22" fill="#ff8a66" opacity="0.35" />
+	<circle cx="364" cy="322" r="22" fill="#ff8a66" opacity="0.35" />
+	<!-- mouth -->
+	<path d="M212 340 Q256 384 300 340" fill="none" stroke="#4a3728" stroke-width="16" stroke-linecap="round" />
+	<!-- coin tucked in the plush belly -->
+	<circle cx="360" cy="404" r="62" fill="#e8a93a" />
+	<circle cx="360" cy="400" r="56" fill="#ffd35c" />
+	<circle cx="360" cy="400" r="40" fill="none" stroke="#e8a93a" stroke-width="5" opacity="0.7" />
+	<path d="M360 368 L369 390 L392 393 L374 408 L380 431 L360 419 L340 431 L346 408 L328 393 L351 390 Z" fill="#fff3c9" stroke="#e8a93a" stroke-width="4" stroke-linejoin="round" />
+	<circle cx="338" cy="384" r="7" fill="#fffdf3" opacity="0.9" />
+</svg>
