@@ -17,8 +17,15 @@
 -->
 <section class="owned-strip" data-testid="owned-strip" aria-label="My Toys">
 	<div class="owned-rug">
-		{#each items as id}
-			<div class="owned-slot pop-in" data-testid="owned-toy-{id}" aria-label={TOY_LABELS[id]}>
+		<!-- Unkeyed by design, but position-tagged: the cycle can repeat a
+		     toy, so specs address duplicates by data-index, not testid alone. -->
+		{#each items as id, i}
+			<div
+				class="owned-slot pop-in"
+				data-testid="owned-toy-{id}"
+				data-index={i}
+				aria-label={TOY_LABELS[id]}
+			>
 				<GoalItem kind={id} size={size} />
 			</div>
 		{:else}

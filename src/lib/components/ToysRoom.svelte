@@ -72,11 +72,15 @@
 	</button>
 
 	<div class="room-rug">
-		{#each items as id (id)}
+		<!-- Keyed by position, not by id: the dream list cycles, so `owned`
+		     can hold the same toy twice — each acquisition is a real object
+		     and must get its own tile (the unit suite asserts the cycle). -->
+		{#each items as id, i (i)}
 			<button
 				type="button"
 				class="room-toy"
 				data-testid="toy-{id}"
+				data-index={i}
 				aria-label={TOY_LABELS[id]}
 				onclick={() => tapToy(id)}
 			>

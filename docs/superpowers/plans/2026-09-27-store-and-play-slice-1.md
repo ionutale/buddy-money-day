@@ -1,6 +1,8 @@
 # Store & Play — Slice 1 Implementation Plan
 
 > **For agentic workers:** Executed **subagent-driven** (fresh implementer per task, task review after each, whole-branch review at the end). This file's checkboxes are the tracker. Steps use `- [ ]`. Spec: `docs/superpowers/specs/2026-09-27-store-and-play-design.md`.
+>
+> **Tracker note:** Executed subagent-driven; the live tracker was the SDD ledger (`.superpowers/sdd/2026-09-27-store-and-play-slice-1/progress.md`) — checkboxes left unticked.
 
 **Goal:** Replace the game's core loop with **chores → coins → store → buy/save → play**, invert feeding into a paid job (care rewarded, never priced), delete the bird/lollipop/droop machinery, and ship the Ball mini-game — the vertical slice of the redesign.
 

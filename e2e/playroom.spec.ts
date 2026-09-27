@@ -28,6 +28,24 @@ function watchForThrows(page: Page): Error[] {
 	return errors;
 }
 
+const SAVE_KEY = 'money-day-save';
+
+/**
+ * A v2 save from after the dream list has wrapped: wagon → teddy → wagon.
+ * The engine keeps the repeat on purpose ("a second teddy is a real thing"),
+ * so the render must too — an id-keyed list throws `each_key_duplicate`,
+ * which once turned the My Toys door into a dead end.
+ */
+const CYCLED_SAVE = {
+	schemaVersion: 2,
+	childName: 'Sam',
+	nameSkipped: false,
+	day: 10,
+	goal: 'wagon',
+	jarCoins: 0,
+	owned: ['wagon', 'teddy', 'wagon']
+};
+
 test.describe('My Toys', () => {
 	test('a fresh install finds a gentle, empty room and no save changes', async ({ page }) => {
 		const errors = watchForThrows(page);
@@ -111,6 +129,35 @@ test.describe('My Toys', () => {
 		await expect(page.getByTestId('toys-room')).toHaveCount(0);
 		await expect(page.getByTestId('start-button')).toBeVisible();
 		expect(await saveSnapshot(page)).toEqual(before);
+		expect(errors).toEqual([]);
+	});
+
+	test('a repeated dream renders twice — on the strip and in the room', async ({ page }) => {
+		const errors = watchForThrows(page);
+
+		// Seed the post-cycle save before the app boots, exactly as the
+		// family phone would carry it after wagon → teddy → wagon.
+		await page.addInitScript(
+			(save: { key: string; value: string }) => localStorage.setItem(save.key, save.value),
+			{ key: SAVE_KEY, value: JSON.stringify(CYCLED_SAVE) }
+		);
+		await page.goto('/?mute=1');
+		await expect(page.getByTestId('start-button')).toBeVisible();
+
+		// The title's strip shows every acquisition, the second wagon included.
+		const stripWagons = page.getByTestId('owned-toy-wagon');
+		await expect(stripWagons).toHaveCount(2);
+		await expect(stripWagons.nth(0)).toHaveAttribute('data-index', '0');
+		await expect(stripWagons.nth(1)).toHaveAttribute('data-index', '2');
+		await expect(page.getByTestId('owned-toy-teddy')).toHaveCount(1);
+
+		// The room renders with no duplicate-key throw: one tile per object.
+		await page.getByTestId('toys-door').click();
+		await expect(page.getByTestId('toys-room')).toBeVisible();
+		await expect(page.getByTestId('toy-wagon')).toHaveCount(2);
+		await expect(page.getByTestId('toy-teddy')).toHaveCount(1);
+		await expect(page.getByTestId('toy-wagon').nth(1)).toHaveAttribute('data-index', '2');
+
 		expect(errors).toEqual([]);
 	});
 });

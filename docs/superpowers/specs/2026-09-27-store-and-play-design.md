@@ -79,7 +79,7 @@ Never sad. Mood set shrinks to `happy | hungry | sleepy | celebrate`. `greetingS
 
 ## 10. State, migration, deletions
 
-- `ToyId = 'ball' | 'car' | 'blocks' | 'wagon'`; toy catalog with `price` and `kind: 'toy' | 'dream'`.
+- `ToyId = 'ball' | 'car' | 'blocks' | 'wagon' | 'teddy'`; toy catalog with `price` and `kind: 'toy' | 'dream'`.
 - GameState: `ownedToys: ToyId[]` (persisted); `goal` becomes the current dream id (default `'wagon'`); `homeItems` retired; `savedToday` stays; new transient `earnedTodayCoins` incremented per chore payment (recap uses it directly); `buddySad` deleted; `fedToday` repurposed as the feed chore's done-flag.
 - **Persistence:** bump to `schemaVersion 2` with an explicit migration from v1 that keeps `childName`, `day`, and `jarCoins`, drops old goal/home items, and sets the dream to the wagon. Fresh installs unchanged.
 - **Deleted:** friend/bird scene + lines + specs; lollipop (lines, buttons, specs); hunger skip/no-coin/sad lines; droop states and their specs; old shelf/jars scenes (their testids retire).
@@ -97,7 +97,7 @@ Kept where scenes survive (task testids, price tags, toasts, flights, banner slo
 ## 12. Testing
 
 - **Unit:** chore payment incl. feed; cap/all-done state; store afford/deny/buy; owned list; dream cycle at 12 with remainder; v1→v2 migration; recap variants; earnedTodayCoins.
-- **E2E:** full day v2 (plan → 3 chores → cap line → store → save → recap); buy the ball → it appears in My Toys → its game opens/taps/exits; afford-denied line; dream completion over three days; persistence across reload with owned toys; meaning specs re-pointed (dream banner, job board, store lines); deleted specs removed (hunger, lollipop, bird).
+- **E2E:** full day v2 (plan → 3 chores → cap line → store → save → recap); buy the ball → it appears in My Toys → its game opens/taps/exits; afford-denied line (**deferred to slice 2** per the plan amendment — slice 1's shelf never reaches the unaffordable state, so the compare branch ships unit-covered only, with its e2e landing alongside Car & Blocks); dream completion over three days; persistence across reload with owned toys; meaning specs re-pointed (dream banner, job board, store lines); deleted specs removed (hunger, lollipop, bird).
 - The settings, first-run, and persistence specs stay green (settings untouched; persistence gains owned-toys coverage).
 
 ## 13. Slice plan
