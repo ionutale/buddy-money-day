@@ -26,7 +26,7 @@ import type { GameState } from './types';
 /** A day at the 'greeting' phase, name already set. */
 function freshDay(): GameState {
 	let s = newGame();
-	s = submitName(s, 'Andrei');
+	s = submitName(s, 'Sam');
 	return beginDay(s);
 }
 
@@ -66,8 +66,8 @@ describe('new game', () => {
 
 describe('grown-up setup', () => {
 	it('accepts a name and moves to the start screen', () => {
-		const s = submitName(newGame(), '  Andrei  ');
-		expect(s.childName).toBe('Andrei');
+		const s = submitName(newGame(), '  Sam  ');
+		expect(s.childName).toBe('Sam');
 		expect(s.phase).toBe('start');
 	});
 
@@ -293,7 +293,7 @@ describe('tuck-in and the next morning', () => {
 describe('whole days, end to end', () => {
 	it('two days of nothing but saving reach the goal (skip-everything path)', () => {
 		let s = newGame();
-		s = submitName(s, 'Andrei');
+		s = submitName(s, 'Sam');
 		s = beginDay(s);
 
 		// day 1
@@ -316,7 +316,7 @@ describe('whole days, end to end', () => {
 
 	it('overflow past the goal price is carried into the next goal', () => {
 		let s = newGame();
-		s = submitName(s, 'Andrei');
+		s = submitName(s, 'Sam');
 		s = beginDay(s);
 
 		// day 1: feed Buddy, save the remaining two

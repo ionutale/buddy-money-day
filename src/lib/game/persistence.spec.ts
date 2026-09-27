@@ -24,7 +24,7 @@ describe('loading a save', () => {
 		const storage = mapStorage();
 		// A realistic mid-day save: two toys tidied and a partly saved jar.
 		let day: GameState = newGame();
-		day = submitName(day, 'Andrei');
+		day = submitName(day, 'Sam');
 		day = beginDay(day);
 		day = greetDone(day);
 		day = tidyToy(day);
@@ -34,7 +34,7 @@ describe('loading a save', () => {
 		saveState(day, storage);
 
 		const loaded = loadState(storage);
-		expect(loaded.childName).toBe('Andrei');
+		expect(loaded.childName).toBe('Sam');
 		expect(loaded.jarCoins).toBe(4);
 		expect(loaded.day).toBe(2);
 		expect(loaded.planks).toBe(1);
@@ -73,10 +73,10 @@ describe('loading a save', () => {
 describe('saving and clearing', () => {
 	it('roundtrips a state through storage', () => {
 		const storage = mapStorage();
-		const s = { ...newGame(), childName: 'Andrei', jarCoins: 3, day: 3 };
+		const s = { ...newGame(), childName: 'Sam', jarCoins: 3, day: 3 };
 		saveState(s, storage);
 		const loaded = loadState(storage);
-		expect(loaded.childName).toBe('Andrei');
+		expect(loaded.childName).toBe('Sam');
 		expect(loaded.jarCoins).toBe(3);
 		expect(loaded.day).toBe(3);
 	});
