@@ -10,7 +10,7 @@ _Avoid_: money, points, credits, cash
 
 **Helping Task**:
 A ~10-second drag or tap activity that ends with a payment of Coins (tidy the toys, water the tree, feed the bear). Three run per Money Day — Tidy pays 2, Water 1, Feed 1 — each once, in any order. Feeding is paid like the rest: care is rewarded, never a cost.
-_Avoid_: chore, minigame, job, quest
+_Avoid_: minigame, quest
 
 **Money Day**:
 One play session: greet Buddy → the three Helping Tasks (any order) → the Store (buy a toy or save) → tuck-in. A Dream toy lands after 2–3 Money Days.
