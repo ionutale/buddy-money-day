@@ -13,7 +13,7 @@ A ~10-second drag or tap activity that ends with a payment of Coins (tidy the to
 _Avoid_: minigame, quest
 
 **Money Day**:
-One play session: greet Buddy → the three Helping Tasks (any order) → the Store (buy a toy or save) → tuck-in. A Dream toy lands after 2–3 Money Days.
+One play session: greet Buddy → the three Helping Tasks (any order) → the Store (buy a toy or save) → tuck-in. A Dream toy lands after about three Money Days.
 _Avoid_: level, round, session, run
 
 **Dream toy**:
@@ -37,7 +37,7 @@ The room behind the title door where owned toys live on a rug; tapping a toy ope
 _Avoid_: Home, inventory, collection menu
 
 **Plan**:
-The morning board on the greeting screen: today's three Helping Tasks as picture cards with their coin prices (Tidy 2 · Water 1 · Feed 1), checkmarks as each finishes, next to the dream's progress. The day's whole deal in one look.
+The day's job board (after the greeting): today's three Helping Tasks as picture cards with their coin prices (Tidy 2 · Water 1 · Feed 1), checkmarks as each finishes, next to the dream's progress. The day's whole deal in one look.
 _Avoid_: schedule, agenda, task list
 
 **Dream Banner**:
