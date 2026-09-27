@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { GOAL_COST } from '$lib/game/economy';
 	import Coin from './Coin.svelte';
-	import Jar from './Jar.svelte';
+	import GoalBanner from './GoalBanner.svelte';
 
 	type Props = {
 		coins: number;
@@ -19,9 +19,9 @@
 		<span class="hud-number" data-testid="coin-count">{coins}</span>
 	</div>
 
-	<div class="hud-pill" aria-label="Coins in the Save Jar">
-		<Jar fill={jarCoins} capacity={GOAL_COST} size={42} />
-		<span class="hud-number" data-testid="jar-progress">{jarCoins} / {GOAL_COST}</span>
+	<div class="hud-pill hud-save" aria-label="Coins in the Save Jar">
+		<GoalBanner size={40} />
+		<span class="hud-progress" data-testid="jar-progress">{jarCoins} / {GOAL_COST}</span>
 	</div>
 
 	<div class="hud-pill hud-day" data-testid="day-badge">Day {day}</div>
@@ -63,6 +63,18 @@
 	.hud-day {
 		padding: 10px 16px;
 		font-size: 18px;
+		color: var(--ink-soft);
+	}
+
+	.hud-save {
+		gap: 10px;
+		padding: 5px 14px 5px 10px;
+	}
+
+	.hud-progress {
+		min-width: 2.4em;
+		text-align: right;
+		font-size: 14px;
 		color: var(--ink-soft);
 	}
 </style>

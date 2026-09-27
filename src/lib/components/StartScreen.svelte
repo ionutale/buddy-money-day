@@ -4,6 +4,7 @@
 	import { speak } from '$lib/game/speech';
 	import { unlock } from '$lib/game/sounds';
 	import Buddy from './Buddy.svelte';
+	import GoalBanner from './GoalBanner.svelte';
 	import HomeStrip from './HomeStrip.svelte';
 	import Setup from './Setup.svelte';
 
@@ -61,6 +62,7 @@
 		Let's play!
 	</button>
 
+	<GoalBanner size={52} />
 	<HomeStrip items={game.state.homeItems} />
 
 	{#if showSetup}
