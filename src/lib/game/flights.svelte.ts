@@ -33,3 +33,23 @@ export function hudCoinPoint(): Point {
 	}
 	return { x: 40, y: 52 };
 }
+
+/** Where the dream banner's slot `index` lives right now — the landing spot for saves. */
+export function goalSlotPoint(index: number): Point {
+	try {
+		const slot = document.querySelector(`[data-testid="goal-slot-${index}"]`);
+		const slotRect = slot?.getBoundingClientRect();
+		if (slotRect) {
+			return { x: slotRect.left + slotRect.width / 2, y: slotRect.top + slotRect.height / 2 };
+		}
+		const bannerRect = document
+			.querySelector('[data-testid="goal-banner"]')
+			?.getBoundingClientRect();
+		if (bannerRect) {
+			return { x: bannerRect.left + bannerRect.width / 2, y: bannerRect.top + bannerRect.height / 2 };
+		}
+	} catch {
+		/* fall through to the top of the screen */
+	}
+	return { x: innerWidth / 2, y: 64 };
+}
