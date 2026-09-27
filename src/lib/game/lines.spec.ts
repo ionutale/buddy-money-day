@@ -37,12 +37,6 @@ describe('the morning plan', () => {
 		);
 		expect(lines.greetingPlan(s({}))).toContain('Good morning, friend!');
 	});
-
-	it('greets without a trace of sadness', () => {
-		expect(lines.greeting(s({ childName: 'Sam' }))).toBe(
-			'Good morning, Sam! Buddy is so happy to see you!'
-		);
-	});
 });
 
 describe('the chores state their deal', () => {
@@ -155,9 +149,5 @@ describe('the tuck-in recap', () => {
 		expect(lines.recapLine(s({ earnedTodayCoins: 4, jarCoins: 0 }))).toBe(
 			'Today you earned 4 coins. Your wagon has 0 of 12. Tomorrow we can earn more!'
 		);
-	});
-
-	it('says good night without a trace of hunger', () => {
-		expect(lines.tuckIn(s({ childName: 'Sam' }))).toBe('Good night, Buddy. Good night, Sam!');
 	});
 });

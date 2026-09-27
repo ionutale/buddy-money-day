@@ -63,7 +63,6 @@ export const lines = {
 	start: (s) => `Hi ${buddyName(s)}! Buddy is ready for a Money Day.`,
 
 	// Greeting, with the whole day's plan in one spoken breath.
-	greeting: (s) => `Good morning, ${buddyName(s)}! Buddy is so happy to see you!`,
 	planLine: planText,
 	greetingPlan: (s) => `Good morning, ${buddyName(s)}! ${planText(s)}`,
 
@@ -110,8 +109,5 @@ export const lines = {
 			return `Today you earned ${earnedText}. Your ${TOY_LABELS[s.goal]} has ${s.jarCoins} of ${TOY_PRICES[s.goal]} — ${moreChores(remaining)}`;
 		}
 		return `Today you earned ${earnedText}. Your ${TOY_LABELS[s.goal]} has 0 of ${TOY_PRICES[s.goal]}. Tomorrow we can earn more!`;
-	},
-
-	// Tuck-in.
-	tuckIn: (s) => `Good night, Buddy. Good night, ${buddyName(s)}!`
+	}
 } satisfies Record<string, Line>;

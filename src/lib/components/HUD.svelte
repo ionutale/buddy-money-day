@@ -24,7 +24,7 @@
 	</div>
 
 	<div class="hud-pill hud-save" aria-label="Coins in the Save Jar">
-		<GoalBanner size={40} />
+		<GoalBanner size={32} compact />
 		<span class="hud-progress" data-testid="jar-progress">{jarCoins} / {dreamPrice}</span>
 	</div>
 
@@ -56,7 +56,7 @@
 		box-shadow: 0 4px 0 rgba(74, 55, 40, 0.08), 0 8px 18px rgba(74, 55, 40, 0.1);
 		backdrop-filter: blur(6px);
 		font-weight: 700;
-		font-size: 22px;
+		font-size: 20px;
 	}
 
 	.hud-number {
@@ -65,20 +65,21 @@
 	}
 
 	.hud-day {
-		padding: 10px 16px;
-		font-size: 18px;
+		padding: 8px 12px;
+		font-size: 17px;
 		color: var(--ink-soft);
 	}
 
 	.hud-save {
-		gap: 10px;
-		padding: 5px 14px 5px 10px;
+		gap: 7px;
+		padding: 5px 10px 5px 8px;
 	}
 
 	.hud-progress {
 		min-width: 2.4em;
 		text-align: right;
-		font-size: 14px;
+		font-size: 13px;
+		white-space: nowrap;
 		color: var(--ink-soft);
 	}
 </style>

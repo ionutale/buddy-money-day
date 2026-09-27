@@ -25,13 +25,21 @@ export async function completeSetup(page: Page, name = 'Sam'): Promise<void> {
 	await expect(startButton).toBeVisible();
 }
 
-export async function startMoneyDay(page: Page): Promise<void> {
+/**
+ * From the title screen, begin a Money Day and arrive at the job board. Works
+ * for the first day and every next one alike — the loop is the same.
+ */
+async function arriveAtJobBoard(page: Page): Promise<void> {
 	// Continue buttons sit inside continuously animated scenes; force taps skip
 	// Playwright's stability gate, exactly like the bobbing water drops.
 	await page.getByTestId('start-button').click({ force: true });
 	await expect(page.getByTestId('greeting-start')).toBeVisible();
 	await page.getByTestId('greeting-start').click({ force: true });
 	await expect(page.getByTestId('job-board')).toBeVisible();
+}
+
+export async function startMoneyDay(page: Page): Promise<void> {
+	await arriveAtJobBoard(page);
 }
 
 export async function dragLocator(page: Page, from: Locator, to: Locator): Promise<void> {
@@ -90,44 +98,6 @@ export async function doChore(page: Page, chore: Chore): Promise<void> {
 	await expect(page.getByTestId(`job-card-${chore}`)).toHaveAttribute('data-done', 'true');
 }
 
-export type DayChoices = {
-	feed: 'feed' | 'skip';
-	give?: number; // coins to the bird, 0..3
-	spend?: 'save' | 'lollipop';
-};
-
-/** Play one whole Money Day up to (not including) the tuck-in. */
-export async function playDay(page: Page, choices: DayChoices): Promise<void> {
-	const { feed, give = 0, spend = 'save' } = choices;
-
-	await tidyAllToys(page);
-	await waterAllDrops(page);
-
-	if (feed === 'feed') {
-		await page.getByTestId('hunger-feed').click();
-	} else {
-		await page.getByTestId('hunger-skip').click();
-	}
-	await expect(page.getByTestId('friend-done')).toBeVisible();
-	for (let i = 0; i < give; i++) {
-		await page.getByTestId('friend-give').click();
-	}
-	await page.getByTestId('friend-done').click();
-
-	await expect(page.getByTestId('shelf-save')).toBeVisible();
-	if (spend === 'lollipop') {
-		// The offered lollipop wobbles forever; force clicks tap its current spot.
-		await page.getByTestId('shelf-lollipop').click({ force: true });
-		await expect(page.getByTestId('lollipop-bought')).toBeVisible();
-		await page.getByTestId('lollipop-continue').click();
-	} else {
-		await page.getByTestId('shelf-save').click();
-	}
-
-	await expect(page.getByTestId('jars-continue')).toBeVisible();
-	await page.getByTestId('jars-continue').click();
-}
-
 export async function tuckIn(page: Page): Promise<void> {
 	await expect(page.getByTestId('tuckin-done')).toBeVisible();
 	await page.getByTestId('tuckin-done').click();
@@ -136,8 +106,5 @@ export async function tuckIn(page: Page): Promise<void> {
 
 /** From the start screen, begin the next Money Day and arrive at the job board. */
 export async function nextDay(page: Page): Promise<void> {
-	await page.getByTestId('start-button').click({ force: true });
-	await expect(page.getByTestId('greeting-start')).toBeVisible();
-	await page.getByTestId('greeting-start').click({ force: true });
-	await expect(page.getByTestId('job-board')).toBeVisible();
+	await arriveAtJobBoard(page);
 }

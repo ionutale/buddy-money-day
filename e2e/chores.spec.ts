@@ -62,7 +62,6 @@ test.describe('the job board', () => {
 		await doChore(page, 'water');
 		await expect(page.getByTestId('cap-line')).toHaveCount(0);
 		await expect(page.getByTestId('to-store-button')).toHaveCount(0);
-		await expect(page.getByTestId('store-shelf')).toHaveCount(0);
 
 		// The third job unlocks the way to the store.
 		await doChore(page, 'feed');

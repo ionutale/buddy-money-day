@@ -14,7 +14,10 @@ function mapStorage(): StorageLike & { raw: Map<string, string> } {
 	};
 }
 
-/** A literal v1 save, exactly as the old schema wrote it. */
+/**
+ * A v1 save: the durable fields the migration keeps, plus the retired v1 keys
+ * it must drop (the old goal and home items, planks, a mid-day phase).
+ */
 function v1Save(overrides: Record<string, unknown> = {}): string {
 	return JSON.stringify({
 		schemaVersion: 1,
@@ -25,8 +28,6 @@ function v1Save(overrides: Record<string, unknown> = {}): string {
 		jarCoins: 5,
 		homeItems: ['kite'],
 		planks: 2,
-		buddySad: true,
-		lollipopsTotal: 1,
 		phase: 'shelf',
 		goalCompletedToday: false,
 		savedToday: 2,
@@ -35,7 +36,6 @@ function v1Save(overrides: Record<string, unknown> = {}): string {
 		waterDone: 3,
 		fedToday: true,
 		gaveToday: 0,
-		lollipopToday: false,
 		...overrides
 	});
 }

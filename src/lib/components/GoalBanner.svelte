@@ -4,8 +4,12 @@
 	import { game } from '$lib/game/game.svelte';
 	import GoalItem from './GoalItem.svelte';
 
-	type Props = { size?: number };
-	let { size = 42 }: Props = $props();
+	type Props = {
+		size?: number;
+		/** A tight 6-per-row layout for the narrow in-day HUD. */
+		compact?: boolean;
+	};
+	let { size = 42, compact = false }: Props = $props();
 
 	// The slots show what the jar holds — unless a scene previews an outcome
 	// (the Store previews what saving the held coins would accomplish).
@@ -16,11 +20,12 @@
 
 <div
 	class="goal-banner"
+	class:compact
 	data-testid="goal-banner"
 	aria-label="Saving for your {TOY_LABELS[game.state.goal]}"
 >
 	<GoalItem kind={game.state.goal} size={size} />
-	<span class="slots" aria-hidden="true">
+	<span class="slots" class:compact aria-hidden="true">
 		{#each Array(price) as _, index (index)}
 			<span
 				class="slot"
@@ -39,11 +44,34 @@
 		gap: 8px;
 	}
 
+	.goal-banner.compact {
+		gap: 6px;
+	}
+
 	.slots {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 4px;
 		max-width: 104px;
+	}
+
+	/*
+	 * The in-day HUD has no room for the full-size slots at phone widths;
+	 * a fixed six-column grid holds two clean rows of six instead of the
+	 * 5/5/2 rag the flex wrap produced (and the columns may shrink a little
+	 * on the narrowest phones rather than overflow).
+	 */
+	.slots.compact {
+		display: grid;
+		grid-template-columns: repeat(6, minmax(8px, 11px));
+		grid-auto-rows: 11px;
+		gap: 2px;
+		max-width: none;
+	}
+
+	.slots.compact .slot {
+		width: auto;
+		height: 11px;
 	}
 
 	.slot {

@@ -105,6 +105,18 @@ test.describe('grown-up settings: voice', () => {
 		await completeSetup(page);
 		expect(await spokenCount(page)).toBe(0);
 
+		// Voice off never hides the words: the scene's bubble still holds them.
+		const startButton = page.getByTestId('start-button');
+		await expect(startButton).toBeVisible();
+		await startButton.click();
+		await expect(page.getByTestId('greeting-start')).toBeVisible();
+		await expect(page.getByText(/Good morning/)).toBeVisible();
+		expect(await spokenCount(page)).toBe(0);
+
+		// A reload restarts the unfinished day at the title, still silent.
+		await page.reload();
+		await expect(startButton).toBeVisible();
+
 		// Turn voice on in Grown-up Setup; flipping the switch is itself audible.
 		await page.getByTestId('open-setup-button').click();
 		await page.getByTestId('voice-toggle').click();
@@ -114,7 +126,7 @@ test.describe('grown-up settings: voice', () => {
 
 		// A new scene now speaks — and its text bubble still carries the words.
 		const before = await spokenCount(page);
-		await page.getByTestId('start-button').click({ force: true });
+		await startButton.click();
 		await expect(page.getByTestId('greeting-start')).toBeVisible();
 		await expect(page.getByText(/Good morning/)).toBeVisible();
 		await expect.poll(() => spokenCount(page)).toBeGreaterThan(before);
@@ -158,9 +170,11 @@ test.describe('grown-up settings: voice', () => {
 		await expect(page.getByTestId('voice-toggle')).toHaveAttribute('aria-checked', 'true');
 		await expect(page.getByTestId('voice-option-1')).toHaveAttribute('aria-checked', 'true');
 
-		// System default takes it back.
+		// System default takes it back — and previews again with no voice chosen.
+		const previews = await spokenCount(page);
 		await page.getByTestId('voice-option-default').click();
 		await expect(page.getByTestId('voice-option-default')).toHaveAttribute('aria-checked', 'true');
+		await expect.poll(() => spokenCount(page)).toBeGreaterThan(previews);
 		await expect.poll(() => lastVoice(page)).toBe(null);
 		expect(await storedSettings(page)).toEqual({ voiceEnabled: true, voiceURI: null });
 

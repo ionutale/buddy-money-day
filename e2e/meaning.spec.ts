@@ -2,155 +2,140 @@ import { expect, test } from '@playwright/test';
 import {
 	completeSetup,
 	doChore,
+	feedAllSnacks,
 	nextDay,
 	openGame,
-	playDay,
 	startMoneyDay,
-	tidyAllToys,
-	tuckIn,
-	waterAllDrops
+	tuckIn
 } from './helpers';
 
+/**
+ * The meaning layer: the dream banner, the job board's deals, the feed as a
+ * paid job, the store restating the dream, and the tuck-in recap — every
+ * number the child sees tied to the dream toy and its price.
+ */
 test.describe('the meaning layer', () => {
-	test('the goal is always on screen', async ({ page }) => {
+	test('the banner always shows the dream in twelve slots', async ({ page }) => {
 		await openGame(page);
 		await completeSetup(page);
 
-		// Title screen: the Goal with six empty slots and nothing earned yet.
+		// Title screen: the whole dream, twelve empty slots.
 		await expect(page.getByTestId('goal-banner')).toBeVisible();
-		for (let i = 0; i < 6; i++) {
-			await expect(page.getByTestId(`goal-slot-${i}`)).toHaveAttribute('data-filled', 'false');
-		}
+		await expect(page.locator('[data-testid^="goal-slot-"]')).toHaveCount(12);
+		await expect(page.getByTestId('goal-slot-0')).toHaveAttribute('data-filled', 'false');
+		await expect(page.getByTestId('goal-slot-11')).toHaveAttribute('data-filled', 'false');
 
 		await startMoneyDay(page);
-		await expect(page.getByTestId('goal-banner')).toBeVisible();
 
-		// Earning fills the hand, not the jar (the banner does not move yet).
-		await tidyAllToys(page);
-		await waterAllDrops(page);
-		await expect(page.getByTestId('coin-count')).toHaveText(/3/);
-		await expect(page.getByTestId('jar-progress')).toHaveText(/0\s*\/\s*6/);
-		for (let i = 0; i < 6; i++) {
-			await expect(page.getByTestId(`goal-slot-${i}`)).toHaveAttribute('data-filled', 'false');
-		}
+		// Earning fills the hand, not the jar: the banner does not move yet.
+		for (const chore of ['tidy', 'water', 'feed'] as const) await doChore(page, chore);
+		await expect(page.getByTestId('coin-count')).toHaveText('4');
+		await expect(page.getByTestId('jar-progress')).toHaveText('0 / 12');
+		await expect(page.getByTestId('goal-slot-3')).toHaveAttribute('data-filled', 'false');
+
+		// While choosing, the store previews the save: four slots will light up.
+		await page.getByTestId('to-store-button').click();
+		await expect(page.getByTestId('goal-slot-3')).toHaveAttribute('data-filled', 'true');
+		await expect(page.getByTestId('goal-slot-4')).toHaveAttribute('data-filled', 'false');
+
+		// The save lands: four slots hold, the jar reads four of twelve.
+		await page.getByTestId('store-save-button').click();
+		await expect(page.getByTestId('jar-progress')).toHaveText('4 / 12');
+		await expect(page.getByTestId('goal-slot-3')).toHaveAttribute('data-filled', 'true');
+		await expect(page.getByTestId('goal-slot-4')).toHaveAttribute('data-filled', 'false');
 	});
 
-	test('every task states its deal', async ({ page }) => {
-		await openGame(page);
-		await completeSetup(page);
-		await startMoneyDay(page);
-
-		// Tidy announces its reason and deal, carries its price, and pays visibly.
-		await expect(page.getByTestId('price-tag-tidy')).toContainText('2');
-		await expect(page.getByText('two coins')).toBeVisible();
-		await tidyAllToys(page);
-		await expect(page.getByTestId('goal-toast')).toContainText('Two coins earned!');
-
-		// Water does the same for its one coin.
-		await expect(page.getByTestId('price-tag-water')).toContainText('1');
-		await expect(page.getByText('one coin')).toBeVisible();
-		await waterAllDrops(page);
-		await expect(page.getByTestId('goal-toast')).toContainText('One coin earned!');
-	});
-
-	test('a spend restates the goal', async ({ page }) => {
-		await openGame(page);
-		await completeSetup(page);
-		await startMoneyDay(page);
-		await tidyAllToys(page);
-		await waterAllDrops(page);
-
-		await page.getByTestId('hunger-feed').click();
-		await expect(page.getByTestId('goal-toast')).toContainText('still has 0 of 6');
-		await expect(page.getByTestId('jar-progress')).toHaveText(/0\s*\/\s*6/);
-	});
-
-	test('the shelf previews the outcome', async ({ page }) => {
-		await openGame(page);
-		await completeSetup(page);
-		await startMoneyDay(page);
-		await playDay(page, { feed: 'skip' }); // day 1: save three
-		await tuckIn(page);
-
-		await nextDay(page);
-		await tidyAllToys(page);
-		await waterAllDrops(page);
-		await page.getByTestId('hunger-skip').click();
-		await page.getByTestId('friend-done').click();
-
-		await expect(page.getByTestId('shelf-preview')).toHaveAttribute('data-preview-filled', '6');
-		await expect(page.getByTestId('shelf-preview')).toHaveAttribute('data-complete', 'true');
-		await expect(page.getByText(/6 of 6/)).toBeVisible();
-	});
-
-	test('the lollipop spend restates the goal', async ({ page }) => {
-		await openGame(page);
-		await completeSetup(page);
-		await startMoneyDay(page);
-		await tidyAllToys(page);
-		await waterAllDrops(page);
-		await page.getByTestId('hunger-feed').click();
-		await expect(page.getByTestId('friend-done')).toBeVisible();
-		await page.getByTestId('friend-done').click();
-
-		await page.getByTestId('shelf-lollipop').click({ force: true });
-		await expect(page.getByTestId('lollipop-bought')).toBeVisible();
-		await expect(page.getByTestId('goal-toast')).toContainText('still has 0 of 6');
-
-		await page.getByTestId('lollipop-continue').click();
-		await expect(page.getByTestId('jars-continue')).toBeVisible();
-		await page.getByTestId('jars-continue').click();
-		await expect(page.getByTestId('recap-text')).toContainText('Tomorrow we can earn more!');
-	});
-
-	test('the morning plan speaks the whole deal', async ({ page }) => {
+	test("the job board states each job's deal", async ({ page }) => {
 		await openGame(page);
 		await completeSetup(page);
 		await page.getByTestId('start-button').click({ force: true });
 		await expect(page.getByTestId('greeting-start')).toBeVisible();
 
-		await expect(page.getByText('Today we can earn 3 coins for your kite!')).toBeVisible();
-		await expect(page.getByTestId('plan-card-tidy')).toContainText('2');
-		await expect(page.getByTestId('plan-card-water')).toContainText('1');
+		// The greeting speaks the day's whole plan.
+		await expect(page.getByText('Today we can earn 4 coins for your wagon!')).toBeVisible();
+		await page.getByTestId('greeting-start').click({ force: true });
+
+		// Each card offers its job and its pay.
+		await expect(page.getByTestId('job-card-tidy')).toContainText('Tidy the toys');
+		await expect(page.getByTestId('job-card-tidy')).toContainText('2');
+		await expect(page.getByTestId('job-card-water')).toContainText('Water the tree');
+		await expect(page.getByTestId('job-card-water')).toContainText('1');
+		await expect(page.getByTestId('job-card-feed')).toContainText('Feed the bear');
+		await expect(page.getByTestId('job-card-feed')).toContainText('1');
+		await expect(page.getByTestId('cap-line')).toHaveCount(0);
+
+		// Any order works: feed, tidy, water. The cap line and the store door
+		// wait until the whole day's work is done.
+		await doChore(page, 'feed');
+		await doChore(page, 'tidy');
+		await expect(page.getByTestId('cap-line')).toHaveCount(0);
+		await expect(page.getByTestId('to-store-button')).toHaveCount(0);
+		await doChore(page, 'water');
+		await expect(page.getByTestId('cap-line')).toHaveText('All chores done! More tomorrow.');
+		await expect(page.getByTestId('to-store-button')).toBeVisible();
 	});
 
-	test('the last coin fills the last slot, and the goal lands in Home', async ({ page }) => {
+	test('feeding the bear is a paid job with no way to skip', async ({ page }) => {
 		await openGame(page);
 		await completeSetup(page);
 		await startMoneyDay(page);
-		await playDay(page, { feed: 'skip' }); // day 1: save three
-		await tuckIn(page);
+		await page.getByTestId('job-card-feed').click();
 
-		await nextDay(page);
-		await playDay(page, { feed: 'skip' }); // day 2: three more
-		await expect(page.getByTestId('goal-celebrate')).toBeVisible();
-		for (let i = 0; i < 6; i++) {
-			await expect(page.getByTestId(`goal-slot-${i}`)).toHaveAttribute('data-filled', 'true');
+		// The deal on screen: three snacks, a bowl, a hungry bear — no skip.
+		await expect(page.getByText("I'm hungry! Feed me and I'll pay you a coin!")).toBeVisible();
+		await expect(page.getByTestId('price-tag-feed')).toContainText('1');
+		for (const i of [0, 1, 2]) {
+			await expect(page.getByTestId(`feed-snack-${i}`)).toBeVisible();
 		}
-		await expect(page.getByTestId('home-item-kite')).toBeVisible();
+		await expect(page.getByTestId('hunger-skip')).toHaveCount(0);
 
-		await page.getByTestId('goal-celebrate').click();
-		await expect(page.getByTestId('goal-option-hat')).toBeVisible();
-		await page.getByTestId('goal-option-hat').click();
+		// Each snack is dragged into the bowl; the third pays one coin.
+		await feedAllSnacks(page);
+		await expect(page.getByTestId('goal-toast')).toContainText('One coin earned!');
+		await expect(page.getByTestId('coin-count')).toHaveText('1');
+		await expect(page.getByTestId('job-card-feed')).toHaveAttribute('data-done', 'true');
+	});
 
-		// The recap tells the story, and the new goal starts empty.
-		await expect(page.getByTestId('tuckin-done')).toBeVisible();
-		await expect(page.getByTestId('recap-text')).toContainText('The kite is yours');
-		await expect(page.getByTestId('recap-text')).toContainText('Your funny hat needs 6 coins');
-		await expect(page.getByTestId('goal-banner')).toHaveAttribute('aria-label', /funny hat/);
-		for (let i = 0; i < 6; i++) {
-			await expect(page.getByTestId(`goal-slot-${i}`)).toHaveAttribute('data-filled', 'false');
-		}
+	test('the store restates the dream for a buy and a save', async ({ page }) => {
+		await openGame(page);
+		await completeSetup(page);
+		await startMoneyDay(page);
+		for (const chore of ['tidy', 'water', 'feed'] as const) await doChore(page, chore);
+		await page.getByTestId('to-store-button').click();
+
+		// The save is the default path, and its line names the current dream.
+		await expect(page.getByText('Time to choose! A toy now, or save for your wagon?')).toBeVisible();
+		await expect(page.getByTestId('store-save-button')).toContainText(
+			'Save the rest for your wagon.'
+		);
+
+		// A buy celebrates and restates the dream where the purchase leaves it.
+		await page.getByTestId('store-toy-ball').click();
+		await expect(page.getByTestId('goal-toast')).toContainText(
+			"It's in your room! Your wagon has 0 of 12."
+		);
+		await expect(page.getByTestId('store-toy-ball')).toHaveAttribute('data-owned', 'true');
+		await expect(page.getByTestId('store-save-button')).toContainText(
+			'Save the rest for your wagon.'
+		);
+
+		// The remaining two coins go to the jar; the recap uses the dream's numbers.
+		await page.getByTestId('store-save-button').click();
+		await expect(page.getByTestId('recap-text')).toContainText('Your wagon has 2 of 12');
 	});
 
 	test('the recap tells the truth while still saving', async ({ page }) => {
 		await openGame(page);
 		await completeSetup(page);
 		await startMoneyDay(page);
-		await playDay(page, { feed: 'skip' });
+		for (const chore of ['tidy', 'water', 'feed'] as const) await doChore(page, chore);
+		await page.getByTestId('to-store-button').click();
+		await page.getByTestId('store-save-button').click();
 
-		await expect(page.getByTestId('recap-text')).toContainText('Today you earned 3 coins');
-		await expect(page.getByTestId('recap-text')).toContainText('has 3 of 6');
+		// The honest bookend: what today paid, where the dream stands, what is left.
+		await expect(page.getByTestId('recap-text')).toContainText('Today you earned 4 coins.');
+		await expect(page.getByTestId('recap-text')).toContainText('Your wagon has 4 of 12');
+		await expect(page.getByTestId('recap-text')).toContainText('8 more chores tomorrow!');
 	});
 
 	test('three saving days bring the wagon home', async ({ page }) => {
@@ -160,7 +145,7 @@ test.describe('the meaning layer', () => {
 		await openGame(page);
 		await completeSetup(page);
 
-		// Days 1 and 2: 4 coins earned, all of them saved (4 → 8).
+		// Days 1 and 2: four coins earned, all of them saved (4 → 8).
 		for (const day of [1, 2]) {
 			if (day === 1) await startMoneyDay(page);
 			else await nextDay(page);
@@ -177,12 +162,17 @@ test.describe('the meaning layer', () => {
 		await page.getByTestId('to-store-button').click();
 		await page.getByTestId('store-save-button').click();
 
+		// The last coin fills the last slot before the celebration.
 		await expect(page.getByTestId('dream-celebrate')).toBeVisible();
+		for (let i = 0; i < 12; i++) {
+			await expect(page.getByTestId(`goal-slot-${i}`)).toHaveAttribute('data-filled', 'true');
+		}
 		await page.getByTestId('dream-celebrate').click();
 
 		// The recap names the wagon and points at the next dream.
 		await expect(page.getByTestId('recap-text')).toContainText('The wagon is yours');
 		await expect(page.getByTestId('recap-text')).toContainText('big teddy needs 12 coins');
+		await expect(page.getByTestId('goal-banner')).toHaveAttribute('aria-label', /big teddy/);
 		await tuckIn(page);
 
 		// Back at the title: the wagon is on the strip, and My Toys has a door.

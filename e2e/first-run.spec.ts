@@ -13,7 +13,7 @@ test.describe('first run', () => {
 		await expect(page.getByText('Sam')).toBeVisible();
 		await expect(page.getByTestId('buddy')).toBeVisible();
 		await page.getByTestId('greeting-start').click();
-		await expect(page.getByTestId('toy-0')).toBeVisible();
+		await expect(page.getByTestId('job-board')).toBeVisible();
 	});
 
 	test('the setup does not appear again on the next visit', async ({ page }) => {
@@ -34,6 +34,10 @@ test.describe('first run', () => {
 		await expect(page.getByTestId('greeting-start')).toBeVisible();
 		await expect(page.getByText('friend')).toBeVisible();
 		await page.getByTestId('greeting-start').click();
+
+		// The day's hub opens, and the first chore is playable without a name.
+		await expect(page.getByTestId('job-board')).toBeVisible();
+		await page.getByTestId('job-card-tidy').click();
 		await expect(page.getByTestId('toy-0')).toBeVisible();
 	});
 });

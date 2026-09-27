@@ -1,5 +1,5 @@
 /**
- * Tiny WebAudio effects: coin, clunk, pop, chime, sad. Every entry point is
+ * Tiny WebAudio effects: coin, clunk, pop, chime. Every entry point is
  * guarded — unsupported browsers, blocked autoplay, and closed contexts all
  * stay silent. unlock() runs on the first tap so mobile browsers let sound
  * through. Nothing here ever throws.
@@ -82,9 +82,5 @@ export const sounds = {
 		blip({ freq: 659, duration: 0.5, type: 'triangle', volume: 0.1 });
 		blip({ freq: 880, duration: 0.5, type: 'triangle', volume: 0.1, delay: 0.12 });
 		blip({ freq: 1109, duration: 0.6, type: 'triangle', volume: 0.1, delay: 0.24 });
-	},
-	/** A soft, low wobble — never a buzzer. */
-	sad(): void {
-		blip({ freq: 330, duration: 0.35, type: 'sine', volume: 0.12, slideTo: 208 });
 	}
 };

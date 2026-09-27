@@ -1,55 +1,57 @@
 import { expect, test } from '@playwright/test';
-import { completeSetup, nextDay, openGame, playDay, startMoneyDay, tuckIn } from './helpers';
+import { completeSetup, doChore, nextDay, openGame, startMoneyDay, tuckIn } from './helpers';
 
+/**
+ * The whole Money Day loop, end to end: three chores pay four coins, the
+ * store's save button carries them into the jar, and the day ends at tuck-in.
+ * Three saving days reach the wagon; coins in hand never survive the night,
+ * the jar does.
+ */
 test.describe('the whole money day loop', () => {
-	test('two days of saving reach the goal, and the goal becomes a home item', async ({
-		page
-	}) => {
+	test('three saving days reach the dream', async ({ page }) => {
+		// Three days with all their celebration beats outlast the 30 s default.
+		test.setTimeout(90_000);
+
 		await openGame(page);
 		await completeSetup(page);
 
-		// Day 1: skip the bowl and the bird, save everything (default path).
-		await startMoneyDay(page);
-		await playDay(page, { feed: 'skip' });
+		// Days 1 and 2: all four coins go to the jar (4 → 8).
+		for (const day of [1, 2]) {
+			if (day === 1) await startMoneyDay(page);
+			else await nextDay(page);
+			for (const chore of ['tidy', 'water', 'feed'] as const) await doChore(page, chore);
+			await page.getByTestId('to-store-button').click();
+			await page.getByTestId('store-save-button').click();
+			await expect(page.getByTestId('recap-text')).toContainText(`has ${day * 4} of 12`);
+			await tuckIn(page);
+		}
 
-		// Skipping food leaves Buddy droopy at bedtime.
-		await expect(page.getByTestId('buddy')).toHaveAttribute('data-mood', 'sad');
-		await tuckIn(page);
-
-		// Day 2: three more coins reach the goal price.
+		// Day 3: the jar reaches 12, and the save opens the dream celebration.
 		await nextDay(page);
-		await playDay(page, { feed: 'skip' });
-
-		await expect(page.getByTestId('goal-celebrate')).toBeVisible();
-		await page.getByTestId('goal-celebrate').click();
-
-		// Pick a new goal among the three cards.
-		await expect(page.getByTestId('goal-option-hat')).toBeVisible();
-		await expect(page.getByTestId('goal-option-slide')).toBeVisible();
-		await page.getByTestId('goal-option-hat').click();
-
-		// The finished kite now lives in Buddy's home...
-		await tuckIn(page);
-		await expect(page.getByTestId('home-item-kite')).toBeVisible();
-
-		// ...and the jar restarts empty on the next money day.
-		await nextDay(page);
-		await expect(page.getByTestId('jar-progress')).toHaveText(/0\s*\/\s*6/);
+		for (const chore of ['tidy', 'water', 'feed'] as const) await doChore(page, chore);
+		await page.getByTestId('to-store-button').click();
+		await page.getByTestId('store-save-button').click();
+		await expect(page.getByTestId('dream-celebrate')).toBeVisible();
 	});
 
 	test('coins in hand never survive the night, the jar does', async ({ page }) => {
 		await openGame(page);
 		await completeSetup(page);
 
+		// Day 1: the whole day pays four coins into the hand.
 		await startMoneyDay(page);
-		await playDay(page, { feed: 'feed' }); // 3 earned, 1 fed -> 2 saved
+		for (const chore of ['tidy', 'water', 'feed'] as const) await doChore(page, chore);
+		await expect(page.getByTestId('coin-count')).toHaveText('4');
+
+		// The save carries them into the jar; the night starts at tuck-in.
+		await page.getByTestId('to-store-button').click();
+		await page.getByTestId('store-save-button').click();
+		await expect(page.getByTestId('recap-text')).toBeVisible();
 		await tuckIn(page);
 
-		await expect(page.getByTestId('start-button')).toBeVisible();
-		await page.getByTestId('start-button').click();
-		await expect(page.getByTestId('greeting-start')).toBeVisible();
-
-		await expect(page.getByTestId('jar-progress')).toHaveText(/2\s*\/\s*6/);
-		await expect(page.getByTestId('coin-count')).toHaveText(/0/);
+		// The next Money Day wakes with an empty hand and the jar untouched.
+		await nextDay(page);
+		await expect(page.getByTestId('coin-count')).toHaveText('0');
+		await expect(page.getByTestId('jar-progress')).toHaveText('4 / 12');
 	});
 });
