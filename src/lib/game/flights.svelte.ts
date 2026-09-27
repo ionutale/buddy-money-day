@@ -21,3 +21,15 @@ export function flyCoins({ from, to, count = 1, onDone }: FlightSpec): void {
 		onDone?.();
 	}, fallbackMs);
 }
+
+/** Where the HUD's coin counter lives right now — the landing spot for earns. */
+export function hudCoinPoint(): Point {
+	try {
+		const el = document.querySelector('[data-testid="coin-count"]');
+		const rect = el?.getBoundingClientRect();
+		if (rect) return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+	} catch {
+		/* fall through to the corner */
+	}
+	return { x: 40, y: 52 };
+}

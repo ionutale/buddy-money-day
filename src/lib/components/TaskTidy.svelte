@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { TIDY_REWARD, TIDY_TOYS } from '$lib/game/economy';
+	import { flyCoins, hudCoinPoint } from '$lib/game/flights.svelte';
 	import { actions, game } from '$lib/game/game.svelte';
 	import { lines } from '$lib/game/lines';
 	import { speak } from '$lib/game/speech';
 	import { sounds } from '$lib/game/sounds';
+	import { toast } from '$lib/game/toasts.svelte';
 	import Bubble from './Bubble.svelte';
 	import Coin from './Coin.svelte';
 
@@ -117,6 +119,15 @@
 		paying = true;
 		sounds.coin();
 		speak(lines.tidyPaid(game.state));
+		toast(lines.tidyPaid(game.state));
+		const rect = boxEl?.getBoundingClientRect();
+		flyCoins({
+			from: rect
+				? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
+				: { x: innerWidth / 2, y: innerHeight / 2 },
+			to: hudCoinPoint(),
+			count: TIDY_REWARD
+		});
 		timer = setTimeout(() => actions.tidyToy(), 1600);
 	}
 
@@ -127,7 +138,12 @@
 </script>
 
 <div class="scene tidy">
-	<Bubble tail="center">The toys are all over the floor!</Bubble>
+	<div class="task-head">
+		<Bubble tail="center">{lines.tidy(game.state)}</Bubble>
+		<span class="price-tag" data-testid="price-tag-tidy" aria-label="Pays {TIDY_REWARD} coins">
+			<Coin size={24} />{TIDY_REWARD}
+		</span>
+	</div>
 
 	<div class="tidy-stage">
 		{#each TOYS as toy (toy.id)}
@@ -204,6 +220,25 @@
 </div>
 
 <style>
+	.task-head {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.price-tag {
+		display: inline-flex;
+		align-items: center;
+		gap: 3px;
+		flex: 0 0 auto;
+		background: #fffdf8;
+		border-radius: 999px;
+		padding: 6px 12px 6px 6px;
+		font-size: 22px;
+		font-weight: 700;
+		box-shadow: 0 4px 0 rgba(74, 55, 40, 0.1);
+	}
+
 	.tidy-stage {
 		position: relative;
 		width: 100%;

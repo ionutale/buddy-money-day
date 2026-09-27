@@ -24,4 +24,22 @@ test.describe('the meaning layer', () => {
 			await expect(page.getByTestId(`goal-slot-${i}`)).toHaveAttribute('data-filled', 'false');
 		}
 	});
+
+	test('every task states its deal', async ({ page }) => {
+		await openGame(page);
+		await completeSetup(page);
+		await startMoneyDay(page);
+
+		// Tidy announces its reason and deal, carries its price, and pays visibly.
+		await expect(page.getByTestId('price-tag-tidy')).toContainText('2');
+		await expect(page.getByText('two coins')).toBeVisible();
+		await tidyAllToys(page);
+		await expect(page.getByTestId('goal-toast')).toContainText('Two coins earned!');
+
+		// Water does the same for its one coin.
+		await expect(page.getByTestId('price-tag-water')).toContainText('1');
+		await expect(page.getByText('one coin')).toBeVisible();
+		await waterAllDrops(page);
+		await expect(page.getByTestId('goal-toast')).toContainText('One coin earned!');
+	});
 });

@@ -1,16 +1,20 @@
 <script lang="ts">
-	import { WATER_DROPS } from '$lib/game/economy';
+	import { WATER_DROPS, WATER_REWARD } from '$lib/game/economy';
+	import { flyCoins, hudCoinPoint } from '$lib/game/flights.svelte';
 	import { actions, game } from '$lib/game/game.svelte';
 	import { lines } from '$lib/game/lines';
 	import { speak } from '$lib/game/speech';
 	import { sounds } from '$lib/game/sounds';
+	import { toast } from '$lib/game/toasts.svelte';
 	import Bubble from './Bubble.svelte';
+	import Coin from './Coin.svelte';
 
 	const DROPS = Array.from({ length: WATER_DROPS }, (_, i) => i);
 
 	let used = $state<boolean[]>(DROPS.map(() => false));
 	let bloom = $state(false);
 	let splash = $state(0);
+	let treeEl: SVGSVGElement | undefined = $state();
 
 	let advancing = false;
 	let timer: ReturnType<typeof setTimeout> | undefined;
@@ -36,6 +40,15 @@
 			bloom = true;
 			sounds.chime();
 			speak(lines.waterPaid(game.state));
+			toast(lines.waterPaid(game.state));
+			const rect = treeEl?.getBoundingClientRect();
+			flyCoins({
+				from: rect
+					? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
+					: { x: innerWidth / 2, y: innerHeight / 2 },
+				to: hudCoinPoint(),
+				count: WATER_REWARD
+			});
 			// Let the tree bloom, then the 3rd drop pays out.
 			advancing = true;
 			timer = setTimeout(() => actions.waterDrop(), 1600);
@@ -44,7 +57,12 @@
 </script>
 
 <div class="scene water">
-	<Bubble tail="center">The little tree is thirsty!</Bubble>
+	<div class="task-head">
+		<Bubble tail="center">{lines.water(game.state)}</Bubble>
+		<span class="price-tag" data-testid="price-tag-water" aria-label="Pays {WATER_REWARD} coin">
+			<Coin size={24} />{WATER_REWARD}
+		</span>
+	</div>
 
 	<div class="water-stage">
 		<div class="drops">
@@ -70,7 +88,7 @@
 			{#key splash}
 				<span class="falling" aria-hidden="true"></span>
 			{/key}
-			<svg class="tree" class:bloom viewBox="0 0 220 220" role="img" aria-label="The little tree">
+			<svg class="tree" class:bloom bind:this={treeEl} viewBox="0 0 220 220" role="img" aria-label="The little tree">
 				<ellipse cx="110" cy="208" rx="86" ry="14" fill="#9ad29a" />
 				<path d="M100 208 Q96 168 102 132 L122 132 Q128 170 124 208 Z" fill="#b9834f" />
 				<path d="M110 148 Q88 138 78 120" fill="none" stroke="#b9834f" stroke-width="11" stroke-linecap="round" />
@@ -118,6 +136,25 @@
 </div>
 
 <style>
+	.task-head {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.price-tag {
+		display: inline-flex;
+		align-items: center;
+		gap: 3px;
+		flex: 0 0 auto;
+		background: #fffdf8;
+		border-radius: 999px;
+		padding: 6px 12px 6px 6px;
+		font-size: 22px;
+		font-weight: 700;
+		box-shadow: 0 4px 0 rgba(74, 55, 40, 0.1);
+	}
+
 	.water-stage {
 		position: relative;
 		width: 100%;
