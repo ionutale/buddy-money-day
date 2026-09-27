@@ -144,4 +144,4 @@ toast(text: string): void
 
 - [x] Update `CONTEXT.md`: add **Plan** (the morning job board) and **Goal Banner** to the Language section
 - [x] Commit `docs: meaning-layer glossary terms`; push (auto-deploys)
-- [ ] Verify the git-triggered deployment is Ready + live suite green; report
+- [x] Verify the git-triggered deployment is Ready + live suite green; report — 23/23 live
