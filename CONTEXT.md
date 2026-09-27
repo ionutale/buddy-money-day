@@ -44,6 +44,18 @@ _Avoid_: required purchase, health, energy bar
 Buddy's room. Fills with the real objects the child saved for; the Home strip is the entire progression system (no levels, no XP).
 _Avoid_: inventory, collection menu, shop
 
+**Plan**:
+The morning board on the greeting screen: today's Helping Tasks as picture cards with their coin prices, next to the Goal's progress. The day's whole deal in one look.
+_Avoid_: schedule, agenda, task list
+
+**Goal Banner**:
+The always-visible strip showing the Goal's picture and its six coin slots, filled as Coins are saved. It previews outcomes at the Shelf and lands the item in Home at Goal-reached.
+_Avoid_: progress bar, counter, HUD widget
+
+**Recap**:
+The tuck-in line that closes every Money Day: what was earned today and where the Goal stands — honest in every variant, never a scolding.
+_Avoid_: summary, report card, stats
+
 **Grown-up Setup**:
 The only text screen: first-run name entry and game reset. Exists for the parent, never required for play.
 _Avoid_: parent mode, settings, menu, dashboard
