@@ -109,8 +109,8 @@ The product default flips: new installs are **silent**; the existing Voice switc
 
 **Files:** `src/lib/components/Store.svelte`, `e2e/store.spec.ts` (new)
 
-- [ ] **Step 1: failing e2e:** unaffordable compare (`store-unaffordable` — Ball with 1 coin after one chore: "That's 2 coins — you have 1. One more chore tomorrow!"; blocks are not on the slice-1 shelf); buy ball with 2 → celebration → owned state; `store-save-button` flies coins to the banner then advances (tuck-in, or dream-reached at ≥12); `store-dream` pedestal with progress.
-- [ ] **Step 2: red → implement.** Shelf (`store-shelf`, `store-toy-ball`) + pedestal + default save button; buys restate the dream via toast.
+- [ ] **Step 1: failing e2e:** buy ball with 2 → celebration → owned state; `store-save-button` flies coins to the banner's dream slots then advances (tuck-in, or dream-reached at ≥12); `store-dream` pedestal with progress. (`store-unaffordable` has no play path in v2 — the store opens only after all three chores (4 coins), the ball costs 2, and day transients never survive a load, so nothing can put the child at the shelf with 1 coin. Keep the branch and testid; its copy stays unit-covered in `lines.spec.ts`; e2e coverage defers to slice 2 when Blocks (6) joins the shelf.)
+- [ ] **Step 2: red → implement.** Shelf (`store-shelf`, `store-toy-ball`) + pedestal + default save button; buys restate the dream via toast; the save-flight lands on the banner's dream slots, not the HUD counter (Task 1 parked fix).
 - [ ] **Step 3: green + commit** — `feat: the store — buy a toy or save for the dream`.
 
 ### Task 7 — Dream home + title doors + recap
