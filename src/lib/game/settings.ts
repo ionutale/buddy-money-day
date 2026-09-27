@@ -8,7 +8,11 @@ import { defaultStorage, type StorageLike } from './persistence';
 export const SETTINGS_KEY = 'money-day-settings';
 
 export type Settings = {
-	/** When false the game stays silent; text bubbles always keep the words. */
+	/**
+	 * When false the game stays silent; text bubbles always keep the words.
+	 * New installs are silent — a grown-up turns voice on in Setup. A stored
+	 * preference always wins over this default.
+	 */
 	voiceEnabled: boolean;
 	/**
 	 * voiceURI of the chosen speech-synthesis actor; null = the device's
@@ -18,7 +22,7 @@ export type Settings = {
 	voiceURI: string | null;
 };
 
-export const DEFAULT_SETTINGS: Settings = { voiceEnabled: true, voiceURI: null };
+export const DEFAULT_SETTINGS: Settings = { voiceEnabled: false, voiceURI: null };
 
 function isVoiceURI(value: unknown): value is string | null {
 	return value === null || typeof value === 'string';

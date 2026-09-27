@@ -2,12 +2,12 @@
 
 **Live: [buddy-money-day.vercel.app](https://buddy-money-day.vercel.app)** — open it on a phone; "Add to Home Screen" makes it feel like a real app.
 
-A 5-minute, fully-voiced phone game that teaches a 4-year-old the first principles of money: effort earns coins, saving is for a goal you chose, needs come before wants, and sharing is its own reward.
+A 5-minute phone game that teaches a 4-year-old the first principles of money: effort earns coins, saving is for a goal you chose, needs come before wants, and sharing is its own reward.
 
 - **Design language:** [CONTEXT.md](./CONTEXT.md) (glossary) and [docs/adr](./docs/adr) (decisions)
 - **Privacy:** completely static SPA — no backend, no accounts, no network calls; progress lives in `localStorage` (per device)
-- **Voice:** English TTS via the Web Speech API; append `?mute=1` to silence it
-- **No reading required:** every instruction is spoken; numerals appear only as support
+- **Voice:** optional English TTS via the Web Speech API — **off by default**; a grown-up turns it on in Grown-up Setup (the gear), where Buddy's actor can also be chosen. Every line is mirrored in a text bubble; append `?mute=1` to force silence.
+- **No reading required:** every instruction is spoken when voice is on, and the text bubbles always carry the words for a grown-up to read along; numerals appear only as support
 
 ## Develop
 

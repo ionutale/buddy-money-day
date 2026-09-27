@@ -12,11 +12,22 @@ function mapStorage(): StorageLike & { raw: Map<string, string> } {
 	};
 }
 
+/** Fresh installs and any unreadable save land here: silent, system voice. */
+const SILENT = { voiceEnabled: false, voiceURI: null };
+
 describe('grown-up settings', () => {
-	it('defaults to voice on with the system voice when nothing is stored', () => {
-		expect(loadSettings(mapStorage())).toEqual(DEFAULT_SETTINGS);
-		expect(DEFAULT_SETTINGS.voiceEnabled).toBe(true);
-		expect(DEFAULT_SETTINGS.voiceURI).toBeNull();
+	it('defaults to silent with the system voice when nothing is stored', () => {
+		expect(DEFAULT_SETTINGS).toEqual(SILENT);
+		expect(loadSettings(mapStorage())).toEqual(SILENT);
+	});
+
+	it('a stored choice to turn voice on still wins over the silent default', () => {
+		const storage = mapStorage();
+		saveSettings({ voiceEnabled: true, voiceURI: null }, storage);
+		expect(loadSettings(storage)).toEqual({ voiceEnabled: true, voiceURI: null });
+		// The stored value is read back even when it disagrees with the default.
+		storage.setItem(SETTINGS_KEY, JSON.stringify({ voiceEnabled: true, voiceURI: 'voice-bella' }));
+		expect(loadSettings(storage)).toEqual({ voiceEnabled: true, voiceURI: 'voice-bella' });
 	});
 
 	it('roundtrips both the switch and the chosen voice actor', () => {
@@ -28,22 +39,24 @@ describe('grown-up settings', () => {
 
 	it('loads saves from before the actor picker existed', () => {
 		const storage = mapStorage();
-		storage.setItem(SETTINGS_KEY, JSON.stringify({ voiceEnabled: false }));
-		expect(loadSettings(storage)).toEqual({ voiceEnabled: false, voiceURI: null });
+		storage.setItem(SETTINGS_KEY, JSON.stringify({ voiceEnabled: true }));
+		expect(loadSettings(storage)).toEqual({ voiceEnabled: true, voiceURI: null });
 	});
 
-	it('falls back to defaults for corrupt json', () => {
+	it('falls back to silence for corrupt json', () => {
 		const storage = mapStorage();
 		storage.setItem(SETTINGS_KEY, '{not json');
-		expect(loadSettings(storage)).toEqual(DEFAULT_SETTINGS);
+		expect(loadSettings(storage)).toEqual(SILENT);
 	});
 
-	it('falls back to defaults for foreign shapes', () => {
+	it('falls back to silence for foreign shapes', () => {
 		const storage = mapStorage();
 		storage.setItem(SETTINGS_KEY, JSON.stringify({ voiceEnabled: 'yes' }));
-		expect(loadSettings(storage)).toEqual(DEFAULT_SETTINGS);
+		expect(loadSettings(storage)).toEqual(SILENT);
 		storage.setItem(SETTINGS_KEY, JSON.stringify(['voiceEnabled']));
-		expect(loadSettings(storage)).toEqual(DEFAULT_SETTINGS);
+		expect(loadSettings(storage)).toEqual(SILENT);
+		storage.setItem(SETTINGS_KEY, JSON.stringify(null));
+		expect(loadSettings(storage)).toEqual(SILENT);
 	});
 
 	it('treats a non-string voice actor as the system default', () => {
@@ -64,7 +77,7 @@ describe('grown-up settings', () => {
 				throw new Error('nope');
 			}
 		};
-		expect(loadSettings(broken)).toEqual(DEFAULT_SETTINGS);
+		expect(loadSettings(broken)).toEqual(SILENT);
 		expect(() => saveSettings({ voiceEnabled: false, voiceURI: null }, broken)).not.toThrow();
 	});
 });
