@@ -1,15 +1,17 @@
 <script lang="ts">
+	import { TIDY_REWARD, WATER_REWARD } from '$lib/game/economy';
 	import { actions, game } from '$lib/game/game.svelte';
-	import { buddyName, lines } from '$lib/game/lines';
+	import { lines } from '$lib/game/lines';
 	import { speak } from '$lib/game/speech';
 	import Buddy from './Buddy.svelte';
 	import Bubble from './Bubble.svelte';
+	import Coin from './Coin.svelte';
 
 	let spoke = $state(false);
 	$effect(() => {
 		if (spoke) return;
 		spoke = true;
-		speak(game.state.buddySad ? lines.greetingSad(game.state) : lines.greeting(game.state));
+		speak(game.state.buddySad ? lines.greetingSad(game.state) : lines.greetingPlan(game.state));
 	});
 </script>
 
@@ -28,9 +30,30 @@
 		</g>
 	</svg>
 
-	<Bubble tail="left">Good morning, {buddyName(game.state)}!</Bubble>
+	<Bubble tail="left"
+		>{game.state.buddySad
+			? lines.greetingSad(game.state)
+			: lines.greetingPlan(game.state)}</Bubble
+	>
 
 	<Buddy mood={game.state.buddySad ? 'sad' : 'happy'} size={188} />
+
+	<div class="plan" data-testid="plan-cards">
+		<div class="plan-card" data-testid="plan-card-tidy">
+			<svg class="plan-icon" viewBox="0 0 48 48" aria-hidden="true">
+				<rect x="6" y="26" width="36" height="16" rx="6" fill="#d9a869" stroke="#4a3728" stroke-width="2.5" />
+				<circle cx="18" cy="16" r="9" fill="#ff8a66" />
+				<rect x="28" y="8" width="14" height="14" rx="4" fill="#ffd35c" stroke="#4a3728" stroke-width="2.5" />
+			</svg>
+			<span class="plan-price"><Coin size={22} />{TIDY_REWARD}</span>
+		</div>
+		<div class="plan-card" data-testid="plan-card-water">
+			<svg class="plan-icon" viewBox="0 0 40 52" aria-hidden="true">
+				<path d="M20 3 C 29 20, 35 28, 35 36 a15 15 0 1 1 -30 0 C 5 28, 11 20, 20 3 Z" fill="#bfe3f5" stroke="#7cbcd9" stroke-width="3" />
+			</svg>
+			<span class="plan-price"><Coin size={22} />{WATER_REWARD}</span>
+		</div>
+	</div>
 
 	<button type="button" class="btn btn-primary btn-huge" data-testid="greeting-start" onclick={() => actions.greetDone()}>
 		Let's help Buddy!
@@ -56,5 +79,33 @@
 		to {
 			transform: rotate(360deg);
 		}
+	}
+
+	.plan {
+		display: flex;
+		gap: 12px;
+	}
+
+	.plan-card {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		background: #fffdf8;
+		border-radius: 22px;
+		padding: 8px 14px;
+		box-shadow: 0 5px 0 rgba(74, 55, 40, 0.1);
+	}
+
+	.plan-icon {
+		width: 40px;
+		height: 40px;
+	}
+
+	.plan-price {
+		display: inline-flex;
+		align-items: center;
+		gap: 2px;
+		font-size: 22px;
+		font-weight: 700;
 	}
 </style>

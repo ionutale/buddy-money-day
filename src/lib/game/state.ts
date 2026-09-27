@@ -31,7 +31,8 @@ export function resetDayTransients(s: GameState): GameState {
 		fedToday: false,
 		gaveToday: 0,
 		lollipopToday: false,
-		goalCompletedToday: false
+		goalCompletedToday: false,
+		savedToday: 0
 	});
 }
 
@@ -49,6 +50,7 @@ export function newGame(): GameState {
 		lollipopsTotal: 0,
 		phase: 'setup',
 		goalCompletedToday: false,
+		savedToday: 0,
 		coins: 0,
 		tidyDone: 0,
 		waterDone: 0,
@@ -138,7 +140,12 @@ export function friendDone(s: GameState): GameState {
 
 export function saveAll(s: GameState): GameState {
 	if (s.phase !== 'shelf') return s;
-	return withState(s, { jarCoins: s.jarCoins + s.coins, coins: 0, phase: 'jars' });
+	return withState(s, {
+		jarCoins: s.jarCoins + s.coins,
+		coins: 0,
+		savedToday: s.savedToday + s.coins,
+		phase: 'jars'
+	});
 }
 
 export function buyLollipop(s: GameState): GameState {
@@ -152,7 +159,12 @@ export function buyLollipop(s: GameState): GameState {
 
 export function continueAfterLollipop(s: GameState): GameState {
 	if (s.phase !== 'shelf' || !s.lollipopToday) return s;
-	return withState(s, { jarCoins: s.jarCoins + s.coins, coins: 0, phase: 'jars' });
+	return withState(s, {
+		jarCoins: s.jarCoins + s.coins,
+		coins: 0,
+		savedToday: s.savedToday + s.coins,
+		phase: 'jars'
+	});
 }
 
 export function jarsDone(s: GameState): GameState {
@@ -191,10 +203,14 @@ export function nextGoalOptions(s: GameState): GoalId[] {
 	return [...uncollected, ...collected].slice(0, GOALS.length);
 }
 
-/** What today has earned so far, however it has been spent. Max TIDY_REWARD + WATER_REWARD. */
+/** What today has earned so far, however it was saved or spent. Max TIDY_REWARD + WATER_REWARD. */
 export function earnedToday(s: GameState): number {
 	return (
-		s.coins + (s.fedToday ? FEED_COST : 0) + s.gaveToday + (s.lollipopToday ? LOLLIPOP_COST : 0)
+		s.savedToday +
+		s.coins +
+		(s.fedToday ? FEED_COST : 0) +
+		s.gaveToday +
+		(s.lollipopToday ? LOLLIPOP_COST : 0)
 	);
 }
 

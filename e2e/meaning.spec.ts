@@ -88,11 +88,67 @@ test.describe('the meaning layer', () => {
 		await startMoneyDay(page);
 		await tidyAllToys(page);
 		await waterAllDrops(page);
-		await page.getByTestId('hunger-skip').click();
+		await page.getByTestId('hunger-feed').click();
+		await expect(page.getByTestId('friend-done')).toBeVisible();
 		await page.getByTestId('friend-done').click();
 
 		await page.getByTestId('shelf-lollipop').click({ force: true });
 		await expect(page.getByTestId('lollipop-bought')).toBeVisible();
 		await expect(page.getByTestId('goal-toast')).toContainText('still has 0 of 6');
+
+		await page.getByTestId('lollipop-continue').click();
+		await expect(page.getByTestId('jars-continue')).toBeVisible();
+		await page.getByTestId('jars-continue').click();
+		await expect(page.getByTestId('recap-text')).toContainText('Tomorrow we can earn more!');
+	});
+
+	test('the morning plan speaks the whole deal', async ({ page }) => {
+		await openGame(page);
+		await completeSetup(page);
+		await page.getByTestId('start-button').click({ force: true });
+		await expect(page.getByTestId('greeting-start')).toBeVisible();
+
+		await expect(page.getByText('Today we can earn 3 coins for your kite!')).toBeVisible();
+		await expect(page.getByTestId('plan-card-tidy')).toContainText('2');
+		await expect(page.getByTestId('plan-card-water')).toContainText('1');
+	});
+
+	test('the last coin fills the last slot, and the goal lands in Home', async ({ page }) => {
+		await openGame(page);
+		await completeSetup(page);
+		await startMoneyDay(page);
+		await playDay(page, { feed: 'skip' }); // day 1: save three
+		await tuckIn(page);
+
+		await nextDay(page);
+		await playDay(page, { feed: 'skip' }); // day 2: three more
+		await expect(page.getByTestId('goal-celebrate')).toBeVisible();
+		for (let i = 0; i < 6; i++) {
+			await expect(page.getByTestId(`goal-slot-${i}`)).toHaveAttribute('data-filled', 'true');
+		}
+		await expect(page.getByTestId('home-item-kite')).toBeVisible();
+
+		await page.getByTestId('goal-celebrate').click();
+		await expect(page.getByTestId('goal-option-hat')).toBeVisible();
+		await page.getByTestId('goal-option-hat').click();
+
+		// The recap tells the story, and the new goal starts empty.
+		await expect(page.getByTestId('tuckin-done')).toBeVisible();
+		await expect(page.getByTestId('recap-text')).toContainText('The kite is yours');
+		await expect(page.getByTestId('recap-text')).toContainText('Your funny hat needs 6 coins');
+		await expect(page.getByTestId('goal-banner')).toHaveAttribute('aria-label', /funny hat/);
+		for (let i = 0; i < 6; i++) {
+			await expect(page.getByTestId(`goal-slot-${i}`)).toHaveAttribute('data-filled', 'false');
+		}
+	});
+
+	test('the recap tells the truth while still saving', async ({ page }) => {
+		await openGame(page);
+		await completeSetup(page);
+		await startMoneyDay(page);
+		await playDay(page, { feed: 'skip' });
+
+		await expect(page.getByTestId('recap-text')).toContainText('Today you earned 3 coins');
+		await expect(page.getByTestId('recap-text')).toContainText('has 3 of 6');
 	});
 });

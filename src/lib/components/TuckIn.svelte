@@ -11,8 +11,12 @@
 	$effect(() => {
 		if (spoke) return;
 		spoke = true;
-		speak(sad ? lines.tuckInSad(game.state) : lines.tuckInHappy(game.state));
-		if (sad) sounds.sad();
+		if (sad) {
+			speak(lines.tuckInSad(game.state));
+			sounds.sad();
+		} else {
+			speak(lines.recapLine(game.state));
+		}
 	});
 </script>
 
@@ -42,6 +46,8 @@
 			Good night, {buddyName(game.state)}!
 		{/if}
 	</p>
+
+	<p class="recap" data-testid="recap-text">{lines.recapLine(game.state)}</p>
 
 	<button type="button" class="btn btn-primary btn-huge" data-testid="tuckin-done" onclick={() => actions.tuckInDone()}>
 		<svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true">
@@ -122,6 +128,15 @@
 	.good-night {
 		margin: 0;
 		font-size: 20px;
+		font-weight: 600;
+		text-align: center;
+		color: var(--ink-soft);
+	}
+
+	.recap {
+		margin: 0;
+		max-width: 88%;
+		font-size: 18px;
 		font-weight: 600;
 		text-align: center;
 		color: var(--ink-soft);

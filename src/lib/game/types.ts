@@ -41,6 +41,8 @@ export type GameState = {
 	phase: Phase;
 	/** True from the Goal celebration until tuck-in; drives the recap. */
 	goalCompletedToday: boolean;
+	/** Coins saved into the jar today — the recap's earned-today bookkeeping. */
+	savedToday: number;
 	coins: number;
 	tidyDone: number;
 	waterDone: number;

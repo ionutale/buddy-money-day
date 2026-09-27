@@ -402,6 +402,8 @@ describe('the meaning layer', () => {
 				withPatch(withCoins, { coins: 0, fedToday: true, lollipopToday: true, gaveToday: 1 })
 			)
 		).toBe(4);
+		// Coins already in the jar still count as today's earnings.
+		expect(earnedToday(saveAll(withPatch(withCoins, { phase: 'shelf' })))).toBe(3);
 	});
 
 	it('previews exactly what saving would put in the jar, capped at the goal', () => {

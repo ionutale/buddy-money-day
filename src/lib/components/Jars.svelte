@@ -19,7 +19,7 @@
 </script>
 
 <div class="scene jars">
-	<Bubble tail="center">Clink, clink! Into the jar!</Bubble>
+	<Bubble tail="center">{lines.jars(game.state)}</Bubble>
 
 	<div class="jar-zone">
 		{#each flies as i (i)}
