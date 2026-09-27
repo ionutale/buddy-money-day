@@ -1,58 +1,58 @@
 <script lang="ts">
-	import type { GoalId } from '$lib/game/economy';
+	import { TOY_LABELS, type ToyId } from '$lib/game/economy';
 
 	type Props = {
-		kind: GoalId;
+		kind: ToyId;
 		size?: number;
 	};
 
 	let { kind, size = 96 }: Props = $props();
-	const uid = $props.id();
 
+	// Placeholder toy art (Task 6 brings the real storybook wagon and teddy).
 	const ink = '#4a3728';
 </script>
 
-<!-- The three Goal items, drawn as storybook toys. -->
 <svg
 	class="goal-item"
 	style="--item-size: {size}px"
 	viewBox="0 0 120 120"
 	role="img"
-	aria-label={kind}
+	aria-label={TOY_LABELS[kind]}
 >
-	{#if kind === 'kite'}
-		<!-- tail -->
-		<path d="M60 88 C 46 96, 74 102, 56 116" fill="none" stroke={ink} stroke-width="3" stroke-linecap="round" />
-		<rect x="-5" y="-5" width="10" height="10" rx="2" fill="#ff8a66" stroke={ink} stroke-width="2" transform="translate(52 100) rotate(45)" />
-		<rect x="-5" y="-5" width="10" height="10" rx="2" fill="#ffd35c" stroke={ink} stroke-width="2" transform="translate(64 107) rotate(45)" />
-		<rect x="-5" y="-5" width="10" height="10" rx="2" fill="#8ed4c0" stroke={ink} stroke-width="2" transform="translate(53 115) rotate(45)" />
-		<!-- diamond -->
-		<path d="M60 6 L60 54 L16 54 Z" fill="#ff8a66" />
-		<path d="M60 6 L104 54 L60 54 Z" fill="#ffd35c" />
-		<path d="M60 54 L60 92 L16 54 Z" fill="#ffd35c" />
-		<path d="M60 54 L104 54 L60 92 Z" fill="#8ed4c0" />
-		<path d="M60 6 L104 54 L60 92 L16 54 Z" fill="none" stroke={ink} stroke-width="4" stroke-linejoin="round" />
-		<path d="M60 6 L60 92 M16 54 L104 54" stroke={ink} stroke-width="2.5" opacity="0.45" />
-	{:else if kind === 'hat'}
-		<!-- funny party hat -->
-		<path d="M30 94 L60 12 L90 94 Z" fill="#ffd35c" stroke={ink} stroke-width="4" stroke-linejoin="round" />
-		<path d="M40 66 Q60 60 80 66 L85 80 Q60 73 35 80 Z" fill="#ff8a66" />
-		<path d="M49 42 Q60 38 71 42 L74 50 Q60 46 46 50 Z" fill="#8ed4c0" />
-		<circle cx="60" cy="12" r="11" fill="#ff8a66" stroke={ink} stroke-width="4" />
-		<ellipse cx="60" cy="96" rx="40" ry="12" fill="#8ed4c0" stroke={ink} stroke-width="4" />
-		<circle cx="52" cy="26" r="3" fill="#fffdf8" opacity="0.9" />
+	{#if kind === 'ball'}
+		<circle cx="60" cy="60" r="46" fill="#ff8a66" />
+		<path d="M18 44 Q60 68 102 44" fill="none" stroke="#fffdf8" stroke-width="10" />
+		<path d="M28 84 Q60 100 92 84" fill="none" stroke="#ffd35c" stroke-width="10" />
+		<circle cx="42" cy="40" r="8" fill="#fffdf8" opacity="0.85" />
+	{:else if kind === 'car'}
+		<rect x="14" y="52" width="92" height="34" rx="12" fill="#ffd35c" stroke={ink} stroke-width="4" />
+		<path d="M34 52 L46 30 L78 30 L90 52 Z" fill="#bfe3f5" stroke={ink} stroke-width="4" stroke-linejoin="round" />
+		<circle cx="36" cy="90" r="12" fill="#4a3728" />
+		<circle cx="84" cy="90" r="12" fill="#4a3728" />
+		<circle cx="36" cy="90" r="5" fill="#fffdf8" />
+		<circle cx="84" cy="90" r="5" fill="#fffdf8" />
+	{:else if kind === 'blocks'}
+		<rect x="14" y="54" width="50" height="50" rx="12" fill="#bfe3f5" stroke={ink} stroke-width="4" />
+		<rect x="52" y="18" width="48" height="48" rx="12" fill="#ffd35c" stroke={ink} stroke-width="4" />
+		<circle cx="74" cy="40" r="8" fill="#fffdf8" opacity="0.9" />
+	{:else if kind === 'wagon'}
+		<path d="M24 62 L24 42 Q24 34 34 34 L36 34" fill="none" stroke={ink} stroke-width="6" stroke-linecap="round" />
+		<rect x="16" y="52" width="88" height="40" rx="10" fill="#ff8a66" stroke={ink} stroke-width="4" />
+		<path d="M16 66 L104 66" stroke="#ffd35c" stroke-width="7" />
+		<circle cx="36" cy="98" r="11" fill="#4a3728" />
+		<circle cx="84" cy="98" r="11" fill="#4a3728" />
+		<circle cx="36" cy="98" r="4" fill="#fffdf8" />
+		<circle cx="84" cy="98" r="4" fill="#fffdf8" />
 	{:else}
-		<!-- little slide -->
-		<ellipse cx="60" cy="106" rx="46" ry="11" fill="#9ad29a" />
-		<rect x="22" y="32" width="8" height="70" rx="4" fill="#bfe3f5" stroke={ink} stroke-width="3" />
-		<rect x="44" y="32" width="8" height="70" rx="4" fill="#bfe3f5" stroke={ink} stroke-width="3" />
-		<rect x="24" y="50" width="26" height="7" rx="3.5" fill="#fffdf8" stroke={ink} stroke-width="3" />
-		<rect x="24" y="68" width="26" height="7" rx="3.5" fill="#fffdf8" stroke={ink} stroke-width="3" />
-		<rect x="24" y="86" width="26" height="7" rx="3.5" fill="#fffdf8" stroke={ink} stroke-width="3" />
-		<rect x="18" y="22" width="44" height="13" rx="6.5" fill="#ffd35c" stroke={ink} stroke-width="3" />
-		<path d="M50 27 Q90 36 99 96" fill="none" stroke="#ff8a66" stroke-width="15" stroke-linecap="round" />
-		<path d="M50 27 Q90 36 99 96" fill="none" stroke={ink} stroke-width="3" stroke-linecap="round" opacity="0.3" />
-		<circle cx="99" cy="99" r="7" fill="#ff8a66" />
+		<!-- big teddy -->
+		<circle cx="32" cy="32" r="14" fill="#d9a869" stroke={ink} stroke-width="3" />
+		<circle cx="88" cy="32" r="14" fill="#d9a869" stroke={ink} stroke-width="3" />
+		<circle cx="60" cy="66" r="40" fill="#d9a869" stroke={ink} stroke-width="3" />
+		<ellipse cx="60" cy="78" rx="21" ry="17" fill="#f4dcc0" />
+		<circle cx="46" cy="56" r="6" fill={ink} />
+		<circle cx="74" cy="56" r="6" fill={ink} />
+		<ellipse cx="60" cy="72" rx="7" ry="5" fill={ink} />
+		<path d="M52 84 Q60 90 68 84" fill="none" stroke={ink} stroke-width="4" stroke-linecap="round" />
 	{/if}
 </svg>
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	export type BuddyMood = 'happy' | 'hungry' | 'sad' | 'sleepy' | 'celebrate';
+	export type BuddyMood = 'happy' | 'hungry' | 'sleepy' | 'celebrate';
 
 	type Props = {
 		mood?: BuddyMood;
@@ -14,7 +14,7 @@
 
 <!--
 	Buddy: an inline-SVG plush creature. Moods change the eyes, brows, mouth,
-	arms and ears; sleepy adds a night cap, sad adds droopy ears and a tear.
+	arms and ears; sleepy adds a night cap. Buddy is never sad.
 -->
 <svg
 	class="buddy {mood}"
@@ -36,24 +36,12 @@
 		</radialGradient>
 	</defs>
 
-	<!-- ears (droopy when sad) -->
-	<g
-		transform={mood === 'sad'
-			? 'rotate(-40 46 52) translate(0 8)'
-			: mood === 'sleepy'
-				? 'rotate(-22 46 52)'
-				: 'rotate(-14 46 52)'}
-	>
+	<!-- ears -->
+	<g transform={mood === 'sleepy' ? 'rotate(-22 46 52)' : 'rotate(-14 46 52)'}>
 		<ellipse cx="46" cy="52" rx="22" ry="26" fill="#8ed4c0" />
 		<ellipse cx="48" cy="54" rx="12" ry="15" fill="#b6ebdd" />
 	</g>
-	<g
-		transform={mood === 'sad'
-			? 'rotate(40 154 52) translate(0 8)'
-			: mood === 'sleepy'
-				? 'rotate(22 154 52)'
-				: 'rotate(14 154 52)'}
-	>
+	<g transform={mood === 'sleepy' ? 'rotate(22 154 52)' : 'rotate(14 154 52)'}>
 		<ellipse cx="154" cy="52" rx="22" ry="26" fill="#8ed4c0" />
 		<ellipse cx="152" cy="54" rx="12" ry="15" fill="#b6ebdd" />
 	</g>
@@ -63,8 +51,8 @@
 		<ellipse cx="34" cy="80" rx="15" ry="23" fill="#8ed4c0" transform="rotate(-40 34 80)" />
 		<ellipse cx="166" cy="80" rx="15" ry="23" fill="#8ed4c0" transform="rotate(40 166 80)" />
 	{:else}
-		<ellipse cx="29" cy="130" rx="15" ry="23" fill="#8ed4c0" transform={mood === 'sad' ? 'rotate(36 29 130)' : 'rotate(18 29 130)'} />
-		<ellipse cx="171" cy="130" rx="15" ry="23" fill="#8ed4c0" transform={mood === 'sad' ? 'rotate(-36 171 130)' : 'rotate(-18 171 130)'} />
+		<ellipse cx="29" cy="130" rx="15" ry="23" fill="#8ed4c0" transform="rotate(18 29 130)" />
+		<ellipse cx="171" cy="130" rx="15" ry="23" fill="#8ed4c0" transform="rotate(-18 171 130)" />
 	{/if}
 
 	<!-- feet -->
@@ -90,9 +78,6 @@
 	{#if mood === 'hungry'}
 		<path class="brow" d="M58 80 Q70 71 82 80" />
 		<path class="brow" d="M118 80 Q130 71 142 80" />
-	{:else if mood === 'sad'}
-		<path class="brow" d="M58 86 Q70 82 82 72" />
-		<path class="brow" d="M118 72 Q130 82 142 86" />
 	{:else if mood === 'celebrate'}
 		<path class="brow" d="M58 76 Q70 67 82 76" />
 		<path class="brow" d="M118 76 Q130 67 142 76" />
@@ -132,9 +117,6 @@
 	{:else if mood === 'hungry'}
 		<ellipse cx="100" cy="134" rx="10" ry="12" fill="#7c4433" />
 		<ellipse cx="100" cy="140" rx="6" ry="4.5" fill="#ff8a66" />
-	{:else if mood === 'sad'}
-		<path class="mouth" d="M85 139 Q100 127 115 139" />
-		<path class="tear" d="M62 112 q5 9 0 14 q-7 -5 0 -14" fill="#bfe3f5" />
 	{:else if mood === 'sleepy'}
 		<ellipse cx="100" cy="132" rx="5.5" ry="6.5" fill="#7c4433" opacity="0.9" />
 	{:else}
@@ -188,9 +170,6 @@
 	.sleepy {
 		animation: buddy-breathe 4.6s ease-in-out infinite;
 	}
-	.sad {
-		animation: buddy-rumble 2.6s ease-in-out infinite;
-	}
 	.celebrate {
 		animation: buddy-hop 0.95s ease-in-out infinite;
 	}
@@ -203,18 +182,6 @@
 	@keyframes buddy-breathe {
 		50% {
 			transform: scale(1.02);
-		}
-	}
-	@keyframes buddy-rumble {
-		0%,
-		100% {
-			transform: translateX(0);
-		}
-		25% {
-			transform: translateX(-1.6px) rotate(-0.7deg);
-		}
-		75% {
-			transform: translateX(1.6px) rotate(0.7deg);
 		}
 	}
 	@keyframes buddy-hop {
@@ -261,26 +228,6 @@
 	}
 	.brow {
 		stroke-width: 5;
-	}
-
-	.tear {
-		transform-box: fill-box;
-		transform-origin: center;
-		animation: tear-drop 2.6s ease-in infinite;
-	}
-	@keyframes tear-drop {
-		0%,
-		60% {
-			opacity: 0;
-			transform: translateY(-4px) scale(0.6);
-		}
-		75% {
-			opacity: 1;
-		}
-		100% {
-			opacity: 0;
-			transform: translateY(10px) scale(0.9);
-		}
 	}
 
 	.rumble-lines {

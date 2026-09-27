@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { GOAL_COST } from '$lib/game/economy';
+	import { TOY_PRICES } from '$lib/game/economy';
 
 	type Props = {
 		/** Coins currently in the jar. */
 		fill?: number;
-		/** Coins the current Goal costs. */
+		/** Coins the dream costs; defaults to the first dream's price. */
 		capacity?: number;
 		size?: number;
 	};
 
-	let { fill = 0, capacity = GOAL_COST, size = 140 }: Props = $props();
+	let { fill = 0, capacity = TOY_PRICES.wagon, size = 140 }: Props = $props();
 	const uid = $props.id();
 
 	const safe = $derived(capacity > 0 ? capacity : 1);

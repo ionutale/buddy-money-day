@@ -5,7 +5,6 @@
 	import { unlock } from '$lib/game/sounds';
 	import Buddy from './Buddy.svelte';
 	import GoalBanner from './GoalBanner.svelte';
-	import HomeStrip from './HomeStrip.svelte';
 	import Setup from './Setup.svelte';
 
 	let showSetup = $state(false);
@@ -52,7 +51,7 @@
 	<h1 class="game-title">Buddy's <span>Money Day</span></h1>
 
 	<div class="start-buddy">
-		<Buddy mood={game.state.buddySad ? 'sad' : 'happy'} size={208} />
+		<Buddy mood="happy" size={208} />
 	</div>
 
 	<button type="button" class="btn btn-primary btn-huge" data-testid="start-button" onclick={play}>
@@ -63,7 +62,6 @@
 	</button>
 
 	<GoalBanner size={52} />
-	<HomeStrip items={game.state.homeItems} />
 
 	{#if showSetup}
 		<Setup mode="reset" onclose={() => (showSetup = false)} />

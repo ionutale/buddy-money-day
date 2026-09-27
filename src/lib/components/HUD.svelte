@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { GOAL_COST } from '$lib/game/economy';
+	import { TOY_PRICES } from '$lib/game/economy';
+	import { game } from '$lib/game/game.svelte';
 	import Coin from './Coin.svelte';
 	import GoalBanner from './GoalBanner.svelte';
 
@@ -10,6 +11,9 @@
 	};
 
 	let { coins, jarCoins, day }: Props = $props();
+
+	// The dream's price drives the progress readout — never a hardcoded literal.
+	const dreamPrice = $derived(TOY_PRICES[game.state.goal]);
 </script>
 
 <!-- The in-day HUD: coins in hand, jar progress, which Money Day it is. -->
@@ -21,7 +25,7 @@
 
 	<div class="hud-pill hud-save" aria-label="Coins in the Save Jar">
 		<GoalBanner size={40} />
-		<span class="hud-progress" data-testid="jar-progress">{jarCoins} / {GOAL_COST}</span>
+		<span class="hud-progress" data-testid="jar-progress">{jarCoins} / {dreamPrice}</span>
 	</div>
 
 	<div class="hud-pill hud-day" data-testid="day-badge">Day {day}</div>

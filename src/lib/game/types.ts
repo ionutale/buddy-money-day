@@ -1,24 +1,22 @@
-import type { GoalId } from './economy';
+import type { ToyId } from './economy';
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 /**
  * One phase of the game. A Money Day runs
- * greeting → task-tidy → task-water → hunger → friend → shelf → jars
- * → (goal-reached → goal-pick)? → tuck-in, then back to start.
+ * greeting → chores (task-tidy | task-water | task-feed, any order, each once)
+ * → store → (dream-reached)? → tuck-in, then back to start.
  */
 export type Phase =
 	| 'setup'
 	| 'start'
 	| 'greeting'
+	| 'chores'
 	| 'task-tidy'
 	| 'task-water'
-	| 'hunger'
-	| 'friend'
-	| 'shelf'
-	| 'jars'
-	| 'goal-reached'
-	| 'goal-pick'
+	| 'task-feed'
+	| 'store'
+	| 'dream-reached'
 	| 'tuck-in';
 
 export type GameState = {
@@ -30,23 +28,23 @@ export type GameState = {
 	day: number;
 
 	/** Durable progress — survives reloads. */
-	goal: GoalId;
+	/** The dream being saved for; always a dream toy. */
+	goal: ToyId;
 	jarCoins: number;
-	homeItems: GoalId[];
-	planks: number;
-	buddySad: boolean;
-	lollipopsTotal: number;
+	/** Toys bought at the store and dreams celebrated, in acquisition order. */
+	owned: ToyId[];
 
 	/** Transient day state — reset at every beginDay and on load. */
 	phase: Phase;
-	/** True from the Goal celebration until tuck-in; drives the recap. */
-	goalCompletedToday: boolean;
-	/** Coins saved into the jar today — the recap's earned-today bookkeeping. */
+	/** True from the dream celebration until tuck-in; drives the recap. */
+	dreamCompletedToday: boolean;
+	/** Coins moved into the jar today — the store's bookkeeping. */
 	savedToday: number;
 	coins: number;
 	tidyDone: number;
 	waterDone: number;
+	/** The feed chore's done-flag; never a hunger that persists. */
 	fedToday: boolean;
-	gaveToday: number;
-	lollipopToday: boolean;
+	/** Every chore payment today, however it was later spent. */
+	earnedTodayCoins: number;
 };

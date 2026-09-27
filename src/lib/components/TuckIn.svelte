@@ -2,21 +2,13 @@
 	import { actions, game } from '$lib/game/game.svelte';
 	import { buddyName, lines } from '$lib/game/lines';
 	import { speak } from '$lib/game/speech';
-	import { sounds } from '$lib/game/sounds';
 	import Buddy from './Buddy.svelte';
-
-	let sad = $derived(game.state.buddySad || !game.state.fedToday);
 
 	let spoke = $state(false);
 	$effect(() => {
 		if (spoke) return;
 		spoke = true;
-		if (sad) {
-			speak(lines.tuckInSad(game.state));
-			sounds.sad();
-		} else {
-			speak(lines.recapLine(game.state));
-		}
+		speak(lines.recapLine(game.state));
 	});
 </script>
 
@@ -33,19 +25,13 @@
 
 	<div class="bed">
 		<div class="headboard"></div>
-		<div class="buddy-in-bed" class:rumble={sad}>
-			<Buddy mood={sad ? 'sad' : 'sleepy'} size={152} />
+		<div class="buddy-in-bed">
+			<Buddy mood="sleepy" size={152} />
 		</div>
 		<div class="blanket"></div>
 	</div>
 
-	<p class="good-night">
-		{#if sad}
-			Buddy's tummy is rumbling. We can feed Buddy tomorrow.
-		{:else}
-			Good night, {buddyName(game.state)}!
-		{/if}
-	</p>
+	<p class="good-night">Good night, {buddyName(game.state)}!</p>
 
 	<p class="recap" data-testid="recap-text">{lines.recapLine(game.state)}</p>
 
@@ -89,20 +75,6 @@
 		position: absolute;
 		left: 40px;
 		bottom: 74px;
-	}
-
-	.buddy-in-bed.rumble {
-		animation: bed-rumble 2.2s ease-in-out infinite;
-	}
-
-	@keyframes bed-rumble {
-		0%,
-		100% {
-			translate: 0 0;
-		}
-		50% {
-			translate: 0 -3px;
-		}
 	}
 
 	.blanket {

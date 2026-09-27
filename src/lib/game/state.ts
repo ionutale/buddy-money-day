@@ -1,14 +1,14 @@
 import {
-	FEED_COST,
-	GOALS,
-	GOAL_COST,
-	LOLLIPOP_COST,
-	SWING_PLANKS,
+	DREAMS,
+	FEED_REWARD,
 	TIDY_REWARD,
 	TIDY_TOYS,
+	TOY_KIND,
+	TOY_PRICES,
+	TOYS,
 	WATER_DROPS,
 	WATER_REWARD,
-	type GoalId
+	type ToyId
 } from './economy';
 import { SCHEMA_VERSION, type GameState } from './types';
 
@@ -29,10 +29,9 @@ export function resetDayTransients(s: GameState): GameState {
 		tidyDone: 0,
 		waterDone: 0,
 		fedToday: false,
-		gaveToday: 0,
-		lollipopToday: false,
-		goalCompletedToday: false,
-		savedToday: 0
+		earnedTodayCoins: 0,
+		savedToday: 0,
+		dreamCompletedToday: false
 	});
 }
 
@@ -42,21 +41,17 @@ export function newGame(): GameState {
 		childName: '',
 		nameSkipped: false,
 		day: 1,
-		goal: GOALS[0],
+		goal: DREAMS[0],
 		jarCoins: 0,
-		homeItems: [],
-		planks: 0,
-		buddySad: false,
-		lollipopsTotal: 0,
+		owned: [],
 		phase: 'setup',
-		goalCompletedToday: false,
+		dreamCompletedToday: false,
 		savedToday: 0,
 		coins: 0,
 		tidyDone: 0,
 		waterDone: 0,
 		fedToday: false,
-		gaveToday: 0,
-		lollipopToday: false
+		earnedTodayCoins: 0
 	};
 }
 
@@ -81,7 +76,23 @@ export function beginDay(s: GameState): GameState {
 
 export function greetDone(s: GameState): GameState {
 	if (s.phase !== 'greeting') return s;
+	return withState(s, { phase: 'chores' });
+}
+
+/** The three chore doors, open from the hub once each per day, any order. */
+export function openTidy(s: GameState): GameState {
+	if (s.phase !== 'chores' || s.tidyDone > 0) return s;
 	return withState(s, { phase: 'task-tidy' });
+}
+
+export function openWater(s: GameState): GameState {
+	if (s.phase !== 'chores' || s.waterDone > 0) return s;
+	return withState(s, { phase: 'task-water' });
+}
+
+export function openFeed(s: GameState): GameState {
+	if (s.phase !== 'chores' || s.fedToday) return s;
+	return withState(s, { phase: 'task-feed' });
 }
 
 export function tidyToy(s: GameState): GameState {
@@ -92,7 +103,8 @@ export function tidyToy(s: GameState): GameState {
 	return withState(s, {
 		tidyDone,
 		coins: s.coins + (finished ? TIDY_REWARD : 0),
-		phase: finished ? 'task-water' : 'task-tidy'
+		earnedTodayCoins: s.earnedTodayCoins + (finished ? TIDY_REWARD : 0),
+		phase: finished ? 'chores' : 'task-tidy'
 	});
 }
 
@@ -104,118 +116,88 @@ export function waterDrop(s: GameState): GameState {
 	return withState(s, {
 		waterDone,
 		coins: s.coins + (finished ? WATER_REWARD : 0),
-		phase: finished ? 'hunger' : 'task-water'
+		earnedTodayCoins: s.earnedTodayCoins + (finished ? WATER_REWARD : 0),
+		phase: finished ? 'chores' : 'task-water'
 	});
 }
 
-export function feedBuddy(s: GameState): GameState {
-	if (s.phase !== 'hunger' || s.coins < FEED_COST) return s;
+/** Feeding is a paid job: one coin earned, a happy bear, no cost and no skip. */
+export function feedBear(s: GameState): GameState {
+	if (s.phase !== 'task-feed') return s;
 	return withState(s, {
-		coins: s.coins - FEED_COST,
+		coins: s.coins + FEED_REWARD,
+		earnedTodayCoins: s.earnedTodayCoins + FEED_REWARD,
 		fedToday: true,
-		buddySad: false,
-		phase: 'friend'
+		phase: 'chores'
 	});
 }
 
-export function skipFeed(s: GameState): GameState {
-	if (s.phase !== 'hunger') return s;
-	return withState(s, { phase: 'friend' });
+/** All three chores, feed included, before the store unlocks. */
+export function allChoresDone(s: GameState): boolean {
+	return s.tidyDone >= TIDY_TOYS && s.waterDone >= WATER_DROPS && s.fedToday;
 }
 
-export function giveCoin(s: GameState): GameState {
-	if (s.phase !== 'friend') return s;
-	if (s.coins < 1 || s.planks >= SWING_PLANKS || s.gaveToday >= SWING_PLANKS) return s;
-	return withState(s, {
-		coins: s.coins - 1,
-		planks: s.planks + 1,
-		gaveToday: s.gaveToday + 1
-	});
+export function toStore(s: GameState): GameState {
+	if (s.phase !== 'chores' || !allChoresDone(s)) return s;
+	return withState(s, { phase: 'store' });
 }
 
-export function friendDone(s: GameState): GameState {
-	if (s.phase !== 'friend') return s;
-	return withState(s, { phase: 'shelf' });
+/** Toys are deliberate buys: unowned, affordable, store-only. Dreams wait for the jar. */
+export function buyToy(s: GameState, id: ToyId): GameState {
+	if (s.phase !== 'store') return s;
+	if (!TOYS.includes(id)) return s;
+	if (TOY_KIND[id] !== 'toy' || s.owned.includes(id)) return s;
+	if (s.coins < TOY_PRICES[id]) return s;
+	return withState(s, { coins: s.coins - TOY_PRICES[id], owned: [...s.owned, id] });
 }
 
-export function saveAll(s: GameState): GameState {
-	if (s.phase !== 'shelf') return s;
-	return withState(s, {
-		jarCoins: s.jarCoins + s.coins,
-		coins: 0,
-		savedToday: s.savedToday + s.coins,
-		phase: 'jars'
-	});
-}
-
-export function buyLollipop(s: GameState): GameState {
-	if (s.phase !== 'shelf' || s.lollipopToday || s.coins < LOLLIPOP_COST) return s;
-	return withState(s, {
-		coins: s.coins - LOLLIPOP_COST,
-		lollipopToday: true,
-		lollipopsTotal: s.lollipopsTotal + 1
-	});
-}
-
-export function continueAfterLollipop(s: GameState): GameState {
-	if (s.phase !== 'shelf' || !s.lollipopToday) return s;
+/** The default path stays saving (ADR-0002): every held coin goes to the jar. */
+export function saveRemainder(s: GameState): GameState {
+	if (s.phase !== 'store' || s.coins === 0) return s;
 	return withState(s, {
 		jarCoins: s.jarCoins + s.coins,
-		coins: 0,
 		savedToday: s.savedToday + s.coins,
-		phase: 'jars'
+		coins: 0
 	});
 }
 
-export function jarsDone(s: GameState): GameState {
-	if (s.phase !== 'jars') return s;
-	return withState(s, { phase: s.jarCoins >= GOAL_COST ? 'goal-reached' : 'tuck-in' });
-}
-
-export function goalCelebrated(s: GameState): GameState {
-	if (s.phase !== 'goal-reached') return s;
-	return withState(s, { goalCompletedToday: true, phase: 'goal-pick' });
-}
-
-export function pickGoal(s: GameState, goal: GoalId): GameState {
-	if (s.phase !== 'goal-pick' || !GOALS.includes(goal)) return s;
+export function storeDone(s: GameState): GameState {
+	if (s.phase !== 'store') return s;
 	return withState(s, {
-		homeItems: [...s.homeItems, s.goal],
-		jarCoins: Math.max(0, s.jarCoins - GOAL_COST),
-		goal,
+		phase: s.jarCoins >= TOY_PRICES[s.goal] ? 'dream-reached' : 'tuck-in'
+	});
+}
+
+/** The first dream not owned yet; once every dream is owned the list cycles. */
+export function nextDream(owned: readonly ToyId[]): ToyId {
+	return DREAMS.find((dream) => !owned.includes(dream)) ?? DREAMS[0];
+}
+
+export function dreamCelebrated(s: GameState): GameState {
+	if (s.phase !== 'dream-reached') return s;
+	const owned = [...s.owned, s.goal];
+	return withState(s, {
+		dreamCompletedToday: true,
+		owned,
+		jarCoins: Math.max(0, s.jarCoins - TOY_PRICES[s.goal]),
+		goal: nextDream(owned),
 		phase: 'tuck-in'
 	});
 }
 
 export function tuckInDone(s: GameState): GameState {
 	if (s.phase !== 'tuck-in') return s;
-	return withState(resetDayTransients(s), {
-		buddySad: !s.fedToday,
-		day: s.day + 1,
-		phase: 'start'
-	});
+	return withState(resetDayTransients(s), { day: s.day + 1, phase: 'start' });
 }
 
-/** Always three Goal choices, preferring ones never collected. Stable order. */
-export function nextGoalOptions(s: GameState): GoalId[] {
-	const uncollected = GOALS.filter((g) => !s.homeItems.includes(g));
-	const collected = GOALS.filter((g) => s.homeItems.includes(g));
-	return [...uncollected, ...collected].slice(0, GOALS.length);
-}
-
-/** What today has earned so far, however it was saved or spent. Max TIDY_REWARD + WATER_REWARD. */
+/** What today's chores paid, however the day later saved or spent it. */
 export function earnedToday(s: GameState): number {
-	return (
-		s.savedToday +
-		s.coins +
-		(s.fedToday ? FEED_COST : 0) +
-		s.gaveToday +
-		(s.lollipopToday ? LOLLIPOP_COST : 0)
-	);
+	return s.earnedTodayCoins;
 }
 
-/** What the Save Jar would hold if the hand's coins were saved right now. */
+/** What the jar would hold if the hand's coins were saved right now. */
 export function savePreview(s: GameState): { filled: number; completes: boolean } {
+	const price = TOY_PRICES[s.goal];
 	const total = s.jarCoins + s.coins;
-	return { filled: Math.min(total, GOAL_COST), completes: total >= GOAL_COST };
+	return { filled: Math.min(total, price), completes: total >= price };
 }

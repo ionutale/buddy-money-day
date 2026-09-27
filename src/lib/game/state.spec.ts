@@ -1,69 +1,94 @@
 import { describe, expect, it } from 'vitest';
-import { GOALS, LOLLIPOP_COST, SWING_PLANKS, TIDY_REWARD, WATER_REWARD } from './economy';
 import {
+	DREAMS,
+	FEED_REWARD,
+	TIDY_REWARD,
+	TIDY_TOYS,
+	TOY_PRICES,
+	WATER_DROPS,
+	WATER_REWARD,
+	type ToyId
+} from './economy';
+import {
+	allChoresDone,
 	beginDay,
-	buyLollipop,
-	continueAfterLollipop,
+	buyToy,
+	dreamCelebrated,
 	earnedToday,
-	feedBuddy,
-	friendDone,
-	giveCoin,
-	goalCelebrated,
+	feedBear,
 	greetDone,
-	jarsDone,
 	newGame,
-	nextGoalOptions,
-	pickGoal,
+	nextDream,
+	openFeed,
+	openTidy,
+	openWater,
 	resetDayTransients,
-	saveAll,
 	savePreview,
-	skipFeed,
+	saveRemainder,
 	skipName,
+	storeDone,
 	submitName,
 	tidyToy,
+	toStore,
 	tuckInDone,
 	waterDrop
 } from './state';
 import type { GameState } from './types';
 
-/** A day at the 'greeting' phase, name already set. */
+/** A fresh day at the 'greeting' phase, name already set. */
 function freshDay(): GameState {
 	let s = newGame();
 	s = submitName(s, 'Sam');
 	return beginDay(s);
 }
 
-/** Complete both Helping Tasks; ends at the 'hunger' phase with coins in hand. */
-function withTasks(s: GameState): GameState {
-	s = greetDone(s);
-	for (let i = 0; i < 3; i++) s = tidyToy(s);
-	for (let i = 0; i < 3; i++) s = waterDrop(s);
+/** Arrive at the chores hub. */
+function atChores(): GameState {
+	return greetDone(freshDay());
+}
+
+/** Complete every chore (tidy → water → feed) and stand in the hub. */
+function allChores(s: GameState): GameState {
+	s = openTidy(s);
+	for (let i = 0; i < TIDY_TOYS; i++) s = tidyToy(s);
+	s = openWater(s);
+	for (let i = 0; i < WATER_DROPS; i++) s = waterDrop(s);
+	s = openFeed(s);
+	s = feedBear(s);
 	return s;
 }
 
-/** Abandon the day with no feeding, no giving, and the default save. */
-function skipEverythingAndSave(s: GameState): GameState {
-	s = skipFeed(s);
-	s = friendDone(s);
-	s = saveAll(s);
-	return s;
+/** A day with all chores done, standing in the store. */
+function atStore(): GameState {
+	return toStore(allChores(atChores()));
 }
 
 function withPatch(s: GameState, patch: Partial<GameState>): GameState {
 	return { ...s, ...patch };
 }
 
+/** Which fields differ between two states — the moral-invariant probe. */
+function changedKeys(a: GameState, b: GameState): string[] {
+	return (Object.keys(a) as (keyof GameState)[])
+		.filter((key) => JSON.stringify(a[key]) !== JSON.stringify(b[key]))
+		.sort();
+}
+
 describe('new game', () => {
-	it('starts at grown-up setup with an empty jar and the first goal', () => {
+	it('starts at grown-up setup with an empty jar, no toys, and the wagon dream', () => {
 		const s = newGame();
+		expect(s.schemaVersion).toBe(2);
 		expect(s.phase).toBe('setup');
 		expect(s.day).toBe(1);
 		expect(s.coins).toBe(0);
 		expect(s.jarCoins).toBe(0);
-		expect(s.goal).toBe('kite');
-		expect(s.homeItems).toEqual([]);
-		expect(s.planks).toBe(0);
-		expect(s.buddySad).toBe(false);
+		expect(s.goal).toBe('wagon');
+		expect(s.owned).toEqual([]);
+		expect(s.tidyDone).toBe(0);
+		expect(s.waterDone).toBe(0);
+		expect(s.fedToday).toBe(false);
+		expect(s.earnedTodayCoins).toBe(0);
+		expect(s.dreamCompletedToday).toBe(false);
 	});
 });
 
@@ -83,15 +108,16 @@ describe('grown-up setup', () => {
 });
 
 describe('beginning a money day', () => {
-	it('resets loose coins and task progress, then greets', () => {
+	it('resets loose coins and every transient, then greets', () => {
 		const dirty = withPatch(newGame(), {
 			phase: 'start',
 			coins: 5,
 			tidyDone: 2,
 			waterDone: 1,
 			fedToday: true,
-			gaveToday: 2,
-			lollipopToday: true
+			earnedTodayCoins: 4,
+			savedToday: 4,
+			dreamCompletedToday: true
 		});
 		const s = beginDay(dirty);
 		expect(s.phase).toBe('greeting');
@@ -99,14 +125,29 @@ describe('beginning a money day', () => {
 		expect(s.tidyDone).toBe(0);
 		expect(s.waterDone).toBe(0);
 		expect(s.fedToday).toBe(false);
-		expect(s.gaveToday).toBe(0);
-		expect(s.lollipopToday).toBe(false);
+		expect(s.earnedTodayCoins).toBe(0);
+		expect(s.savedToday).toBe(0);
+		expect(s.dreamCompletedToday).toBe(false);
+	});
+
+	it('does nothing outside the title screen', () => {
+		const greeting = beginDay(newGame());
+		expect(beginDay(greeting)).toEqual(greeting);
 	});
 });
 
-describe('helping tasks', () => {
-	it('pays the tidy reward only when the last toy is tidied', () => {
-		let s = greetDone(freshDay());
+describe('the chores hub', () => {
+	it('greeting cards lead to the hub, and the hub opens each chore', () => {
+		const morning = freshDay();
+		expect(greetDone(morning).phase).toBe('chores');
+
+		expect(openTidy(atChores()).phase).toBe('task-tidy');
+		expect(openWater(atChores()).phase).toBe('task-water');
+		expect(openFeed(atChores()).phase).toBe('task-feed');
+	});
+
+	it('tidy pays only when the last toy is tidied, then returns to the hub', () => {
+		let s = openTidy(atChores());
 		s = tidyToy(s);
 		s = tidyToy(s);
 		expect(s.coins).toBe(0);
@@ -115,310 +156,433 @@ describe('helping tasks', () => {
 
 		s = tidyToy(s);
 		expect(s.coins).toBe(TIDY_REWARD);
-		expect(s.phase).toBe('task-water');
+		expect(s.earnedTodayCoins).toBe(TIDY_REWARD);
+		expect(s.tidyDone).toBe(TIDY_TOYS);
+		expect(s.phase).toBe('chores');
 	});
 
-	it('pays the water reward only when the last drop lands, and then Buddy is hungry', () => {
-		let s = greetDone(freshDay());
-		for (let i = 0; i < 3; i++) s = tidyToy(s);
+	it('water pays only when the last drop lands, then returns to the hub', () => {
+		let s = openWater(atChores());
 		s = waterDrop(s);
 		s = waterDrop(s);
-		expect(s.coins).toBe(TIDY_REWARD);
+		expect(s.coins).toBe(0);
 		expect(s.waterDone).toBe(2);
+		expect(s.phase).toBe('task-water');
 
 		s = waterDrop(s);
-		expect(s.coins).toBe(TIDY_REWARD + WATER_REWARD);
-		expect(s.phase).toBe('hunger');
+		expect(s.coins).toBe(WATER_REWARD);
+		expect(s.earnedTodayCoins).toBe(WATER_REWARD);
+		expect(s.waterDone).toBe(WATER_DROPS);
+		expect(s.phase).toBe('chores');
 	});
 
-	it('clamps repeated taps so extra actions cannot mint coins', () => {
-		let s = greetDone(freshDay());
-		for (let i = 0; i < 10; i++) s = tidyToy(s);
-		for (let i = 0; i < 10; i++) s = waterDrop(s);
-		expect(s.tidyDone).toBe(3);
-		expect(s.waterDone).toBe(3);
-		expect(s.coins).toBe(TIDY_REWARD + WATER_REWARD);
-	});
-});
-
-describe('hunger', () => {
-	it('feeding costs one coin and cheers Buddy up', () => {
-		let s = withTasks(freshDay());
-		s = withPatch(s, { buddySad: true });
-		s = feedBuddy(s);
-		expect(s.coins).toBe(TIDY_REWARD + WATER_REWARD - 1);
+	it('feeding pays one coin and returns to the hub', () => {
+		const s = feedBear(openFeed(atChores()));
+		expect(s.coins).toBe(FEED_REWARD);
+		expect(s.earnedTodayCoins).toBe(FEED_REWARD);
 		expect(s.fedToday).toBe(true);
-		expect(s.buddySad).toBe(false);
-		expect(s.phase).toBe('friend');
+		expect(s.phase).toBe('chores');
 	});
 
-	it('cannot feed with no coins — the day stays at the bowl (tap-spam guard)', () => {
-		const s = withPatch(withTasks(freshDay()), { coins: 0 });
-		const after = feedBuddy(s);
-		expect(after).toEqual(s);
+	it('pays every chore exactly once, in any order', () => {
+		let s = atChores();
+		s = openWater(s);
+		for (let i = 0; i < WATER_DROPS; i++) s = waterDrop(s);
+		s = openFeed(s);
+		s = feedBear(s);
+		s = openTidy(s);
+		for (let i = 0; i < TIDY_TOYS; i++) s = tidyToy(s);
+
+		expect(s.coins).toBe(TIDY_REWARD + WATER_REWARD + FEED_REWARD);
+		expect(s.earnedTodayCoins).toBe(TIDY_REWARD + WATER_REWARD + FEED_REWARD);
+		expect(allChoresDone(s)).toBe(true);
+		expect(s.phase).toBe('chores');
 	});
 
-	it('skipping leaves the state untouched and moves on', () => {
-		const before = withTasks(freshDay());
-		const s = skipFeed(before);
-		expect(s.phase).toBe('friend');
-		expect(s.coins).toBe(before.coins);
-		expect(s.fedToday).toBe(false);
+	it('a finished chore cannot be opened or paid again (tap-spam guard)', () => {
+		const done = allChores(atChores());
+		expect(openTidy(done)).toEqual(done);
+		expect(openWater(done)).toEqual(done);
+		expect(openFeed(done)).toEqual(done);
+		expect(tidyToy(done)).toEqual(done);
+		expect(waterDrop(done)).toEqual(done);
+		expect(feedBear(done)).toEqual(done);
+	});
+
+	it('clamps repeated taps mid-chore so extra actions cannot mint coins', () => {
+		let s = openTidy(atChores());
+		for (let i = 0; i < 10; i++) s = tidyToy(s);
+		expect(s.tidyDone).toBe(TIDY_TOYS);
+		expect(s.coins).toBe(TIDY_REWARD);
+		expect(s.earnedTodayCoins).toBe(TIDY_REWARD);
+	});
+
+	it('chores cannot be opened outside the hub', () => {
+		const morning = freshDay();
+		expect(openTidy(morning)).toEqual(morning);
+		expect(openWater(morning)).toEqual(morning);
+		expect(openFeed(morning)).toEqual(morning);
+	});
+
+	it('a day without the feed chore differs only by one coin and the fed flag', () => {
+		// The moral invariant: skipping the feed has zero state consequences.
+		let quiet = atChores();
+		quiet = openTidy(quiet);
+		for (let i = 0; i < TIDY_TOYS; i++) quiet = tidyToy(quiet);
+		quiet = openWater(quiet);
+		for (let i = 0; i < WATER_DROPS; i++) quiet = waterDrop(quiet);
+		const unfed = quiet;
+
+		const fed = feedBear(openFeed(unfed));
+
+		expect(fed.phase).toBe(unfed.phase);
+		expect(changedKeys(unfed, fed)).toEqual(['coins', 'earnedTodayCoins', 'fedToday']);
+		expect(fed.coins - unfed.coins).toBe(FEED_REWARD);
 	});
 });
 
-describe('the friend with the broken swing', () => {
-	it('each coin given builds one plank', () => {
-		let s = withTasks(freshDay());
-		s = feedBuddy(s);
-		s = giveCoin(s);
-		expect(s.coins).toBe(1);
-		expect(s.planks).toBe(1);
+describe('all chores done and the store door', () => {
+	it('needs every chore, the feed included', () => {
+		expect(allChoresDone(atChores())).toBe(false);
+
+		let s = atChores();
+		s = openTidy(s);
+		for (let i = 0; i < TIDY_TOYS; i++) s = tidyToy(s);
+		s = openWater(s);
+		for (let i = 0; i < WATER_DROPS; i++) s = waterDrop(s);
+		expect(allChoresDone(s)).toBe(false);
+
+		s = openFeed(s);
+		s = feedBear(s);
+		expect(allChoresDone(s)).toBe(true);
 	});
 
-	it('cannot give more than three planks, and never more coins than are held (tap-spam guard)', () => {
-		let s = withPatch(withTasks(freshDay()), { phase: 'friend', planks: 0 });
-		for (let i = 0; i < 10; i++) s = giveCoin(s);
-		expect(s.planks).toBe(SWING_PLANKS);
-		expect(s.coins).toBe(TIDY_REWARD + WATER_REWARD - SWING_PLANKS);
+	it('opens the store only from the hub, only with every chore done', () => {
+		const morning = atChores();
+		expect(toStore(morning)).toEqual(morning);
 
-		const broke = withPatch(s, { coins: 0 });
-		expect(giveCoin(broke)).toEqual(broke);
-	});
-
-	it('moving on reaches the shelf whatever was given', () => {
-		const s = friendDone(skipFeed(withTasks(freshDay())));
-		expect(s.phase).toBe('shelf');
+		const stored = toStore(allChores(morning));
+		expect(stored.phase).toBe('store');
+		// One way: the door does not open again.
+		expect(toStore(stored)).toEqual(stored);
+		// Nor outside the hub.
+		expect(toStore(freshDay())).toEqual(freshDay());
 	});
 });
 
-describe('the shelf: saving by default, spending deliberately', () => {
-	it('saving moves every held coin into the jar', () => {
-		const s = saveAll(withPatch(withTasks(freshDay()), { phase: 'shelf' }));
-		expect(s.jarCoins).toBe(TIDY_REWARD + WATER_REWARD);
+describe('the store: buying toys', () => {
+	it('buys an unowned, affordable toy and keeps the day at the store', () => {
+		const s = buyToy(atStore(), 'ball');
+		expect(s.coins).toBe(TIDY_REWARD + WATER_REWARD + FEED_REWARD - TOY_PRICES.ball);
+		expect(s.owned).toEqual(['ball']);
+		expect(s.phase).toBe('store');
+	});
+
+	it('buys several toys while the coins last', () => {
+		let s = withPatch(atStore(), { coins: 6 });
+		s = buyToy(s, 'ball');
+		s = buyToy(s, 'car');
+		expect(s.owned).toEqual(['ball', 'car']);
 		expect(s.coins).toBe(0);
-		expect(s.phase).toBe('jars');
 	});
 
-	it('the lollipop costs two coins and is praised, not repeated (tap-spam guard)', () => {
-		let s = withPatch(withTasks(freshDay()), { phase: 'shelf' });
-		s = buyLollipop(s);
-		expect(s.coins).toBe(TIDY_REWARD + WATER_REWARD - LOLLIPOP_COST);
-		expect(s.lollipopToday).toBe(true);
-		expect(s.lollipopsTotal).toBe(1);
-		expect(s.phase).toBe('shelf');
+	it('denies dreams, owned toys, and unaffordable toys', () => {
+		const store = atStore();
+		expect(buyToy(store, 'wagon')).toEqual(store);
 
-		const again = buyLollipop(s);
-		expect(again).toEqual(s);
+		const ownsBall = withPatch(store, { owned: ['ball'] as ToyId[] });
+		expect(buyToy(ownsBall, 'ball')).toEqual(ownsBall);
+
+		const short = withPatch(store, { coins: TOY_PRICES.ball - 1 });
+		expect(buyToy(short, 'ball')).toEqual(short);
 	});
 
-	it('the lollipop cannot be bought without two coins', () => {
-		const broke = withPatch(withTasks(freshDay()), { phase: 'shelf', coins: 1 });
-		expect(buyLollipop(broke)).toEqual(broke);
+	it('denies purchases outside the store and cannot double-buy', () => {
+		const hub = allChores(atChores());
+		expect(buyToy(hub, 'ball')).toEqual(hub);
+
+		const once = buyToy(atStore(), 'ball');
+		expect(buyToy(once, 'ball')).toEqual(once);
 	});
 
-	it('after a lollipop the leftover still reaches the jar', () => {
-		let s = withPatch(withTasks(freshDay()), { phase: 'shelf' });
-		s = buyLollipop(s);
-		s = continueAfterLollipop(s);
-		expect(s.jarCoins).toBe(TIDY_REWARD + WATER_REWARD - LOLLIPOP_COST);
-		expect(s.coins).toBe(0);
-		expect(s.phase).toBe('jars');
-	});
-
-	it('continuing after a lollipop is only possible once a lollipop exists', () => {
-		const s = withPatch(withTasks(freshDay()), { phase: 'shelf' });
-		expect(continueAfterLollipop(s)).toEqual(s);
+	it('ignores unknown toy ids', () => {
+		const store = atStore();
+		expect(buyToy(store, 'dragon' as ToyId)).toEqual(store);
 	});
 });
 
-describe('the jars ritual', () => {
-	it('below the goal price the day simply ends', () => {
-		const s = jarsDone(saveAll(withPatch(withTasks(freshDay()), { phase: 'shelf' })));
+describe('the store: saving the remainder', () => {
+	it('moves every held coin into the jar and keeps the day at the store', () => {
+		const store = withPatch(atStore(), { coins: 3, jarCoins: 7 });
+		const s = saveRemainder(store);
+		expect(s.jarCoins).toBe(10);
+		expect(s.savedToday).toBe(3);
+		expect(s.coins).toBe(0);
+		expect(s.phase).toBe('store');
+	});
+
+	it('does nothing with empty hands, or outside the store', () => {
+		const broke = withPatch(atStore(), { coins: 0 });
+		expect(saveRemainder(broke)).toEqual(broke);
+
+		const morning = atChores();
+		expect(saveRemainder(morning)).toEqual(morning);
+	});
+
+	it('below the dream price the day ends at tuck-in (11 of 12)', () => {
+		const s = storeDone(saveRemainder(withPatch(atStore(), { jarCoins: 10, coins: 1 })));
+		expect(s.jarCoins).toBe(11);
 		expect(s.phase).toBe('tuck-in');
 	});
 
-	it('at the goal price the celebration begins', () => {
-		const s = jarsDone(
-			saveAll(withPatch(withTasks(freshDay()), { phase: 'shelf', jarCoins: 4 }))
-		);
-		expect(s.phase).toBe('goal-reached');
+	it('at the dream price the celebration begins (12 of 12)', () => {
+		const s = storeDone(saveRemainder(withPatch(atStore(), { jarCoins: 11, coins: 1 })));
+		expect(s.jarCoins).toBe(12);
+		expect(s.phase).toBe('dream-reached');
+	});
+
+	it('over the dream price still celebrates, leaving the remainder (13 of 12)', () => {
+		const s = storeDone(withPatch(atStore(), { jarCoins: 13 }));
+		expect(s.jarCoins).toBe(13);
+		expect(s.phase).toBe('dream-reached');
+	});
+
+	it('ending the store is denied outside the store', () => {
+		const morning = atChores();
+		expect(storeDone(morning)).toEqual(morning);
 	});
 });
 
-describe('the goal cycle', () => {
-	it('celebrating leads to picking the next goal', () => {
-		const s = goalCelebrated(withPatch(newGame(), { phase: 'goal-reached' }));
-		expect(s.phase).toBe('goal-pick');
+describe('the dream cycle', () => {
+	it('celebrating owns the dream, spends its price, and shows the next dream', () => {
+		const s = dreamCelebrated(
+			withPatch(newGame(), { phase: 'dream-reached', jarCoins: 13, goal: 'wagon' })
+		);
+		expect(s.dreamCompletedToday).toBe(true);
+		expect(s.owned).toEqual(['wagon']);
+		expect(s.jarCoins).toBe(1);
+		expect(s.goal).toBe('teddy');
+		expect(s.phase).toBe('tuck-in');
 	});
 
-	it('picking the next goal shelves the finished one and keeps overflowing coins', () => {
-		const s = withPatch(newGame(), { phase: 'goal-pick', jarCoins: 8, homeItems: [] });
-		const picked = pickGoal(s, 'hat');
-		expect(picked.homeItems).toEqual(['kite']);
-		expect(picked.jarCoins).toBe(2);
-		expect(picked.goal).toBe('hat');
-		expect(picked.phase).toBe('tuck-in');
+	it('walks to the first unowned dream, and cycles when all are owned', () => {
+		expect([...DREAMS]).toEqual(['wagon', 'teddy']);
+		expect(nextDream([])).toBe('wagon');
+		expect(nextDream(['wagon'])).toBe('teddy');
+		expect(nextDream(['teddy'])).toBe('wagon');
+		expect(nextDream(['wagon', 'teddy'])).toBe('wagon');
 	});
 
-	it('offers three goals, preferring the ones never collected', () => {
-		expect(nextGoalOptions(newGame())).toEqual([...GOALS]);
+	it('a second wagon is real: the loop never dead-ends', () => {
+		const s = dreamCelebrated(
+			withPatch(newGame(), {
+				phase: 'dream-reached',
+				jarCoins: 12,
+				goal: 'wagon',
+				owned: ['wagon', 'teddy'] as ToyId[]
+			})
+		);
+		expect(s.owned).toEqual(['wagon', 'teddy', 'wagon']);
+		expect(s.goal).toBe('wagon');
+		expect(s.jarCoins).toBe(0);
+	});
 
-		const collectedKite = withPatch(newGame(), { homeItems: ['kite'] });
-		expect(nextGoalOptions(collectedKite)).toEqual(['hat', 'slide', 'kite']);
-
-		const collectedAll = withPatch(newGame(), { homeItems: [...GOALS] });
-		expect(nextGoalOptions(collectedAll)).toEqual([...GOALS]);
+	it('is denied outside the celebration', () => {
+		const store = atStore();
+		expect(dreamCelebrated(store)).toEqual(store);
 	});
 });
 
 describe('tuck-in and the next morning', () => {
-	it('an unfed day leaves Buddy droopy, and the new day starts clean', () => {
-		let s = withPatch(withTasks(freshDay()), { phase: 'tuck-in', fedToday: false });
-		s = tuckInDone(s);
-		expect(s.buddySad).toBe(true);
+	it('ends the day: the day number grows and every transient is clean', () => {
+		const night = withPatch(atStore(), {
+			phase: 'tuck-in',
+			day: 1,
+			coins: 3,
+			tidyDone: TIDY_TOYS,
+			waterDone: WATER_DROPS,
+			fedToday: true,
+			earnedTodayCoins: 4,
+			savedToday: 4,
+			dreamCompletedToday: true
+		});
+		const s = tuckInDone(night);
 		expect(s.day).toBe(2);
 		expect(s.phase).toBe('start');
 		expect(s.coins).toBe(0);
+		expect(s.tidyDone).toBe(0);
+		expect(s.waterDone).toBe(0);
+		expect(s.fedToday).toBe(false);
+		expect(s.earnedTodayCoins).toBe(0);
+		expect(s.savedToday).toBe(0);
+		expect(s.dreamCompletedToday).toBe(false);
+		// The durable things stay.
+		expect(s.jarCoins).toBe(night.jarCoins);
+		expect(s.goal).toBe(night.goal);
+		expect(s.owned).toEqual(night.owned);
 	});
 
-	it('a fed day leaves Buddy happy even if yesterday was sad', () => {
-		let s = withPatch(withTasks(freshDay()), {
+	it('is denied outside tuck-in', () => {
+		const store = atStore();
+		expect(tuckInDone(store)).toEqual(store);
+	});
+
+	it('resetDayTransients zeroes every transient and leaves the phase to its caller', () => {
+		const dirty = withPatch(newGame(), {
 			phase: 'tuck-in',
+			coins: 3,
+			tidyDone: 2,
+			waterDone: 1,
 			fedToday: true,
-			buddySad: true
+			earnedTodayCoins: 3,
+			savedToday: 2,
+			dreamCompletedToday: true
 		});
-		s = tuckInDone(s);
-		expect(s.buddySad).toBe(false);
+		const clean = resetDayTransients(dirty);
+		expect(clean.phase).toBe('tuck-in');
+		expect(clean.coins).toBe(0);
+		expect(clean.tidyDone).toBe(0);
+		expect(clean.waterDone).toBe(0);
+		expect(clean.fedToday).toBe(false);
+		expect(clean.earnedTodayCoins).toBe(0);
+		expect(clean.savedToday).toBe(0);
+		expect(clean.dreamCompletedToday).toBe(false);
 	});
 });
 
 describe('whole days, end to end', () => {
-	it('two days of nothing but saving reach the goal (skip-everything path)', () => {
+	it('three clean saving days reach the wagon and launch the teddy', () => {
 		let s = newGame();
 		s = submitName(s, 'Sam');
-		s = beginDay(s);
 
-		// day 1
-		s = withTasks(s);
-		s = skipEverythingAndSave(s);
-		s = jarsDone(s);
+		// day 1: 4 coins, jar 4
+		s = beginDay(s);
+		s = storeDone(saveRemainder(toStore(allChores(greetDone(s)))));
 		expect(s.phase).toBe('tuck-in');
-		expect(s.jarCoins).toBe(3);
+		expect(s.jarCoins).toBe(4);
 		s = tuckInDone(s);
 
-		// day 2
+		// day 2: jar 8
 		s = beginDay(s);
-		s = withTasks(s);
-		s = skipEverythingAndSave(s);
-		s = jarsDone(s);
-		expect(s.phase).toBe('goal-reached');
-		expect(s.jarCoins).toBe(6);
-		expect(s.buddySad).toBe(true);
+		s = storeDone(saveRemainder(toStore(allChores(greetDone(s)))));
+		expect(s.phase).toBe('tuck-in');
+		expect(s.jarCoins).toBe(8);
+		s = tuckInDone(s);
+
+		// day 3: jar 12 — the dream is reached
+		s = beginDay(s);
+		s = storeDone(saveRemainder(toStore(allChores(greetDone(s)))));
+		expect(s.phase).toBe('dream-reached');
+		expect(s.jarCoins).toBe(12);
+
+		s = dreamCelebrated(s);
+		expect(s.owned).toEqual(['wagon']);
+		expect(s.goal).toBe('teddy');
+		expect(s.jarCoins).toBe(0);
+		expect(s.phase).toBe('tuck-in');
 	});
 
-	it('overflow past the goal price is carried into the next goal', () => {
-		let s = newGame();
-		s = submitName(s, 'Sam');
-		s = beginDay(s);
+	it('a toy in the store delays the dream, and the remainder still saves', () => {
+		let s = beginDay(submitName(newGame(), 'Sam'));
+		s = toStore(allChores(greetDone(s)));
+		s = buyToy(s, 'ball');
+		expect(s.coins).toBe(2);
+		expect(s.owned).toEqual(['ball']);
 
-		// day 1: feed Buddy, save the remaining two
-		s = withTasks(s);
-		s = feedBuddy(s);
-		s = friendDone(s);
-		s = saveAll(s);
-		s = jarsDone(s);
-		s = tuckInDone(s);
+		s = storeDone(saveRemainder(s));
+		expect(s.phase).toBe('tuck-in');
 		expect(s.jarCoins).toBe(2);
-
-		// day 2: skip the bowl, save three
-		s = beginDay(s);
-		s = withTasks(s);
-		s = skipEverythingAndSave(s);
-		s = jarsDone(s);
-		s = tuckInDone(s);
-		expect(s.jarCoins).toBe(5);
-
-		// day 3: save three more — that is eight, two over the goal price
-		s = beginDay(s);
-		s = withTasks(s);
-		s = skipEverythingAndSave(s);
-		s = jarsDone(s);
-		expect(s.phase).toBe('goal-reached');
-		expect(s.jarCoins).toBe(8);
-
-		s = goalCelebrated(s);
-		s = pickGoal(s, 'hat');
-		expect(s.jarCoins).toBe(2);
-		expect(s.homeItems).toEqual(['kite']);
 	});
 
 	it('no sequence of taps can make any resource negative', () => {
-		let s = withTasks(freshDay());
-		const spam = [feedBuddy, feedBuddy, giveCoin, giveCoin, giveCoin, giveCoin, friendDone, saveAll, saveAll, buyLollipop, continueAfterLollipop, jarsDone, jarsDone, goalCelebrated, tuckInDone];
-		for (const step of spam) {
-			s = step(s);
+		let s = atChores();
+		for (let round = 0; round < 5; round++) {
+			s = openTidy(s);
+			for (let i = 0; i < 5; i++) s = tidyToy(s);
+			s = openWater(s);
+			for (let i = 0; i < 5; i++) s = waterDrop(s);
+			s = openFeed(s);
+			s = feedBear(s);
+			s = toStore(s);
+			s = buyToy(s, 'ball');
+			s = buyToy(s, 'wagon');
+			s = saveRemainder(s);
+			s = storeDone(s);
+			s = dreamCelebrated(s);
+			s = tuckInDone(s);
+			s = beginDay(s);
+			s = greetDone(s);
+
 			expect(s.coins).toBeGreaterThanOrEqual(0);
 			expect(s.jarCoins).toBeGreaterThanOrEqual(0);
-			expect(s.planks).toBeGreaterThanOrEqual(0);
-			expect(s.planks).toBeLessThanOrEqual(SWING_PLANKS);
-			expect(s.tidyDone).toBeLessThanOrEqual(3);
-			expect(s.waterDone).toBeLessThanOrEqual(3);
+			expect(s.tidyDone).toBeGreaterThanOrEqual(0);
+			expect(s.tidyDone).toBeLessThanOrEqual(TIDY_TOYS);
+			expect(s.waterDone).toBeGreaterThanOrEqual(0);
+			expect(s.waterDone).toBeLessThanOrEqual(WATER_DROPS);
 		}
 	});
 });
 
-describe('the meaning layer', () => {
-	it('starts every game with no goal completed today', () => {
-		expect(newGame().goalCompletedToday).toBe(false);
+describe('earned today', () => {
+	it('counts every chore payment, however the day later spends it', () => {
+		expect(earnedToday(atChores())).toBe(0);
+
+		let s = openTidy(atChores());
+		for (let i = 0; i < TIDY_TOYS; i++) s = tidyToy(s);
+		expect(earnedToday(s)).toBe(TIDY_REWARD);
+
+		s = openWater(s);
+		for (let i = 0; i < WATER_DROPS; i++) s = waterDrop(s);
+		expect(earnedToday(s)).toBe(TIDY_REWARD + WATER_REWARD);
+
+		s = feedBear(openFeed(s));
+		expect(earnedToday(s)).toBe(4);
+
+		s = buyToy(toStore(s), 'ball');
+		expect(earnedToday(s)).toBe(4);
+
+		s = saveRemainder(s);
+		expect(earnedToday(s)).toBe(4);
 	});
 
-	it('marks a goal completed only from celebration until tuck-in', () => {
-		const celebrated = goalCelebrated(withPatch(newGame(), { phase: 'goal-reached' }));
-		expect(celebrated.goalCompletedToday).toBe(true);
-
-		// the flag survives picking the next goal, so the recap can tell the story
-		const picked = pickGoal(celebrated, 'hat');
-		expect(picked.goalCompletedToday).toBe(true);
-
-		const tucked = tuckInDone(picked);
-		expect(tucked.goalCompletedToday).toBe(false);
+	it('resets with the day', () => {
+		let s = allChores(atChores());
+		expect(earnedToday(s)).toBe(4);
+		s = tuckInDone(withPatch(s, { phase: 'tuck-in' }));
+		expect(earnedToday(s)).toBe(0);
+		s = beginDay(s);
+		expect(earnedToday(s)).toBe(0);
 	});
+});
 
-	it('clears the completed flag when a day restarts from a reload', () => {
-		const dirty = withPatch(newGame(), { phase: 'tuck-in', goalCompletedToday: true });
-		expect(resetDayTransients(dirty).goalCompletedToday).toBe(false);
-	});
-
-	it('counts what was earned today, however it was spent', () => {
-		expect(earnedToday(freshDay())).toBe(0);
-		const withCoins = withTasks(freshDay());
-		expect(earnedToday(withCoins)).toBe(3);
-		expect(earnedToday(feedBuddy(withCoins))).toBe(3); // 2 in hand + 1 fed
-		expect(earnedToday(withPatch(withCoins, { coins: 1, gaveToday: 2 }))).toBe(3);
-		expect(earnedToday(withPatch(withCoins, { coins: 1, lollipopToday: true }))).toBe(3);
-		expect(
-			earnedToday(
-				withPatch(withCoins, { coins: 0, fedToday: true, lollipopToday: true, gaveToday: 1 })
-			)
-		).toBe(4);
-		// Coins already in the jar still count as today's earnings.
-		expect(earnedToday(saveAll(withPatch(withCoins, { phase: 'shelf' })))).toBe(3);
-	});
-
-	it('previews exactly what saving would put in the jar, capped at the goal', () => {
-		expect(savePreview(withPatch(newGame(), { jarCoins: 4, coins: 3 }))).toEqual({
-			filled: 6,
+describe('the save preview', () => {
+	it('counts the jar plus the hand against the dream price', () => {
+		expect(savePreview(withPatch(newGame(), { jarCoins: 10, coins: 2 }))).toEqual({
+			filled: 12,
 			completes: true
 		});
-		expect(savePreview(withPatch(newGame(), { jarCoins: 5, coins: 3 }))).toEqual({
-			filled: 6,
-			completes: true
-		});
-		expect(savePreview(withPatch(newGame(), { jarCoins: 0, coins: 2 }))).toEqual({
-			filled: 2,
+		expect(savePreview(withPatch(newGame(), { jarCoins: 11, coins: 0 }))).toEqual({
+			filled: 11,
 			completes: false
 		});
+		expect(savePreview(withPatch(newGame(), { jarCoins: 8, coins: 3 }))).toEqual({
+			filled: 11,
+			completes: false
+		});
+	});
+
+	it('moves with the current dream', () => {
+		expect(savePreview(withPatch(newGame(), { goal: 'teddy', jarCoins: 4, coins: 2 }))).toEqual({
+			filled: 6,
+			completes: false
+		});
+		expect(savePreview(withPatch(newGame(), { goal: 'teddy', jarCoins: 12, coins: 0 }))).toEqual({
+			filled: 12,
+			completes: true
+		});
+	});
+
+	it('starts empty', () => {
 		expect(savePreview(newGame())).toEqual({ filled: 0, completes: false });
 	});
 });

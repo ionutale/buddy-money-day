@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { TIDY_REWARD, WATER_REWARD } from '$lib/game/economy';
+	import { FEED_REWARD, TIDY_REWARD, WATER_REWARD } from '$lib/game/economy';
 	import { actions, game } from '$lib/game/game.svelte';
 	import { lines } from '$lib/game/lines';
 	import { speak } from '$lib/game/speech';
@@ -11,7 +11,7 @@
 	$effect(() => {
 		if (spoke) return;
 		spoke = true;
-		speak(game.state.buddySad ? lines.greetingSad(game.state) : lines.greetingPlan(game.state));
+		speak(lines.greetingPlan(game.state));
 	});
 </script>
 
@@ -30,13 +30,9 @@
 		</g>
 	</svg>
 
-	<Bubble tail="left"
-		>{game.state.buddySad
-			? lines.greetingSad(game.state)
-			: lines.greetingPlan(game.state)}</Bubble
-	>
+	<Bubble tail="left">{lines.greetingPlan(game.state)}</Bubble>
 
-	<Buddy mood={game.state.buddySad ? 'sad' : 'happy'} size={188} />
+	<Buddy mood="happy" size={188} />
 
 	<div class="plan" data-testid="plan-cards">
 		<div class="plan-card" data-testid="plan-card-tidy">
@@ -52,6 +48,16 @@
 				<path d="M20 3 C 29 20, 35 28, 35 36 a15 15 0 1 1 -30 0 C 5 28, 11 20, 20 3 Z" fill="#bfe3f5" stroke="#7cbcd9" stroke-width="3" />
 			</svg>
 			<span class="plan-price"><Coin size={22} />{WATER_REWARD}</span>
+		</div>
+		<div class="plan-card" data-testid="plan-card-feed">
+			<svg class="plan-icon" viewBox="0 0 48 48" aria-hidden="true">
+				<path d="M5 20 Q24 14 43 20 L40 33 Q24 40 8 33 Z" fill="#ff8a66" stroke="#4a3728" stroke-width="2.5" stroke-linejoin="round" />
+				<ellipse cx="24" cy="20" rx="19" ry="5" fill="#fffdf8" stroke="#4a3728" stroke-width="2.5" />
+				<circle cx="17" cy="19" r="2.6" fill="#d9a869" />
+				<circle cx="24" cy="18" r="2.6" fill="#d9a869" />
+				<circle cx="31" cy="19" r="2.6" fill="#d9a869" />
+			</svg>
+			<span class="plan-price"><Coin size={22} />{FEED_REWARD}</span>
 		</div>
 	</div>
 

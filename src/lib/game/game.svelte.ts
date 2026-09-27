@@ -1,22 +1,21 @@
-import type { GoalId } from './economy';
+import type { ToyId } from './economy';
 import { clearSave, loadState, saveState } from './persistence';
 import {
 	beginDay,
-	buyLollipop,
-	continueAfterLollipop,
-	feedBuddy,
-	friendDone,
-	giveCoin,
-	goalCelebrated,
+	buyToy,
+	dreamCelebrated,
+	feedBear,
 	greetDone,
-	jarsDone,
 	newGame,
-	pickGoal,
-	saveAll,
-	skipFeed,
+	openFeed,
+	openTidy,
+	openWater,
+	saveRemainder,
 	skipName,
+	storeDone,
 	submitName,
 	tidyToy,
+	toStore,
 	tuckInDone,
 	waterDrop
 } from './state';
@@ -43,22 +42,19 @@ export const actions = {
 	beginDay: () => apply(beginDay),
 	greetDone: () => apply(greetDone),
 
+	openTidy: () => apply(openTidy),
+	openWater: () => apply(openWater),
+	openFeed: () => apply(openFeed),
 	tidyToy: () => apply(tidyToy),
 	waterDrop: () => apply(waterDrop),
+	feedBear: () => apply(feedBear),
 
-	feedBuddy: () => apply(feedBuddy),
-	skipFeed: () => apply(skipFeed),
+	toStore: () => apply(toStore),
+	buyToy: (id: ToyId) => apply((s) => buyToy(s, id)),
+	saveRemainder: () => apply(saveRemainder),
+	storeDone: () => apply(storeDone),
 
-	giveCoin: () => apply(giveCoin),
-	friendDone: () => apply(friendDone),
-
-	saveAll: () => apply(saveAll),
-	buyLollipop: () => apply(buyLollipop),
-	continueAfterLollipop: () => apply(continueAfterLollipop),
-
-	jarsDone: () => apply(jarsDone),
-	goalCelebrated: () => apply(goalCelebrated),
-	pickGoal: (goal: GoalId) => apply((s) => pickGoal(s, goal)),
+	dreamCelebrated: () => apply(dreamCelebrated),
 	tuckInDone: () => apply(tuckInDone),
 
 	/** Wipe the per-device save and start over at Grown-up Setup. */

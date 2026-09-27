@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { GOAL_COST, GOAL_LABELS } from '$lib/game/economy';
+	import { TOY_LABELS, TOY_PRICES } from '$lib/game/economy';
 	import { banner } from '$lib/game/banner.svelte';
 	import { game } from '$lib/game/game.svelte';
 	import GoalItem from './GoalItem.svelte';
@@ -8,18 +8,20 @@
 	let { size = 42 }: Props = $props();
 
 	// The slots show what the jar holds — unless a scene previews an outcome
-	// (the Shelf previews what saving the held coins would accomplish).
-	const filled = $derived(Math.min(banner.preview ?? game.state.jarCoins, GOAL_COST));
+	// (the Store previews what saving the held coins would accomplish).
+	// The slot count is the dream's price, never a hardcoded literal.
+	const price = $derived(TOY_PRICES[game.state.goal]);
+	const filled = $derived(Math.min(banner.preview ?? game.state.jarCoins, price));
 </script>
 
 <div
 	class="goal-banner"
 	data-testid="goal-banner"
-	aria-label="Saving for your {GOAL_LABELS[game.state.goal]}"
+	aria-label="Saving for your {TOY_LABELS[game.state.goal]}"
 >
 	<GoalItem kind={game.state.goal} size={size} />
 	<span class="slots" aria-hidden="true">
-		{#each Array(GOAL_COST) as _, index (index)}
+		{#each Array(price) as _, index (index)}
 			<span
 				class="slot"
 				class:full={index < filled}
@@ -39,7 +41,9 @@
 
 	.slots {
 		display: flex;
+		flex-wrap: wrap;
 		gap: 4px;
+		max-width: 104px;
 	}
 
 	.slot {
