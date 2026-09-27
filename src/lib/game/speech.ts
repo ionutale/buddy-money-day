@@ -1,8 +1,10 @@
+import { settings } from './settings.svelte';
+
 /**
  * Buddy's voice. Fire-and-forget: every call cancels the previous line and
- * speaks the new one — nothing ever awaits. Voice is disabled with
- * `?mute=1` or in browsers without speech synthesis, and can be toggled
- * at runtime for tests via setVoiceEnabled().
+ * speaks the new one — nothing ever awaits. Silent when the grown-up turned
+ * Voice off in Grown-up Setup, when `?mute=1` is in the URL, or in browsers
+ * without speech synthesis. Text bubbles always keep the words.
  */
 
 function isMutedByQuery(): boolean {
@@ -21,12 +23,8 @@ function hasSpeech(): boolean {
 	);
 }
 
-let enabled = hasSpeech() && !isMutedByQuery();
-
-/** Tests and grown-ups can silence or re-enable voice at runtime. */
-export function setVoiceEnabled(value: boolean): void {
-	enabled = value;
-	if (!value) cancelSpeech();
+function voiceAllowed(): boolean {
+	return settings.voiceEnabled && !isMutedByQuery() && hasSpeech();
 }
 
 export function cancelSpeech(): void {
@@ -40,13 +38,20 @@ export function cancelSpeech(): void {
 
 /** Cancel-then-speak. Never throws, never blocks. */
 export function speak(text: string): void {
-	if (!enabled || text === '' || !hasSpeech()) return;
+	if (!voiceAllowed() || text === '') return;
 	try {
 		const synth = window.speechSynthesis;
 		synth.cancel();
 		const line = new SpeechSynthesisUtterance(text);
 		line.rate = 0.92;
 		line.pitch = 1.12;
+		const chosen = settings.voiceURI;
+		if (chosen) {
+			// The chosen actor may have vanished (another phone, an OS update):
+			// fall back to the device default instead of failing.
+			const voice = synth.getVoices().find((v) => v.voiceURI === chosen);
+			if (voice) line.voice = voice;
+		}
 		synth.speak(line);
 	} catch {
 		/* voice is optional, never fatal */

@@ -21,6 +21,9 @@ export const lines = {
 			? 'Hello! A grown-up can type a name, or skip.'
 			: `Hello again, ${s.childName.trim()}!`,
 
+	/** Preview line when a grown-up picks Buddy's voice actor. */
+	voiceSample: (_s) => 'Hi there! This is how Buddy will sound.',
+
 	// Title screen.
 	start: (s) => `Hi ${buddyName(s)}! Buddy is ready for a Money Day.`,
 

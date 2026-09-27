@@ -20,7 +20,7 @@ const memoryStorage: StorageLike = {
 	removeItem: (key) => void memory.delete(key)
 };
 
-function defaultStorage(): StorageLike {
+export function defaultStorage(): StorageLike {
 	try {
 		if (typeof localStorage !== 'undefined') return localStorage;
 	} catch {

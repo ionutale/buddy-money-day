@@ -1,7 +1,14 @@
 <script lang="ts">
 	import { actions, game } from '$lib/game/game.svelte';
 	import { lines } from '$lib/game/lines';
-	import { speak } from '$lib/game/speech';
+	import {
+		refreshVoices,
+		settings,
+		setVoiceURI,
+		toggleVoice,
+		voiceOptions
+	} from '$lib/game/settings.svelte';
+	import { cancelSpeech, speak } from '$lib/game/speech';
 	import Buddy from './Buddy.svelte';
 
 	type Props = {
@@ -24,6 +31,23 @@
 		speak(lines.setup(game.state));
 	});
 
+	// Voice lists arrive asynchronously on phones (and can change when the OS
+	// installs voices), so refresh now and then on `voiceschanged`.
+	$effect(() => {
+		refreshVoices();
+		try {
+			if (typeof window === 'undefined') return;
+			const synth = window.speechSynthesis;
+			if (!synth?.addEventListener) return;
+			const onChange = () => refreshVoices();
+			synth.addEventListener('voiceschanged', onChange);
+			return () => synth.removeEventListener('voiceschanged', onChange);
+		} catch {
+			/* voices are optional, never fatal */
+			return;
+		}
+	});
+
 	$effect(() => {
 		if (mode === 'name') nameInput?.focus({ preventScroll: true });
 	});
@@ -38,6 +62,17 @@
 
 	function onKeydown(event: KeyboardEvent): void {
 		if (event.key === 'Enter') submit();
+	}
+
+	function onToggleVoice(): void {
+		const nowOn = toggleVoice();
+		if (nowOn) speak('Voice on!');
+		else cancelSpeech();
+	}
+
+	function pickVoice(uri: string | null): void {
+		setVoiceURI(uri);
+		speak(lines.voiceSample(game.state));
 	}
 
 	function confirmReset(): void {
@@ -58,6 +93,61 @@
 
 <svelte:window onkeydown={onWindowKeydown} />
 
+{#snippet voiceSection()}
+	<div class="setting-row">
+		<span class="setting-label">Voice</span>
+		<button
+			type="button"
+			class="switch"
+			class:on={settings.voiceEnabled}
+			role="switch"
+			aria-checked={settings.voiceEnabled}
+			aria-label="Voice-over"
+			data-testid="voice-toggle"
+			onclick={onToggleVoice}
+		>
+			<span class="knob"></span>
+		</button>
+	</div>
+	<p class="setup-hint">Text bubbles always stay on.</p>
+	{#if settings.voiceEnabled}
+		{#if voiceOptions.list.length > 0}
+			<div class="voice-picker" role="radiogroup" aria-label="Buddy's voice">
+				<span class="picker-label">Buddy's voice</span>
+				<div class="voice-list">
+					<button
+						type="button"
+						class="voice-option"
+						class:selected={settings.voiceURI === null}
+						role="radio"
+						aria-checked={settings.voiceURI === null}
+						data-testid="voice-option-default"
+						onclick={() => pickVoice(null)}
+					>
+						<span>System default</span>
+					</button>
+					{#each voiceOptions.list as voice, index (voice.uri)}
+						<button
+							type="button"
+							class="voice-option"
+							class:selected={settings.voiceURI === voice.uri}
+							role="radio"
+							aria-checked={settings.voiceURI === voice.uri}
+							data-testid="voice-option-{index}"
+							onclick={() => pickVoice(voice.uri)}
+						>
+							<span>{voice.name}</span>
+							<span class="voice-lang">{voice.lang}</span>
+						</button>
+					{/each}
+				</div>
+			</div>
+		{:else}
+			<p class="setup-hint">No extra voices found on this device — the system voice will speak.</p>
+		{/if}
+	{/if}
+{/snippet}
+
 {#if mode === 'name'}
 	<div class="scene setup">
 		<div class="setup-card card">
@@ -67,6 +157,7 @@
 				What should Buddy call your child? The name stays on this phone and is only ever spoken
 				aloud.
 			</p>
+			{@render voiceSection()}
 			<input
 				class="name-input"
 				data-testid="name-input"
@@ -95,6 +186,7 @@
 				Buddy's jar, home, and every saved coin live on this phone only. Starting over erases
 				them, and Buddy will greet you fresh.
 			</p>
+			{@render voiceSection()}
 			<button
 				type="button"
 				class="btn btn-coral"
@@ -104,7 +196,14 @@
 				Start over
 			</button>
 			{#if onclose}
-				<button type="button" class="btn btn-ghost" onclick={onclose}>Keep playing</button>
+				<button
+					type="button"
+					class="btn btn-ghost"
+					data-testid="setup-close-button"
+					onclick={onclose}
+				>
+					Keep playing
+				</button>
 			{/if}
 		</div>
 
@@ -155,6 +254,121 @@
 		margin: 0;
 		font-size: 17px;
 		line-height: 1.4;
+		color: var(--ink-soft);
+	}
+
+	.setting-row {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 14px;
+		background: rgba(191, 227, 245, 0.35);
+		border-radius: 22px;
+		padding: 12px 16px;
+	}
+
+	.setting-label {
+		font-size: 20px;
+		font-weight: 700;
+	}
+
+	.switch {
+		position: relative;
+		width: 96px;
+		height: 52px;
+		flex: 0 0 auto;
+		border: none;
+		border-radius: 999px;
+		background: rgba(74, 55, 40, 0.22);
+		transition: background 0.2s ease;
+		cursor: pointer;
+	}
+
+	.switch.on {
+		background: #6fb8a4;
+	}
+
+	.knob {
+		position: absolute;
+		top: 5px;
+		left: 5px;
+		width: 42px;
+		height: 42px;
+		border-radius: 50%;
+		background: #fffdf8;
+		box-shadow: 0 3px 0 rgba(74, 55, 40, 0.18);
+		transition: translate 0.2s cubic-bezier(0.3, 1.4, 0.5, 1);
+	}
+
+	.switch.on .knob {
+		translate: 44px 0;
+	}
+
+	.switch:focus-visible {
+		outline: 4px solid var(--sky);
+		outline-offset: 3px;
+	}
+
+	.setup-hint {
+		margin: -8px 0 0;
+		font-size: 15px;
+		color: var(--ink-soft);
+	}
+
+	.voice-picker {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	.picker-label {
+		font-size: 17px;
+		font-weight: 700;
+		text-align: left;
+	}
+
+	.voice-list {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		max-height: 216px;
+		overflow-y: auto;
+		padding: 2px;
+	}
+
+	.voice-option {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 10px;
+		width: 100%;
+		min-height: 60px;
+		padding: 10px 16px;
+		border-radius: 18px;
+		border: 3px solid transparent;
+		background: #fffdf8;
+		box-shadow: 0 3px 0 rgba(74, 55, 40, 0.1);
+		font-size: 17px;
+		font-weight: 600;
+		text-align: left;
+		cursor: pointer;
+	}
+
+	.voice-option.selected {
+		border-color: #7cbcd9;
+		background: rgba(191, 227, 245, 0.45);
+	}
+
+	.voice-option:focus-visible {
+		outline: 4px solid var(--sky);
+		outline-offset: 2px;
+	}
+
+	.voice-lang {
+		font-size: 14px;
+		font-weight: 500;
 		color: var(--ink-soft);
 	}
 
