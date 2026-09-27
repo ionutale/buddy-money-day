@@ -68,7 +68,19 @@ export const DREAMS = ['wagon','teddy'] as const;
 - [ ] **Step 4: green gates** — `pnpm check` 0 errors + `pnpm test`.
 - [ ] **Step 5: commit** — `feat!: engine v2 — chores hub, paid feeding, store, dream cycle`.
 
-### Task 2 — Job board + greeting
+### Task 2 — Voice off by default
+
+**Files:** `src/lib/game/settings.ts`, `src/lib/game/settings.spec.ts`, `e2e/settings.spec.ts`, `README.md`
+
+The product default flips: new installs are **silent**; the existing Voice switch in Grown-up Setup turns voice on (text bubbles already mirror every spoken line). A stored preference always wins over the default.
+
+- [ ] **Step 1: failing unit tests.** In `settings.spec.ts`: the default is `{ voiceEnabled: false, voiceURI: null }`; a stored `voiceEnabled: true` still loads as true; the fallback paths (corrupt json, foreign shapes, broken storage) return the silent default.
+- [ ] **Step 2: red → implement** (`DEFAULT_SETTINGS.voiceEnabled = false`).
+- [ ] **Step 3: rework `e2e/settings.spec.ts`** (dev server, usual pattern): the default shows the toggle OFF and nothing is spoken; turning it ON speaks and persists across reload; the actor picker appears only while voice is on (pick → sticks across reload → System default restores); "Start over" keeps the choice. RED first: run the existing spec against the flipped default and capture the failures, then fix.
+- [ ] **Step 4: README** — replace "fully-voiced" marketing with the truth: voice is optional, off by default, enabled in Grown-up Setup; bubbles carry all words.
+- [ ] **Step 5: green gates** (`pnpm check`, `pnpm test`, targeted e2e) **+ commit** — `feat: voice off by default; grown-ups switch it on`.
+
+### Task 3 — Job board + greeting
 
 **Files:** `src/lib/components/JobBoard.svelte` (real), `Greeting.svelte`, `e2e/helpers.ts`, `e2e/chores.spec.ts` (new)
 
@@ -76,7 +88,7 @@ export const DREAMS = ['wagon','teddy'] as const;
 - [ ] **Step 2: red → implement.** Helper `doChore(page, 'tidy'|'water'|'feed')`. Greeting keeps the plan line, cards move to the board.
 - [ ] **Step 3: green + commit** — `feat: the job board — pick a chore, any chore`.
 
-### Task 3 — Feed the bear (real scene)
+### Task 4 — Feed the bear (real scene)
 
 **Files:** `src/lib/components/TaskFeed.svelte`, `e2e/chores.spec.ts`
 
@@ -84,15 +96,15 @@ export const DREAMS = ['wagon','teddy'] as const;
 - [ ] **Step 2: red → implement** (one `feed-give` action, no cost, no skip).
 - [ ] **Step 3: green + commit** — `feat: feeding is a paid job — care rewarded, never priced`.
 
-### Task 4 — The store (real scene)
+### Task 5 — The store (real scene)
 
 **Files:** `src/lib/components/Store.svelte`, `e2e/store.spec.ts` (new)
 
-- [ ] **Step 1: failing e2e:** unaffordable compare (`store-unaffordable`, 4 coins vs blocks: "That's 6 coins — you have 4. Two more chores tomorrow!"); buy ball with 2 → celebration → owned state; `store-save-button` flies coins to the banner then advances (tuck-in, or dream-reached at ≥12); `store-dream` pedestal with progress.
+- [ ] **Step 1: failing e2e:** unaffordable compare (`store-unaffordable` — Ball with 1 coin after one chore: "That's 2 coins — you have 1. One more chore tomorrow!"; blocks are not on the slice-1 shelf); buy ball with 2 → celebration → owned state; `store-save-button` flies coins to the banner then advances (tuck-in, or dream-reached at ≥12); `store-dream` pedestal with progress.
 - [ ] **Step 2: red → implement.** Shelf (`store-shelf`, `store-toy-ball`) + pedestal + default save button; buys restate the dream via toast.
 - [ ] **Step 3: green + commit** — `feat: the store — buy a toy or save for the dream`.
 
-### Task 5 — Dream home + title doors + recap
+### Task 6 — Dream home + title doors + recap
 
 **Files:** `src/lib/components/DreamReached.svelte` (real), `StartScreen.svelte`, `TuckIn.svelte`, `e2e/meaning.spec.ts` (re-point, part 1)
 
@@ -100,14 +112,14 @@ export const DREAMS = ['wagon','teddy'] as const;
 - [ ] **Step 2: red → implement.** Arc-to-strip reused; TuckIn speaks/shows `recapLine` only; StartScreen owns the "My Toys" door.
 - [ ] **Step 3: green + commit** — `feat: the dream comes home`.
 
-### Task 6 — Dream banner (12 slots) + wagon/teddy art
+### Task 7 — Dream banner (12 slots) + wagon/teddy art
 
 **Files:** `GoalBanner.svelte`, `GoalItem.svelte`
 
 - [ ] `GoalBanner`: slots = dream price (12), two rows of six, `goal-slot-*`/`data-filled` kept, `jar-progress` "n / 12" derived from price; `GoalItem`: wagon + teddy art (storybook style), old kinds deleted; placeholders replaced.
 - [ ] `pnpm check` + unit + targeted e2e green; commit — `feat: dream banner and wagon/teddy art`.
 
-### Task 7 — Toys room + keepy-uppy ball
+### Task 8 — Toys room + keepy-uppy ball
 
 **Files:** `src/lib/components/ToysRoom.svelte`, `MiniGameBall.svelte` (new), `StartScreen.svelte`, `e2e/playroom.spec.ts` (new)
 
@@ -115,7 +127,7 @@ export const DREAMS = ['wagon','teddy'] as const;
 - [ ] **Step 2: red → implement.** Pure UI state on StartScreen; no-fail ball loop (tap relaunch, squish, boing, sparkles).
 - [ ] **Step 3: green + commit** — `feat: my toys room and the keepy-uppy ball`.
 
-### Task 8 — Deletions audit + full spec rework
+### Task 9 — Deletions audit + full spec rework
 
 **Files:** `e2e/money-day.spec.ts`, `e2e/meaning.spec.ts`, `e2e/persistence.spec.ts`, `e2e/helpers.ts`; source cleanups
 
@@ -125,13 +137,13 @@ export const DREAMS = ['wagon','teddy'] as const;
 - [ ] Audit greps (Review Focus 4) + remove dead helper code; delete any remaining dead source.
 - [ ] **All specs green against the dev server** (the first full-suite run since Task 1) + commit — `test: rework the suites for the store loop`.
 
-### Task 9 — Full verification
+### Task 10 — Full verification
 
 - [ ] `pnpm check` + `pnpm test` green.
 - [ ] `pnpm build` + manual preview on `127.0.0.1:43118`; **full Playwright run against the production build** (`E2E_BASE_URL=http://127.0.0.1:43118`), all specs green.
 - [ ] Fix anything found; commit — `test: verify the store slice end to end`.
 
-### Task 10 — Docs + ship
+### Task 11 — Docs + ship
 
 - [ ] `docs/adr/0006-work-save-buy-play.md`; `CONTEXT.md` (**Dream toy**, **Store**, **My Toys**, feed-as-job; remove Bird/Hunger/Temptation); README refresh.
 - [ ] Commit `docs: store & play — ADR-0006, glossary, README`; push; verify the deployment is Ready; run the **full suite against the live URL**; report.
