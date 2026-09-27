@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { completeSetup, doChore, dragLocator, openGame, startMoneyDay } from './helpers';
 
 /**
@@ -138,3 +138,39 @@ test.describe('the job board', () => {
 		await expect(page.getByTestId('job-card-feed')).toHaveAttribute('data-done', 'true');
 	});
 });
+
+/**
+ * The tidy floor is seeded by the day number: six kinds in the pool, three
+ * scattered each day. A reload mid-day must show the child the same trio.
+ */
+test.describe('the daily tidy trio', () => {
+	test('shows three toys, and a mid-day reload keeps the same trio', async ({ page }) => {
+		await openGame(page);
+		await completeSetup(page);
+		await startMoneyDay(page);
+		await page.getByTestId('job-card-tidy').click();
+
+		// Exactly three toys, each tagged with the kind it was picked as.
+		const toys = page.locator('[data-testid^="toy-"]');
+		await expect(toys).toHaveCount(3);
+		const before = await tidyToyKinds(page);
+		expect(before).toHaveLength(3);
+		expect(before.every((kind) => kind !== null && kind !== '')).toBe(true);
+
+		// Reload in the middle of the day: the day number is durable, so the trio is too.
+		await page.reload();
+		await completeSetup(page);
+		await startMoneyDay(page);
+		await page.getByTestId('job-card-tidy').click();
+
+		await expect(toys).toHaveCount(3);
+		expect(await tidyToyKinds(page)).toEqual(before);
+	});
+});
+
+/** The kinds, in toy-0..2 order, of the toys scattered in the tidy scene. */
+async function tidyToyKinds(page: Page): Promise<(string | null)[]> {
+	return await page
+		.locator('[data-testid^="toy-"]')
+		.evaluateAll((toys) => toys.map((toy) => toy.getAttribute('data-kind')));
+}

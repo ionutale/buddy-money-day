@@ -6,17 +6,26 @@
 	import { speak } from '$lib/game/speech';
 	import { sounds } from '$lib/game/sounds';
 	import { toast } from '$lib/game/toasts.svelte';
+	import { pickTidyToys, type TidyKind } from '$lib/game/tidyPool';
 	import Bubble from './Bubble.svelte';
 	import Coin from './Coin.svelte';
 
 	type ToyId = 0 | 1 | 2;
-	type ToyKind = 'ball' | 'blocks' | 'teddy';
 
-	const TOYS: { id: ToyId; kind: ToyKind; x: number; y: number }[] = [
-		{ id: 0, kind: 'ball', x: 8, y: 16 },
-		{ id: 1, kind: 'blocks', x: 56, y: 6 },
-		{ id: 2, kind: 'teddy', x: 32, y: 40 }
-	];
+	/** Where each scattered toy lands, in toy-0..2 order. */
+	const SPOTS = [
+		{ x: 8, y: 16 },
+		{ x: 56, y: 6 },
+		{ x: 32, y: 40 }
+	] as const;
+
+	/** The day's trio, seeded by the day alone: the same three all day long. */
+	const TOYS: { id: ToyId; kind: TidyKind; x: number; y: number }[] = pickTidyToys(
+		game.state.day
+	).map((kind, index) => {
+		const id = index as ToyId;
+		return { id, kind, x: SPOTS[id].x, y: SPOTS[id].y };
+	});
 
 	let boxEl: HTMLButtonElement | undefined = $state();
 
@@ -154,6 +163,7 @@
 				class:selected={selected === toy.id}
 				class:accepted={accepted[toy.id]}
 				data-testid="toy-{toy.id}"
+				data-kind={toy.kind}
 				aria-label="A toy to tidy up"
 				style="left: min({toy.x}%, calc(100% - 122px)); top: {toy.y}%; --dx: {offsets[toy.id]
 					.x}px; --dy: {offsets[toy.id].y}px"
@@ -175,7 +185,7 @@
 						<rect x="38" y="12" width="32" height="32" rx="9" fill="#ffd35c" stroke="#4a3728" stroke-width="3" />
 						<circle cx="54" cy="28" r="7" fill="#fffdf8" opacity="0.9" />
 					</svg>
-				{:else}
+				{:else if toy.kind === 'teddy'}
 					<svg viewBox="0 0 80 80" aria-hidden="true">
 						<circle cx="22" cy="24" r="10" fill="#d9a869" />
 						<circle cx="58" cy="24" r="10" fill="#d9a869" />
@@ -184,6 +194,42 @@
 						<circle cx="31" cy="40" r="4" fill="#4a3728" />
 						<circle cx="49" cy="40" r="4" fill="#4a3728" />
 						<path d="M35 53 Q40 57 45 53" fill="none" stroke="#4a3728" stroke-width="3" stroke-linecap="round" />
+					</svg>
+				{:else if toy.kind === 'drum'}
+					<svg viewBox="0 0 80 80" aria-hidden="true">
+						<circle cx="24" cy="10" r="6" fill="#ffd35c" stroke="#4a3728" stroke-width="3" />
+						<path d="M28 15 L44 31" fill="none" stroke="#d9a869" stroke-width="7" stroke-linecap="round" />
+						<rect x="12" y="22" width="56" height="46" rx="14" fill="#ff8a66" stroke="#4a3728" stroke-width="3" />
+						<ellipse cx="40" cy="23" rx="28" ry="9" fill="#f4dcc0" stroke="#4a3728" stroke-width="3" />
+						<path d="M16 40 Q40 48 64 40" fill="none" stroke="#ffd35c" stroke-width="6" />
+						<path d="M17 56 Q40 63 63 56" fill="none" stroke="#fffdf8" stroke-width="6" />
+					</svg>
+				{:else if toy.kind === 'boat'}
+					<svg viewBox="0 0 80 80" aria-hidden="true">
+						<path d="M41 10 V47" fill="none" stroke="#4a3728" stroke-width="3" stroke-linecap="round" />
+						<path d="M45 15 L64 40 L45 40 Z" fill="#bfe3f5" stroke="#4a3728" stroke-width="3" stroke-linejoin="round" />
+						<path d="M37 19 L22 40 L37 40 Z" fill="#fffdf8" stroke="#4a3728" stroke-width="3" stroke-linejoin="round" />
+						<path d="M10 45 Q40 51 70 45 L59 63 Q40 70 21 63 Z" fill="#ff8a66" stroke="#4a3728" stroke-width="3" stroke-linejoin="round" />
+						<path d="M19 51 Q40 57 61 51" fill="none" stroke="#ffd35c" stroke-width="5" />
+						<path d="M8 73 Q17 67 26 73 T44 73 T62 73" fill="none" stroke="#bfe3f5" stroke-width="5" stroke-linecap="round" />
+					</svg>
+				{:else}
+					<svg viewBox="0 0 80 80" aria-hidden="true">
+						<rect x="10" y="45" width="9" height="21" rx="4.5" fill="#bfe3f5" stroke="#4a3728" stroke-width="3" />
+						<rect x="61" y="45" width="9" height="21" rx="4.5" fill="#bfe3f5" stroke="#4a3728" stroke-width="3" />
+						<rect x="26" y="70" width="10" height="7" rx="3.5" fill="#bfe3f5" stroke="#4a3728" stroke-width="3" />
+						<rect x="44" y="70" width="10" height="7" rx="3.5" fill="#bfe3f5" stroke="#4a3728" stroke-width="3" />
+						<path d="M40 9 V16" fill="none" stroke="#4a3728" stroke-width="3" stroke-linecap="round" />
+						<circle cx="40" cy="7" r="5" fill="#ff8a66" stroke="#4a3728" stroke-width="3" />
+						<rect x="18" y="14" width="44" height="27" rx="11" fill="#bfe3f5" stroke="#4a3728" stroke-width="3" />
+						<circle cx="31" cy="27" r="4.5" fill="#4a3728" />
+						<circle cx="49" cy="27" r="4.5" fill="#4a3728" />
+						<path d="M33 34 Q40 38 47 34" fill="none" stroke="#4a3728" stroke-width="3" stroke-linecap="round" />
+						<rect x="21" y="41" width="38" height="31" rx="12" fill="#f4dcc0" stroke="#4a3728" stroke-width="3" />
+						<circle cx="32" cy="52" r="3.5" fill="#ff8a66" />
+						<circle cx="40" cy="52" r="3.5" fill="#ffd35c" />
+						<circle cx="48" cy="52" r="3.5" fill="#bfe3f5" />
+						<rect x="31" y="60" width="18" height="9" rx="4.5" fill="#d9a869" stroke="#4a3728" stroke-width="3" />
 					</svg>
 				{/if}
 			</button>
@@ -363,6 +409,18 @@
 	.blob-teddy {
 		background: #d9a869;
 		border-radius: 50% 50% 16px 16px;
+	}
+	.blob-drum {
+		background: #ff8a66;
+		border-radius: 8px 8px 14px 14px;
+	}
+	.blob-boat {
+		background: #bfe3f5;
+		border-radius: 8px 8px 18px 18px;
+	}
+	.blob-robot {
+		background: #f4dcc0;
+		border-radius: 12px;
 	}
 
 	.pay-moment {
