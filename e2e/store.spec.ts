@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { completeSetup, doChore, openGame, startMoneyDay } from './helpers';
+import { completeSetup, finishChores, openGame, openStore, startMoneyDay } from './helpers';
 
 /**
  * The store is the day's decision beat: buy the ball now, or save the rest
@@ -14,15 +14,12 @@ import { completeSetup, doChore, openGame, startMoneyDay } from './helpers';
  */
 
 /** Play a whole day and walk through the store door. */
-async function openStore(page: Page): Promise<void> {
+async function walkToStore(page: Page): Promise<void> {
 	await openGame(page);
 	await completeSetup(page);
 	await startMoneyDay(page);
-	// Any order works; this one mirrors the day's natural rhythm.
-	await doChore(page, 'tidy');
-	await doChore(page, 'water');
-	await doChore(page, 'feed');
-	await page.getByTestId('to-store-button').click();
+	await finishChores(page);
+	await openStore(page);
 	await expect(page.getByTestId('store-shelf')).toBeVisible();
 }
 
@@ -65,7 +62,7 @@ function within(point: { x: number; y: number }, box: Box): boolean {
 
 test.describe('the store', () => {
 	test('buying the ball celebrates, then the ball lives in your room', async ({ page }) => {
-		await openStore(page);
+		await walkToStore(page);
 
 		const ball = page.getByTestId('store-toy-ball');
 		await expect(ball).toHaveAttribute('data-owned', 'false');
@@ -86,7 +83,7 @@ test.describe('the store', () => {
 	});
 
 	test('saving flies the coins to the dream slots and tucks the day in', async ({ page }) => {
-		await openStore(page);
+		await walkToStore(page);
 		await expect(page.getByTestId('store-save-button')).toContainText(
 			'Save the rest for your wagon.'
 		);
@@ -121,7 +118,7 @@ test.describe('the store', () => {
 	});
 
 	test('the dream pedestal shows the dream and its progress', async ({ page }) => {
-		await openStore(page);
+		await walkToStore(page);
 
 		const dream = page.getByTestId('store-dream');
 		await expect(dream).toBeVisible();

@@ -1,5 +1,14 @@
 import { expect, test } from '@playwright/test';
-import { completeSetup, doChore, openGame, startMoneyDay, tuckIn } from './helpers';
+import {
+	completeSetup,
+	finishChores,
+	finishDay,
+	openGame,
+	openStore,
+	saveDay,
+	startMoneyDay,
+	tuckIn
+} from './helpers';
 
 const SAVE_KEY = 'money-day-save';
 
@@ -87,9 +96,7 @@ test.describe('per-device saves and grown-up reset', () => {
 		await openGame(page);
 		await completeSetup(page);
 		await startMoneyDay(page);
-		for (const chore of ['tidy', 'water', 'feed'] as const) await doChore(page, chore);
-		await page.getByTestId('to-store-button').click();
-		await page.getByTestId('store-save-button').click();
+		await finishDay(page);
 		await expect(page.getByTestId('recap-text')).toBeVisible();
 		await tuckIn(page);
 
@@ -106,13 +113,13 @@ test.describe('per-device saves and grown-up reset', () => {
 		await openGame(page);
 		await completeSetup(page);
 		await startMoneyDay(page);
-		for (const chore of ['tidy', 'water', 'feed'] as const) await doChore(page, chore);
-		await page.getByTestId('to-store-button').click();
+		await finishChores(page);
+		await openStore(page);
 
 		// Buy the ball, then send the rest of the day's coins to the dream.
 		await page.getByTestId('store-toy-ball').click();
 		await expect(page.getByTestId('store-toy-ball')).toHaveAttribute('data-owned', 'true');
-		await page.getByTestId('store-save-button').click();
+		await saveDay(page);
 		await expect(page.getByTestId('recap-text')).toBeVisible();
 		await tuckIn(page);
 
@@ -135,9 +142,7 @@ test.describe('per-device saves and grown-up reset', () => {
 		await openGame(page);
 		await completeSetup(page);
 		await startMoneyDay(page);
-		for (const chore of ['tidy', 'water', 'feed'] as const) await doChore(page, chore);
-		await page.getByTestId('to-store-button').click();
-		await page.getByTestId('store-save-button').click();
+		await finishDay(page);
 		await expect(page.getByTestId('recap-text')).toBeVisible();
 		await tuckIn(page);
 

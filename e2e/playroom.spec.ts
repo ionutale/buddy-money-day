@@ -1,5 +1,13 @@
 import { expect, test, type Page } from '@playwright/test';
-import { completeSetup, doChore, openGame, startMoneyDay, tuckIn } from './helpers';
+import {
+	completeSetup,
+	finishChores,
+	openGame,
+	openStore,
+	saveDay,
+	startMoneyDay,
+	tuckIn
+} from './helpers';
 
 /**
  * My Toys: the room behind the title door and the ball's no-fail keepy-uppy
@@ -51,15 +59,15 @@ test.describe('My Toys', () => {
 		await openGame(page);
 		await completeSetup(page);
 		await startMoneyDay(page);
-		for (const chore of ['tidy', 'water', 'feed'] as const) await doChore(page, chore);
-		await page.getByTestId('to-store-button').click();
+		await finishChores(page);
+		await openStore(page);
 
 		// Buy the ball, then send the rest of the day's coins to the dream.
 		const shelfBall = page.getByTestId('store-toy-ball');
 		await expect(shelfBall).toBeVisible();
 		await shelfBall.click();
 		await expect(shelfBall).toHaveAttribute('data-owned', 'true');
-		await page.getByTestId('store-save-button').click();
+		await saveDay(page);
 		await expect(page.getByTestId('recap-text')).toBeVisible();
 		await tuckIn(page);
 

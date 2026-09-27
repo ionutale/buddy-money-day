@@ -3,8 +3,12 @@ import {
 	completeSetup,
 	doChore,
 	feedAllSnacks,
+	finishChores,
+	finishDay,
 	nextDay,
 	openGame,
+	openStore,
+	saveDay,
 	startMoneyDay,
 	tuckIn
 } from './helpers';
@@ -28,18 +32,18 @@ test.describe('the meaning layer', () => {
 		await startMoneyDay(page);
 
 		// Earning fills the hand, not the jar: the banner does not move yet.
-		for (const chore of ['tidy', 'water', 'feed'] as const) await doChore(page, chore);
+		await finishChores(page);
 		await expect(page.getByTestId('coin-count')).toHaveText('4');
 		await expect(page.getByTestId('jar-progress')).toHaveText('0 / 12');
 		await expect(page.getByTestId('goal-slot-3')).toHaveAttribute('data-filled', 'false');
 
 		// While choosing, the store previews the save: four slots will light up.
-		await page.getByTestId('to-store-button').click();
+		await openStore(page);
 		await expect(page.getByTestId('goal-slot-3')).toHaveAttribute('data-filled', 'true');
 		await expect(page.getByTestId('goal-slot-4')).toHaveAttribute('data-filled', 'false');
 
 		// The save lands: four slots hold, the jar reads four of twelve.
-		await page.getByTestId('store-save-button').click();
+		await saveDay(page);
 		await expect(page.getByTestId('jar-progress')).toHaveText('4 / 12');
 		await expect(page.getByTestId('goal-slot-3')).toHaveAttribute('data-filled', 'true');
 		await expect(page.getByTestId('goal-slot-4')).toHaveAttribute('data-filled', 'false');
@@ -100,8 +104,8 @@ test.describe('the meaning layer', () => {
 		await openGame(page);
 		await completeSetup(page);
 		await startMoneyDay(page);
-		for (const chore of ['tidy', 'water', 'feed'] as const) await doChore(page, chore);
-		await page.getByTestId('to-store-button').click();
+		await finishChores(page);
+		await openStore(page);
 
 		// The save is the default path, and its line names the current dream.
 		await expect(page.getByText('Time to choose! A toy now, or save for your wagon?')).toBeVisible();
@@ -120,7 +124,7 @@ test.describe('the meaning layer', () => {
 		);
 
 		// The remaining two coins go to the jar; the recap uses the dream's numbers.
-		await page.getByTestId('store-save-button').click();
+		await saveDay(page);
 		await expect(page.getByTestId('recap-text')).toContainText('Your wagon has 2 of 12');
 	});
 
@@ -128,9 +132,7 @@ test.describe('the meaning layer', () => {
 		await openGame(page);
 		await completeSetup(page);
 		await startMoneyDay(page);
-		for (const chore of ['tidy', 'water', 'feed'] as const) await doChore(page, chore);
-		await page.getByTestId('to-store-button').click();
-		await page.getByTestId('store-save-button').click();
+		await finishDay(page);
 
 		// The honest bookend: what today paid, where the dream stands, what is left.
 		await expect(page.getByTestId('recap-text')).toContainText('Today you earned 4 coins.');
@@ -149,18 +151,14 @@ test.describe('the meaning layer', () => {
 		for (const day of [1, 2]) {
 			if (day === 1) await startMoneyDay(page);
 			else await nextDay(page);
-			for (const chore of ['tidy', 'water', 'feed'] as const) await doChore(page, chore);
-			await page.getByTestId('to-store-button').click();
-			await page.getByTestId('store-save-button').click();
+			await finishDay(page);
 			await expect(page.getByTestId('recap-text')).toContainText(`has ${day * 4} of 12`);
 			await tuckIn(page);
 		}
 
 		// Day 3: the jar reaches 12 and the wagon is reached.
 		await nextDay(page);
-		for (const chore of ['tidy', 'water', 'feed'] as const) await doChore(page, chore);
-		await page.getByTestId('to-store-button').click();
-		await page.getByTestId('store-save-button').click();
+		await finishDay(page);
 
 		// The last coin fills the last slot before the celebration.
 		await expect(page.getByTestId('dream-celebrate')).toBeVisible();

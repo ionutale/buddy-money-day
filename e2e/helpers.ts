@@ -104,6 +104,28 @@ export async function tuckIn(page: Page): Promise<void> {
 	await expect(page.getByTestId('start-button')).toBeVisible();
 }
 
+/** Play the whole day's work from the job board: all three chores, any order. */
+export async function finishChores(page: Page): Promise<void> {
+	for (const chore of ['tidy', 'water', 'feed'] as const) await doChore(page, chore);
+}
+
+/** Walk through the store door once the board is done. */
+export async function openStore(page: Page): Promise<void> {
+	await page.getByTestId('to-store-button').click();
+}
+
+/** Send every coin in hand to the jar — the store's default path. */
+export async function saveDay(page: Page): Promise<void> {
+	await page.getByTestId('store-save-button').click();
+}
+
+/** A whole day's work, saved: the standard route from board to tuck-in. */
+export async function finishDay(page: Page): Promise<void> {
+	await finishChores(page);
+	await openStore(page);
+	await saveDay(page);
+}
+
 /** From the start screen, begin the next Money Day and arrive at the job board. */
 export async function nextDay(page: Page): Promise<void> {
 	await arriveAtJobBoard(page);
