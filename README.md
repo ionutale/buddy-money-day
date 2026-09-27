@@ -28,6 +28,12 @@ pnpm build
 pnpm preview
 ```
 
+## Deploy
+
+Deployed on Vercel, auto-deploying from `main` on every push. Manual deploy: `vercel deploy --prod`.
+
+The app is a fully static build output in `build/`, so any static host works the same way.
+
 ## Structure
 
 ```

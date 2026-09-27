@@ -1,6 +1,6 @@
-import adapter from '@sveltejs/adapter-auto';
+import adapter from '@sveltejs/adapter-static';
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	plugins: [
@@ -11,10 +11,13 @@ export default defineConfig({
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
 
-			// adapter-auto only supports some environments, see https://svelte.dev/docs/kit/adapter-auto for a list.
-			// If your environment is not supported, or you settled on a specific environment, switch out the adapter.
-			// See https://svelte.dev/docs/kit/adapters for more information about adapters.
-			adapter: adapter()
+			// Fully static client-side app: no SSR, no server, per-device saves.
+			// See docs/adr/0004-static-client-side-per-device-saves.md
+			adapter: adapter({ fallback: 'index.html' })
 		})
-	]
+	],
+	test: {
+		include: ['src/**/*.spec.ts'],
+		environment: 'node'
+	}
 });
