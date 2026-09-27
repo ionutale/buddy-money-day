@@ -40,17 +40,17 @@ These are the failure modes no happy-path test catches; each has a pinned test i
 
 **Files:** `vite.config.ts`, `src/routes/+layout.ts`, `package.json`
 
-- [ ] Replace `adapter-auto` with `@sveltejs/adapter-static` (`fallback: 'index.html'`), keeping the inline `sveltekit({...})` plugin config style the scaffold uses
-- [ ] Add `src/routes/+layout.ts`: `export const ssr = false; export const prerender = false;`
-- [ ] `pnpm build` → assert `build/index.html` exists; `pnpm preview` serves `/`
-- [ ] Commit: `chore: configure adapter-static SPA`
+- [x] Replace `adapter-auto` with `@sveltejs/adapter-static` (`fallback: 'index.html'`), keeping the inline `sveltekit({...})` plugin config style the scaffold uses
+- [x] Add `src/routes/+layout.ts`: `export const ssr = false; export const prerender = false;`
+- [x] `pnpm build` → assert `build/index.html` exists; `pnpm preview` serves `/`
+- [x] Commit: `chore: configure adapter-static SPA`
 
 ### Task 2 — Docs
 
 **Files:** `CONTEXT.md`, `docs/adr/0001..0004`, `README.md`, this plan
 
-- [ ] Write glossary, ADRs, README, plan (this file)
-- [ ] Commit: `docs: glossary, ADRs, prototype plan`
+- [x] Write glossary, ADRs, README, plan (this file)
+- [x] Commit: `docs: glossary, ADRs, prototype plan`
 
 ### Task 3 — Game engine + unit tests (TDD, engine seam)
 
@@ -93,41 +93,41 @@ nextGoalOptions(s)
 
 **Test scenarios (vitest, all outside-in through the transitions above):**
 
-- [ ] new: phase `setup`, day 1, jar 0, coins 0, goal `kite`
-- [ ] `submitName`/`skipName` → `start`; name trimmed; skip sets flag
-- [ ] `beginDay` → `greeting`, transients reset
-- [ ] tidy: 3× `tidyToy` → +2 coins and phase `task-water` on the 3rd; extra calls clamp (no extra coins)
-- [ ] water: 3× → +1 coin and phase `hunger`; extra calls clamp
-- [ ] feed: with coins → −1, `fedToday`, clears `buddySad`, phase `friend`; **with 0 coins → no-op, stays `hunger`** (Review Focus 1)
-- [ ] give: decrements coins + increments planks; clamps at 3 planks; no-op at 0 coins; `friendDone` → `shelf`
-- [ ] `saveAll` moves all coins to jar → `jars`; `buyLollipop` requires 2 coins, sets `lollipopToday`, second call no-op (Review Focus 1)
-- [ ] `continueAfterLollipop` jars the remainder → `jars`
-- [ ] `jarsDone`: jar ≥ 6 → `goal-reached`, else `tuck-in`
-- [ ] `pickGoal`: home += old goal, jar −= 6 keeping remainder (**jar 8 → 2**, Review Focus 2) → `tuck-in`; `nextGoalOptions` returns 3, preferring un-collected
-- [ ] `tuckInDone`: day+1, `buddySad` set iff `!fedToday`, transients reset, phase `start`
-- [ ] full two-day run with no feeding/giving reaches `goal-reached` at day 2 (**Review Focus 3**)
-- [ ] Commit: `feat: pure game engine with unit tests`
+- [x] new: phase `setup`, day 1, jar 0, coins 0, goal `kite`
+- [x] `submitName`/`skipName` → `start`; name trimmed; skip sets flag
+- [x] `beginDay` → `greeting`, transients reset
+- [x] tidy: 3× `tidyToy` → +2 coins and phase `task-water` on the 3rd; extra calls clamp (no extra coins)
+- [x] water: 3× → +1 coin and phase `hunger`; extra calls clamp
+- [x] feed: with coins → −1, `fedToday`, clears `buddySad`, phase `friend`; **with 0 coins → no-op, stays `hunger`** (Review Focus 1)
+- [x] give: decrements coins + increments planks; clamps at 3 planks; no-op at 0 coins; `friendDone` → `shelf`
+- [x] `saveAll` moves all coins to jar → `jars`; `buyLollipop` requires 2 coins, sets `lollipopToday`, second call no-op (Review Focus 1)
+- [x] `continueAfterLollipop` jars the remainder → `jars`
+- [x] `jarsDone`: jar ≥ 6 → `goal-reached`, else `tuck-in`
+- [x] `pickGoal`: home += old goal, jar −= 6 keeping remainder (**jar 8 → 2**, Review Focus 2) → `tuck-in`; `nextGoalOptions` returns 3, preferring un-collected
+- [x] `tuckInDone`: day+1, `buddySad` set iff `!fedToday`, transients reset, phase `start`
+- [x] full two-day run with no feeding/giving reaches `goal-reached` at day 2 (**Review Focus 3**)
+- [x] Commit: `feat: pure game engine with unit tests`
 
 ### Task 4 — Persistence + unit tests
 
 **Files:** `src/lib/game/persistence.ts`, `src/lib/game/persistence.spec.ts`
 
-- [ ] `StorageLike` interface (`getItem/setItem/removeItem`); `loadState(storage)`, `saveState(state, storage)`, `clearSave(storage)`, `SAVE_KEY = 'money-day-save'`
-- [ ] Load: parse → validate `schemaVersion === 1` → `resetDayTransients` (durable fields kept, phase `start`); any error/unknown version → `newGame()` (Review Focus 5)
-- [ ] Tests: roundtrip; corrupt JSON → fresh; wrong version → fresh; no key → fresh; loaded state resets transient day fields but keeps jar/home/day/planks; `clearSave` removes key
-- [ ] Commit: `feat: versioned localStorage persistence with corruption fallback`
+- [x] `StorageLike` interface (`getItem/setItem/removeItem`); `loadState(storage)`, `saveState(state, storage)`, `clearSave(storage)`, `SAVE_KEY = 'money-day-save'`
+- [x] Load: parse → validate `schemaVersion === 1` → `resetDayTransients` (durable fields kept, phase `start`); any error/unknown version → `newGame()` (Review Focus 5)
+- [x] Tests: roundtrip; corrupt JSON → fresh; wrong version → fresh; no key → fresh; loaded state resets transient day fields but keeps jar/home/day/planks; `clearSave` removes key
+- [x] Commit: `feat: versioned localStorage persistence with corruption fallback`
 
 ### Task 5 — Store, shell, styles
 
 **Files:** `src/lib/game/game.svelte.ts`, `src/lib/game/speech.ts`, `src/lib/game/sounds.ts`, `src/lib/game/lines.ts`, `src/app.css`, `src/routes/+layout.svelte`, `src/app.html`
 
-- [ ] Runes store: `game.state` + `actions.*` that apply a transition and persist; `reset()`; `speak`/sound hooks live in components, not the store
-- [ ] `speech.ts`: `speak(text)` via `speechSynthesis`, cancelled/replaced per call, disabled by `?mute=1` or unsupported browsers
-- [ ] `sounds.ts`: tiny WebAudio blips (coin, clunk, pop, chime, sad); `unlock()` on first tap; try/catch no-op
-- [ ] `lines.ts`: every spoken line, name-interpolated, fallback "friend"
-- [ ] Style: storybook-plush palette (cream/sky/grass/coral/sunny), Fredoka via `@fontsource/fredoka`, big touch targets, `overscroll-behavior:none`, no text selection
-- [ ] `app.html`: manifest link, theme-color, `viewport-fit=cover`
-- [ ] Commit: `feat: game store, voice, sounds, and app shell`
+- [x] Runes store: `game.state` + `actions.*` that apply a transition and persist; `reset()`; `speak`/sound hooks live in components, not the store
+- [x] `speech.ts`: `speak(text)` via `speechSynthesis`, cancelled/replaced per call, disabled by `?mute=1` or unsupported browsers
+- [x] `sounds.ts`: tiny WebAudio blips (coin, clunk, pop, chime, sad); `unlock()` on first tap; try/catch no-op
+- [x] `lines.ts`: every spoken line, name-interpolated, fallback "friend"
+- [x] Style: storybook-plush palette (cream/sky/grass/coral/sunny), Fredoka via `@fontsource/fredoka`, big touch targets, `overscroll-behavior:none`, no text selection
+- [x] `app.html`: manifest link, theme-color, `viewport-fit=cover`
+- [x] Commit: `feat: game store, voice, sounds, and app shell`
 
 ### Task 6 — Scenes
 
@@ -135,41 +135,42 @@ nextGoalOptions(s)
 
 One component per phase, `$page` switches on `game.state.phase`; shared props (`Buddy.svelte`, `Coin.svelte`, `Jar.svelte`, `Bubble.svelte`, `HUD.svelte`, `HomeStrip.svelte`). `Buddy` carries `data-testid="buddy"` + `data-mood`. Each scene speaks its line on mount.
 
-- [ ] `Setup` (`name-input`, `name-submit`, `name-skip`; reset mode: `reset-game-button`)
-- [ ] `StartScreen` (`start-button`, `open-setup-button`), `Greeting` (`greeting-start`), auto-advance tidy→water, water→hunger
-- [ ] `TaskTidy` (`toy-0..2` draggable via pointer events, `tidy-box` drop target; happy clunk per toy)
-- [ ] `TaskWater` (`drop-0..2` taps; tree blooms)
-- [ ] `Hunger` (`hunger-feed`, `hunger-skip`), `Friend` (`friend-give`, `friend-done`, swing planks visible)
-- [ ] `Shelf` (`shelf-save` primary, `shelf-lollipop`, `lollipop-continue`), `Jars` (`jars-continue`), `GoalReached` (`goal-celebrate`), `GoalPick` (`goal-option-<id>`), `TuckIn` (`tuckin-done`, droopy iff `buddySad`)
-- [ ] HUD shows `coin-count`, `jar-progress` ("n / 6"), day; `HomeStrip` shows `home-item-<id>` per earned Goal
-- [ ] Commit: `feat: money day scenes`
+- [x] `Setup` (`name-input`, `name-submit`, `name-skip`; reset mode: `reset-game-button`)
+- [x] `StartScreen` (`start-button`, `open-setup-button`), `Greeting` (`greeting-start`), auto-advance tidy→water, water→hunger
+- [x] `TaskTidy` (`toy-0..2` draggable via pointer events, `tidy-box` drop target; happy clunk per toy)
+- [x] `TaskWater` (`drop-0..2` taps; tree blooms)
+- [x] `Hunger` (`hunger-feed`, `hunger-skip`), `Friend` (`friend-give`, `friend-done`, swing planks visible)
+- [x] `Shelf` (`shelf-save` primary, `shelf-lollipop`, `lollipop-continue`), `Jars` (`jars-continue`), `GoalReached` (`goal-celebrate`), `GoalPick` (`goal-option-<id>`), `TuckIn` (`tuckin-done`, droopy iff `buddySad`)
+- [x] HUD shows `coin-count`, `jar-progress` ("n / 6"), day; `HomeStrip` shows `home-item-<id>` per earned Goal
+- [x] Commit: `feat: money day scenes`
 
 ### Task 7 — Playwright e2e
 
 **Files:** `playwright.config.ts`, `e2e/helpers.ts`, `e2e/*.spec.ts`
 
-- [ ] Config: `testDir: 'e2e'`, `webServer: { command: 'pnpm build && pnpm preview -- --port 4173 --strictPort', url: 'http://localhost:4173', reuseExistingServer: !CI }`, `baseURL` same
-- [ ] Helper `beginDay(page)`: open `/?mute=1`, handle setup (fresh context per test = empty localStorage), start, greet, complete both tasks
-- [ ] `first-run.spec.ts`: name entry → greeting shows name; reload → no setup again
-- [ ] `money-day.spec.ts`: two-day skip-everything run → Goal celebration → pick next → home shows item, jar reset (Review Focus 2 + 3)
-- [ ] `temptation.spec.ts`: buy lollipop → praise visible, jar gets remainder only; both choices never shamed
-- [ ] `hunger.spec.ts`: skip feed → droopy tuck-in + droopy next greeting; feed next day → clears (ADR-0003)
-- [ ] `sharing.spec.ts`: give 3 → swing complete; separate day give 0 → no penalty, reaches tuck-in
-- [ ] `persistence.spec.ts`: reload after tuck-in keeps day/jar; Grown-up Setup reset wipes everything (Review Focus 4)
-- [ ] Commit: `test: playthrough e2e suites`
+- [x] Config: `testDir: 'e2e'`, `webServer: { command: 'pnpm build && pnpm preview -- --port 4173 --strictPort', url: 'http://localhost:4173', reuseExistingServer: !CI }`, `baseURL` same
+- [x] Helper `beginDay(page)`: open `/?mute=1`, handle setup (fresh context per test = empty localStorage), start, greet, complete both tasks
+- [x] `first-run.spec.ts`: name entry → greeting shows name; reload → no setup again
+- [x] `money-day.spec.ts`: two-day skip-everything run → Goal celebration → pick next → home shows item, jar reset (Review Focus 2 + 3)
+- [x] `temptation.spec.ts`: buy lollipop → praise visible, jar gets remainder only; both choices never shamed
+- [x] `hunger.spec.ts`: skip feed → droopy tuck-in + droopy next greeting; feed next day → clears (ADR-0003)
+- [x] `sharing.spec.ts`: give 3 → swing complete; separate day give 0 → no penalty, reaches tuck-in
+- [x] `persistence.spec.ts`: reload after tuck-in keeps day/jar; Grown-up Setup reset wipes everything (Review Focus 4)
+- [x] Commit: `test: playthrough e2e suites`
 
 ### Task 8 — PWA manifest
 
-- [ ] `static/manifest.webmanifest` + icons (SVG now; PNG rasterization is a polish task) + meta tags → installable "Add to Home Screen"
-- [ ] Offline service worker explicitly deferred to polish (documented in this plan)
-- [ ] Commit: `feat: installable web app manifest`
+- [x] `static/manifest.webmanifest` + icons (SVG now; PNG rasterization is a polish task) + meta tags → installable "Add to Home Screen"
+- [x] Offline service worker explicitly deferred to polish (documented in this plan)
+- [x] Commit: `feat: installable web app manifest`
 
 ### Task 9 — Verification (evidence before claims)
 
-- [ ] `pnpm check` (svelte-check), `pnpm test`, `pnpm build` all green
-- [ ] `pnpm test:e2e` green against the production build
-- [ ] Manual smoke: `pnpm preview` + curl `/` → 200 with app HTML
-- [ ] Fix anything found, rerun, then final commit
+- [x] `pnpm check` (svelte-check), `pnpm test`, `pnpm build` all green
+- [x] `pnpm test:e2e` green against the production build (12/12)
+- [x] Manual smoke: `pnpm preview` + curl `/` → 200 with app HTML
+- [ ] E2E suite green against the live Vercel URL (git deploys)
+- [x] Fix anything found, rerun, then final commit
 
 ## Deferred to the polish phase (conscious cuts, not omissions)
 
