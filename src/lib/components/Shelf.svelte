@@ -1,15 +1,30 @@
 <script lang="ts">
-	import { LOLLIPOP_COST } from '$lib/game/economy';
+	import { GOAL_COST, LOLLIPOP_COST } from '$lib/game/economy';
+	import { banner } from '$lib/game/banner.svelte';
+	import { flyCoins, hudCoinPoint } from '$lib/game/flights.svelte';
 	import { actions, game } from '$lib/game/game.svelte';
 	import { lines } from '$lib/game/lines';
+	import { savePreview } from '$lib/game/state';
 	import { speak } from '$lib/game/speech';
 	import { sounds } from '$lib/game/sounds';
+	import { toast } from '$lib/game/toasts.svelte';
 	import Bubble from './Bubble.svelte';
 	import Coin from './Coin.svelte';
 	import Jar from './Jar.svelte';
 
 	let wiggle = $state(false);
 	let timer: ReturnType<typeof setTimeout> | undefined;
+	let lollipopEl: HTMLButtonElement | undefined = $state();
+
+	const preview = $derived(savePreview(game.state));
+
+	$effect(() => {
+		// While choosing, the Goal banner shows what saving WOULD accomplish.
+		banner.preview = Math.min(game.state.jarCoins + game.state.coins, GOAL_COST);
+		return () => {
+			banner.preview = null;
+		};
+	});
 
 	let spoke = $state(false);
 	$effect(() => {
@@ -36,7 +51,16 @@
 		}
 		actions.buyLollipop();
 		sounds.pop();
-		speak(lines.lollipop(game.state));
+		speak(lines.lollipopGoal(game.state));
+		toast(lines.lollipopGoal(game.state));
+		const rect = lollipopEl?.getBoundingClientRect();
+		flyCoins({
+			from: hudCoinPoint(),
+			to: rect
+				? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
+				: { x: innerWidth / 2, y: innerHeight / 2 },
+			count: LOLLIPOP_COST
+		});
 	}
 
 	function continueOn(): void {
@@ -62,7 +86,18 @@
 			</button>
 		</div>
 	{:else}
-		<Bubble tail="center">Coins in the jar, or a lollipop right now?</Bubble>
+	<div
+		class="shelf-outcome"
+		data-testid="shelf-preview"
+		data-preview-filled={preview.filled}
+		data-complete={preview.completes ? 'true' : 'false'}
+	>
+		{#if preview.completes}
+			<span class="complete-line">{lines.shelfComplete(game.state)}</span>
+		{/if}
+	</div>
+
+		<Bubble tail="center">{lines.shelf(game.state)}</Bubble>
 
 		<div class="shelf-items">
 			<div class="shelf-jar">
@@ -73,6 +108,7 @@
 				type="button"
 				class="lollipop"
 				class:wiggle
+				bind:this={lollipopEl}
 				data-testid="shelf-lollipop"
 				aria-label="Take a lollipop for two coins"
 				onclick={buy}
@@ -98,6 +134,21 @@
 </div>
 
 <style>
+	.shelf-outcome {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 34px;
+	}
+
+	.complete-line {
+		font-size: 21px;
+		font-weight: 700;
+		color: #e8a93a;
+		text-shadow: 0 2px 0 #fffdf8;
+		animation: pop-in 0.5s cubic-bezier(0.2, 1.5, 0.4, 1) both;
+	}
+
 	.shelf-items {
 		display: flex;
 		align-items: flex-end;

@@ -1,14 +1,17 @@
 <script lang="ts">
 	import { SWING_PLANKS } from '$lib/game/economy';
+	import { flyCoins, hudCoinPoint } from '$lib/game/flights.svelte';
 	import { actions, game } from '$lib/game/game.svelte';
 	import { lines } from '$lib/game/lines';
 	import { speak } from '$lib/game/speech';
 	import { sounds } from '$lib/game/sounds';
+	import { toast } from '$lib/game/toasts.svelte';
 	import Bubble from './Bubble.svelte';
 	import Coin from './Coin.svelte';
 
 	let hop = $state(0);
 	let denied = $state(false);
+	let swingEl: SVGSVGElement | undefined = $state();
 	let timer: ReturnType<typeof setTimeout> | undefined;
 
 	let canGive = $derived(
@@ -34,15 +37,24 @@
 		actions.giveCoin();
 		sounds.coin();
 		hop += 1;
-		speak(lines.friendGive(game.state));
+		speak(lines.friendGiveGoal(game.state));
+		toast(lines.friendGiveGoal(game.state));
+		const rect = swingEl?.getBoundingClientRect();
+		flyCoins({
+			from: hudCoinPoint(),
+			to: rect
+				? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
+				: { x: innerWidth / 2, y: innerHeight / 2 },
+			count: 1
+		});
 	}
 </script>
 
 <div class="scene friend">
-	<Bubble tail="left">The bird's swing is broken!</Bubble>
+	<Bubble tail="left">{lines.friend(game.state)}</Bubble>
 
 	<div class="swing-zone" class:wobble={denied}>
-		<svg class="swing" viewBox="0 0 260 224" role="img" aria-label="The bird's swing">
+		<svg class="swing" bind:this={swingEl} viewBox="0 0 260 224" role="img" aria-label="The bird's swing">
 			<!-- frame -->
 			<path d="M40 206 L70 40" stroke="#b9834f" stroke-width="12" stroke-linecap="round" />
 			<path d="M220 206 L190 40" stroke="#b9834f" stroke-width="12" stroke-linecap="round" />

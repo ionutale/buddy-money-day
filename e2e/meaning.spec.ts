@@ -1,5 +1,14 @@
 import { expect, test } from '@playwright/test';
-import { completeSetup, openGame, startMoneyDay, tidyAllToys, waterAllDrops } from './helpers';
+import {
+	completeSetup,
+	nextDay,
+	openGame,
+	playDay,
+	startMoneyDay,
+	tidyAllToys,
+	tuckIn,
+	waterAllDrops
+} from './helpers';
 
 test.describe('the meaning layer', () => {
 	test('the goal is always on screen', async ({ page }) => {
@@ -41,5 +50,49 @@ test.describe('the meaning layer', () => {
 		await expect(page.getByText('one coin')).toBeVisible();
 		await waterAllDrops(page);
 		await expect(page.getByTestId('goal-toast')).toContainText('One coin earned!');
+	});
+
+	test('a spend restates the goal', async ({ page }) => {
+		await openGame(page);
+		await completeSetup(page);
+		await startMoneyDay(page);
+		await tidyAllToys(page);
+		await waterAllDrops(page);
+
+		await page.getByTestId('hunger-feed').click();
+		await expect(page.getByTestId('goal-toast')).toContainText('still has 0 of 6');
+		await expect(page.getByTestId('jar-progress')).toHaveText(/0\s*\/\s*6/);
+	});
+
+	test('the shelf previews the outcome', async ({ page }) => {
+		await openGame(page);
+		await completeSetup(page);
+		await startMoneyDay(page);
+		await playDay(page, { feed: 'skip' }); // day 1: save three
+		await tuckIn(page);
+
+		await nextDay(page);
+		await tidyAllToys(page);
+		await waterAllDrops(page);
+		await page.getByTestId('hunger-skip').click();
+		await page.getByTestId('friend-done').click();
+
+		await expect(page.getByTestId('shelf-preview')).toHaveAttribute('data-preview-filled', '6');
+		await expect(page.getByTestId('shelf-preview')).toHaveAttribute('data-complete', 'true');
+		await expect(page.getByText(/6 of 6/)).toBeVisible();
+	});
+
+	test('the lollipop spend restates the goal', async ({ page }) => {
+		await openGame(page);
+		await completeSetup(page);
+		await startMoneyDay(page);
+		await tidyAllToys(page);
+		await waterAllDrops(page);
+		await page.getByTestId('hunger-skip').click();
+		await page.getByTestId('friend-done').click();
+
+		await page.getByTestId('shelf-lollipop').click({ force: true });
+		await expect(page.getByTestId('lollipop-bought')).toBeVisible();
+		await expect(page.getByTestId('goal-toast')).toContainText('still has 0 of 6');
 	});
 });
