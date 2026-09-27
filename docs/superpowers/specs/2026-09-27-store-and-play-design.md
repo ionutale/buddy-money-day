@@ -42,7 +42,7 @@ Phases: `start → greeting → task-tidy | task-water | task-feed (any order, e
 |---|---|---|
 | Tidy the toys | 2 | existing drag game |
 | Water the little tree | 1 | existing tap game |
-| Feed the bear | 1 | re-skin of the snack beat: tap to give the snack; **no cost, no skip button**; bear happy |
+| Feed the bear | 1 | three snack drags into the bear's bowl; each bite munches and cheers the bear; **no cost, no skip**; the third bite pays |
 
 Every chore states its reason and deal (existing grammar). **Feed the bear** voice: *"I'm hungry! Feed me and I'll pay you a coin!"* If a day skips it, the bear simply asks again tomorrow — no state, no sadness, no penalty (moral fix, hard requirement).
 
@@ -92,7 +92,7 @@ Kept where scenes survive (task testids, price tags, toasts, flights, banner slo
 - `store-shelf`, `store-toy-ball`, `store-dream`, `store-save-button`, `store-unaffordable` (the compare line)
 - `cap-line` (all chores done), `job-card-feed`
 - `toys-room`, `toy-ball`, `mini-game-ball`, `mini-game-exit`
-- `feed-give` (the single feed action)
+- `feed-snack-0..2`, `bear-bowl` (the feed chore's drags and drop target)
 
 ## 12. Testing
 

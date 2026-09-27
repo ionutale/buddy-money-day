@@ -19,21 +19,21 @@
 - Phases: `setup | start | greeting | chores | task-tidy | task-water | task-feed | store | dream-reached | tuck-in`.
 - Play mode writes nothing to the save; every mini-game is no-fail.
 - Gates per task: `pnpm check` + `pnpm test` green; e2e additions run against a manually-run **dev server** on `127.0.0.1:43118` via `E2E_BASE_URL` (never start Playwright's own webServer on this machine — it is unreliable here); full production-build verification happens in the final tasks.
-- **Interim spec rot is expected and contained:** between Task 1 (which deletes beats) and Task 8 (which reworks specs), several e2e specs are stale. Implementers run only their own targeted specs; the full suite is restored in Task 8 and verified in Task 9.
+- **Interim spec rot is expected and contained:** between Task 1 (which deletes beats) and Task 9 (which reworks specs), several e2e specs are stale. Implementers run only their own targeted specs; the full suite is restored in Task 9 and verified in Task 10.
 
 ## Review Focus
 
-1. **Migration safety** — a v1 save keeps `childName`, `day`, `jarCoins`; dream becomes `wagon`; `owned` empty; corrupt/unknown saves still boot fresh (T1 units + T8 e2e seed).
+1. **Migration safety** — a v1 save keeps `childName`, `day`, `jarCoins`; dream becomes `wagon`; `owned` empty; corrupt/unknown saves still boot fresh (T1 units + Task 9 e2e seed).
 2. **Money conservation** — no tap sequence can make `coins`/`jarCoins` negative; buy only from `store` for unowned, affordable `toy`-kind items; dream completes exactly at ≥ price, remainder kept, dream list cycles (T1 units).
 3. **Chore cap semantics** — each chore exactly once per day, any order; `toStore` guarded by `allChoresDone`; cap line only then (T1 units + T2 e2e).
-4. **The moral invariant** — after this slice, grep finds no `buddySad|skipFeed|hungerNoCoin|tuckInSad|greetingSad|lollipop`; skipping feed changes nothing (T1 skip-feed invariance test + T8 audit; `Buddy.svelte`'s unused `sad` mood removed).
-5. **Play-room safety** — tap-spam on the ball never throws or ends the game; exit always visible; a full play session mutates no storage (T7 e2e asserts localStorage unchanged).
+4. **The moral invariant** — after this slice, grep finds no `buddySad|skipFeed|hungerNoCoin|tuckInSad|greetingSad|lollipop`; skipping feed changes nothing (T1 skip-feed invariance test + Task 9 audit; `Buddy.svelte`'s unused `sad` mood removed).
+5. **Play-room safety** — tap-spam on the ball never throws or ends the game; exit always visible; a full play session mutates no storage (Task 8 e2e asserts localStorage unchanged).
 
 ---
 
 ### Task 1 — Demolition + foundation (one coherent breaking change)
 
-**Why this is one task:** removing engine functions (bird, lollipop, hunger economy, old phases) breaks their consumers; deleting dead beats, writing engine v2, and patching the survivors must land together or nothing compiles. Interim placeholder scenes keep the app runnable while Tasks 2–7 replace them.
+**Why this is one task:** removing engine functions (bird, lollipop, hunger economy, old phases) breaks their consumers; deleting dead beats, writing engine v2, and patching the survivors must land together or nothing compiles. Interim placeholder scenes keep the app runnable while Tasks 3–8 replace them.
 
 **Files:**
 - Rewrite: `src/lib/game/economy.ts`, `src/lib/game/types.ts`, `src/lib/game/state.ts`, `src/lib/game/persistence.ts`, `src/lib/game/lines.ts`
@@ -85,18 +85,27 @@ The product default flips: new installs are **silent**; the existing Voice switc
 **Files:** `src/lib/components/JobBoard.svelte` (real), `Greeting.svelte`, `e2e/helpers.ts`, `e2e/chores.spec.ts` (new)
 
 - [ ] **Step 1: failing e2e** (dev server at `E2E_BASE_URL=http://127.0.0.1:43118`): jobs in any order (feed → water → tidy), each pays and checks its card (`job-card-tidy|water|feed`, price badges kept); `cap-line` + `to-store-button` appear only when all three are done.
-- [ ] **Step 2: red → implement.** Helper `doChore(page, 'tidy'|'water'|'feed')`. Greeting keeps the plan line, cards move to the board.
+- [ ] **Step 2: red → implement.** Helper `doChore(page, 'tidy'|'water'|'feed')` (tidy = existing drags; water = taps; feed = three snack drags to `bear-bowl`). Greeting keeps the plan line, cards move to the board.
 - [ ] **Step 3: green + commit** — `feat: the job board — pick a chore, any chore`.
 
-### Task 4 — Feed the bear (real scene)
+### Task 4 — Feed the bear (real scene): three snack drags
 
-**Files:** `src/lib/components/TaskFeed.svelte`, `e2e/chores.spec.ts`
+**Files:** `src/lib/components/TaskFeed.svelte`, `e2e/chores.spec.ts`, `e2e/helpers.ts`
 
-- [ ] **Step 1: failing e2e:** feeding pays (0→1 coin, toast "…one coin earned", bear happy, back to the board); **no skip exists** (`hunger-skip` count 0).
-- [ ] **Step 2: red → implement** (one `feed-give` action, no cost, no skip).
-- [ ] **Step 3: green + commit** — `feat: feeding is a paid job — care rewarded, never priced`.
+- [ ] **Step 1: failing e2e:** three snack drags (`feed-snack-0..2`) into the bowl (`bear-bowl`): each bite munches, squishes, and raises the bear's mood; the third pays (0→1 coin, toast "…one coin earned", happy dance, back to the board); **no skip exists** (`hunger-skip` count 0); re-dragging an accepted snack is a no-op.
+- [ ] **Step 2: red → implement.** Reuse TaskTidy's pointer-drag pattern (capture, center-in-target check, accepted flags, double-accept guard). Three berries (one small SVG reused), `feed-snack-{i}` testids; the completion pays via `feedBear` after the same 1.6s celebration rhythm as tidy/water; no cost, no skip.
+- [ ] **Step 3: helpers** — `doChore(page, 'feed')` becomes three drags to `bear-bowl`.
+- [ ] **Step 4: green + commit** — `feat: feed the bear — three bites, big payoff`.
 
-### Task 5 — The store (real scene)
+### Task 5 — Tidy variety: a pool of six, three per day
+
+**Files:** `src/lib/game/tidyPool.ts` (new), `src/lib/game/tidyPool.spec.ts` (new), `src/lib/components/TaskTidy.svelte`, `e2e/chores.spec.ts`
+
+- [ ] **Step 1: failing unit tests.** `TIDY_POOL` has six kinds (ball, blocks, teddy, drum, boat, robot); `pickTidyToys(day)` returns three **distinct** kinds; **deterministic** for a given day (a reload mid-day shows the same trio); varies across days (at least two different sets within any 7-day run); every kind is from the pool.
+- [ ] **Step 2: red → implement.** Pure seeded pick in `tidyPool.ts` (the day number is the seed — no engine state, no schema change); `TaskTidy` renders that day's trio, keeps the `toy-0..2` index testids and all existing drag/accept logic unchanged; draw three new toys (drum, boat, robot) in the storybook style.
+- [ ] **Step 3: green + commit** — `feat: a fresh trio of toys to tidy every day`.
+
+### Task 6 — The store (real scene)
 
 **Files:** `src/lib/components/Store.svelte`, `e2e/store.spec.ts` (new)
 
@@ -104,7 +113,7 @@ The product default flips: new installs are **silent**; the existing Voice switc
 - [ ] **Step 2: red → implement.** Shelf (`store-shelf`, `store-toy-ball`) + pedestal + default save button; buys restate the dream via toast.
 - [ ] **Step 3: green + commit** — `feat: the store — buy a toy or save for the dream`.
 
-### Task 6 — Dream home + title doors + recap
+### Task 7 — Dream home + title doors + recap
 
 **Files:** `src/lib/components/DreamReached.svelte` (real), `StartScreen.svelte`, `TuckIn.svelte`, `e2e/meaning.spec.ts` (re-point, part 1)
 
@@ -112,14 +121,14 @@ The product default flips: new installs are **silent**; the existing Voice switc
 - [ ] **Step 2: red → implement.** Arc-to-strip reused; TuckIn speaks/shows `recapLine` only; StartScreen owns the "My Toys" door.
 - [ ] **Step 3: green + commit** — `feat: the dream comes home`.
 
-### Task 7 — Dream banner (12 slots) + wagon/teddy art
+### Task 8 — Dream banner (12 slots) + wagon/teddy art
 
 **Files:** `GoalBanner.svelte`, `GoalItem.svelte`
 
 - [ ] `GoalBanner`: slots = dream price (12), two rows of six, `goal-slot-*`/`data-filled` kept, `jar-progress` "n / 12" derived from price; `GoalItem`: wagon + teddy art (storybook style), old kinds deleted; placeholders replaced.
 - [ ] `pnpm check` + unit + targeted e2e green; commit — `feat: dream banner and wagon/teddy art`.
 
-### Task 8 — Toys room + keepy-uppy ball
+### Task 9 — Toys room + keepy-uppy ball
 
 **Files:** `src/lib/components/ToysRoom.svelte`, `MiniGameBall.svelte` (new), `StartScreen.svelte`, `e2e/playroom.spec.ts` (new)
 
@@ -127,7 +136,7 @@ The product default flips: new installs are **silent**; the existing Voice switc
 - [ ] **Step 2: red → implement.** Pure UI state on StartScreen; no-fail ball loop (tap relaunch, squish, boing, sparkles).
 - [ ] **Step 3: green + commit** — `feat: my toys room and the keepy-uppy ball`.
 
-### Task 9 — Deletions audit + full spec rework
+### Task 10 — Deletions audit + full spec rework
 
 **Files:** `e2e/money-day.spec.ts`, `e2e/meaning.spec.ts`, `e2e/persistence.spec.ts`, `e2e/helpers.ts`; source cleanups
 
@@ -137,13 +146,13 @@ The product default flips: new installs are **silent**; the existing Voice switc
 - [ ] Audit greps (Review Focus 4) + remove dead helper code; delete any remaining dead source.
 - [ ] **All specs green against the dev server** (the first full-suite run since Task 1) + commit — `test: rework the suites for the store loop`.
 
-### Task 10 — Full verification
+### Task 11 — Full verification
 
 - [ ] `pnpm check` + `pnpm test` green.
 - [ ] `pnpm build` + manual preview on `127.0.0.1:43118`; **full Playwright run against the production build** (`E2E_BASE_URL=http://127.0.0.1:43118`), all specs green.
 - [ ] Fix anything found; commit — `test: verify the store slice end to end`.
 
-### Task 11 — Docs + ship
+### Task 12 — Docs + ship
 
 - [ ] `docs/adr/0006-work-save-buy-play.md`; `CONTEXT.md` (**Dream toy**, **Store**, **My Toys**, feed-as-job; remove Bird/Hunger/Temptation); README refresh.
 - [ ] Commit `docs: store & play — ADR-0006, glossary, README`; push; verify the deployment is Ready; run the **full suite against the live URL**; report.
