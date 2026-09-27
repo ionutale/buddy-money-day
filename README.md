@@ -1,42 +1,38 @@
-# sv
+# Buddy's Money Day
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A 5-minute, fully-voiced phone game that teaches a 4-year-old the first principles of money: effort earns coins, saving is for a goal you chose, needs come before wants, and sharing is its own reward.
 
-## Creating a project
+- **Design language:** [CONTEXT.md](./CONTEXT.md) (glossary) and [docs/adr](./docs/adr) (decisions)
+- **Privacy:** completely static SPA — no backend, no accounts, no network calls; progress lives in `localStorage` (per device)
+- **Voice:** English TTS via the Web Speech API; append `?mute=1` to silence it
+- **No reading required:** every instruction is spoken; numerals appear only as support
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Develop
 
-```sh
-# create a new project
-npx sv create my-app
+```bash
+pnpm install
+pnpm dev --open
 ```
 
-To recreate this project with the same configuration:
+## Test
 
-```sh
-# recreate this project
-pnpm dlx sv@0.17.1 create --template minimal --types ts --install pnpm .
+```bash
+pnpm test        # engine unit tests (vitest)
+pnpm test:e2e    # full playthrough tests (playwright; builds + previews the app)
 ```
 
-## Developing
+## Build
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+```bash
+pnpm build
+pnpm preview
 ```
 
-## Building
+## Structure
 
-To create a production version of your app:
-
-```sh
-npm run build
 ```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+src/lib/game/        pure engine (state, economy, persistence) + speech/sounds
+src/lib/components/  scenes (one per Money Day beat) and props
+e2e/                 playthrough specs (Playwright)
+docs/                ADRs and the prototype plan
+```

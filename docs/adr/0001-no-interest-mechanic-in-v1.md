@@ -1,0 +1,3 @@
+# No "money grows" mechanic in v1
+
+The game deliberately ships without interest, investment, or any mechanic where waiting multiplies Coins, even though the parent initially asked for it. Four-year-olds form literal mental models, and watching 3 Coins visibly become 6 would teach "money breeds on its own" — false in reality (real returns are a few percent per *year* and can be negative). The Save Jar already teaches that waiting pays off; the first model should be "money comes from work, saving is for a goal you chose." Reintroduce growth around age 6–7 as a slow, capped fantasy tree, framed as magic rather than banking.
