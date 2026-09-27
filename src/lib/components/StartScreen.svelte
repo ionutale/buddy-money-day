@@ -5,6 +5,7 @@
 	import { unlock } from '$lib/game/sounds';
 	import Buddy from './Buddy.svelte';
 	import GoalBanner from './GoalBanner.svelte';
+	import OwnedStrip from './OwnedStrip.svelte';
 	import Setup from './Setup.svelte';
 
 	let showSetup = $state(false);
@@ -62,6 +63,21 @@
 	</button>
 
 	<GoalBanner size={52} />
+
+	<OwnedStrip items={game.state.owned} />
+
+	<button type="button" class="btn btn-mint" data-testid="toys-door">
+		<svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true">
+			<circle cx="8" cy="9" r="4.5" fill="#d9a869" stroke="#4a3728" stroke-width="1.6" />
+			<circle cx="24" cy="9" r="4.5" fill="#d9a869" stroke="#4a3728" stroke-width="1.6" />
+			<circle cx="16" cy="18" r="10" fill="#d9a869" stroke="#4a3728" stroke-width="1.6" />
+			<ellipse cx="16" cy="21.5" rx="5" ry="3.8" fill="#f4dcc0" />
+			<circle cx="12.5" cy="15.5" r="1.7" fill="#4a3728" />
+			<circle cx="19.5" cy="15.5" r="1.7" fill="#4a3728" />
+			<ellipse cx="16" cy="19.5" rx="2" ry="1.4" fill="#4a3728" />
+		</svg>
+		My Toys
+	</button>
 
 	{#if showSetup}
 		<Setup mode="reset" onclose={() => (showSetup = false)} />

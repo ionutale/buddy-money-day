@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import {
 	completeSetup,
+	doChore,
 	nextDay,
 	openGame,
 	playDay,
@@ -150,5 +151,43 @@ test.describe('the meaning layer', () => {
 
 		await expect(page.getByTestId('recap-text')).toContainText('Today you earned 3 coins');
 		await expect(page.getByTestId('recap-text')).toContainText('has 3 of 6');
+	});
+
+	test('three saving days bring the wagon home', async ({ page }) => {
+		// Three full Money Days with celebration beats outlast the 30 s default.
+		test.setTimeout(90_000);
+
+		await openGame(page);
+		await completeSetup(page);
+
+		// Days 1 and 2: 4 coins earned, all of them saved (4 → 8).
+		for (const day of [1, 2]) {
+			if (day === 1) await startMoneyDay(page);
+			else await nextDay(page);
+			for (const chore of ['tidy', 'water', 'feed'] as const) await doChore(page, chore);
+			await page.getByTestId('to-store-button').click();
+			await page.getByTestId('store-save-button').click();
+			await expect(page.getByTestId('recap-text')).toContainText(`has ${day * 4} of 12`);
+			await tuckIn(page);
+		}
+
+		// Day 3: the jar reaches 12 and the wagon is reached.
+		await nextDay(page);
+		for (const chore of ['tidy', 'water', 'feed'] as const) await doChore(page, chore);
+		await page.getByTestId('to-store-button').click();
+		await page.getByTestId('store-save-button').click();
+
+		await expect(page.getByTestId('dream-celebrate')).toBeVisible();
+		await page.getByTestId('dream-celebrate').click();
+
+		// The recap names the wagon and points at the next dream.
+		await expect(page.getByTestId('recap-text')).toContainText('The wagon is yours');
+		await expect(page.getByTestId('recap-text')).toContainText('big teddy needs 12 coins');
+		await tuckIn(page);
+
+		// Back at the title: the wagon is on the strip, and My Toys has a door.
+		await expect(page.getByTestId('owned-strip')).toBeVisible();
+		await expect(page.getByTestId('owned-toy-wagon')).toBeVisible();
+		await expect(page.getByTestId('toys-door')).toBeVisible();
 	});
 });
