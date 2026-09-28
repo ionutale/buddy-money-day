@@ -25,7 +25,11 @@
 		// The item arcs from the reveal into its place on the strip.
 		timer = setTimeout(() => {
 			const from = revealEl?.getBoundingClientRect();
-			const to = stripEl?.getBoundingClientRect();
+			// The acquired toy's own slot — the last one on the strip, since the
+			// push happens on Hooray. Once the strip wraps rows, the wrapper's
+			// centre is a gap, so fall back to it only when the slot is missing.
+			const slot = stripEl?.querySelector(`[data-index="${game.state.owned.length}"]`);
+			const to = slot?.getBoundingClientRect() ?? stripEl?.getBoundingClientRect();
 			if (!from || !to) return;
 			arc = {
 				x: from.left + from.width / 2,

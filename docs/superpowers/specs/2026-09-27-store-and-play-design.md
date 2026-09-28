@@ -80,7 +80,7 @@ Never sad. Mood set shrinks to `happy | hungry | sleepy | celebrate`. `greetingS
 ## 10. State, migration, deletions
 
 - `ToyId = 'ball' | 'car' | 'blocks' | 'wagon' | 'teddy'`; toy catalog with `price` and `kind: 'toy' | 'dream'`.
-- GameState: `ownedToys: ToyId[]` (persisted); `goal` becomes the current dream id (default `'wagon'`); `homeItems` retired; `savedToday` stays; new transient `earnedTodayCoins` incremented per chore payment (recap uses it directly); `buddySad` deleted; `fedToday` repurposed as the feed chore's done-flag.
+- GameState: `owned: ToyId[]` (persisted); `goal` becomes the current dream id (default `'wagon'`); `homeItems` retired; `savedToday` stays; new transient `earnedTodayCoins` incremented per chore payment (recap uses it directly); `buddySad` deleted; `fedToday` repurposed as the feed chore's done-flag.
 - **Persistence:** bump to `schemaVersion 2` with an explicit migration from v1 that keeps `childName`, `day`, and `jarCoins`, drops old goal/home items, and sets the dream to the wagon. Fresh installs unchanged.
 - **Deleted:** friend/bird scene + lines + specs; lollipop (lines, buttons, specs); hunger skip/no-coin/sad lines; droop states and their specs; old shelf/jars scenes (their testids retire).
 - **ADR-0006** records: work → save → buy → play; care is rewarded; daily caps teach patience; the droop consequence is retired while "never shame" remains.

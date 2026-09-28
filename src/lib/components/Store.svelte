@@ -115,7 +115,6 @@
 				type="button"
 				class="shelf-toy"
 				class:owned={ownsBall}
-				class:buying={buying}
 				data-testid="store-toy-ball"
 				data-owned={ownsBall ? 'true' : 'false'}
 				aria-label={ownsBall ? 'The ball is in your room' : `The ball, ${TOY_PRICES.ball} coins`}

@@ -37,7 +37,10 @@ function dreamStandsText(s: GameState): string {
 
 /** "5 more chores tomorrow!" — honest arithmetic, never a scold. */
 function moreChores(n: number): string {
-	if (n <= 1) return 'One more chore tomorrow!';
+	// Nothing left to earn (latent: the recap only asks when n > 0): a neutral
+	// sign-off, never "one more" for a zero.
+	if (n <= 0) return 'More chores tomorrow!';
+	if (n === 1) return 'One more chore tomorrow!';
 	if (n === 2) return 'Two more chores tomorrow!';
 	return `${n} more chores tomorrow!`;
 }

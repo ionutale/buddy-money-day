@@ -8,6 +8,14 @@
 	};
 
 	let { items, size = 58 }: Props = $props();
+
+	/** A repeated toy gets its copy number; a lone one keeps its plain name. */
+	function slotLabel(id: ToyId, index: number): string {
+		const copies = items.filter((item) => item === id).length;
+		if (copies <= 1) return TOY_LABELS[id];
+		const copy = items.slice(0, index + 1).filter((item) => item === id).length;
+		return `${TOY_LABELS[id]} (${copy})`;
+	}
 </script>
 
 <!--
@@ -24,7 +32,7 @@
 				class="owned-slot pop-in"
 				data-testid="owned-toy-{id}"
 				data-index={i}
-				aria-label={TOY_LABELS[id]}
+				aria-label={slotLabel(id, i)}
 			>
 				<GoalItem kind={id} size={size} />
 			</div>

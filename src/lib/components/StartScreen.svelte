@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { ToyId } from '$lib/game/economy';
+	import { tick } from 'svelte';
 	import { actions, game } from '$lib/game/game.svelte';
 	import { lines } from '$lib/game/lines';
 	import { speak } from '$lib/game/speech';
@@ -15,10 +16,19 @@
 	// Play mode is UI state, not a phase: the engine never hears about it.
 	let roomOpen = $state(false);
 	let playing = $state(false);
+	let doorEl: HTMLButtonElement | undefined = $state();
 
 	function playToy(id: ToyId): void {
 		// Slice 1 ships the ball's game; the room hops the rest until slice 2.
 		if (id === 'ball') playing = true;
+	}
+
+	/** Close the room and hand the keyboard back to the door that opened it. */
+	async function closeRoom(): Promise<void> {
+		roomOpen = false;
+		// The title stays inert until the close renders — focus after it does.
+		await tick();
+		doorEl?.focus();
 	}
 
 	let spoke = $state(false);
@@ -35,7 +45,7 @@
 	}
 </script>
 
-<div class="scene start-screen">
+<div class="scene start-screen" inert={roomOpen || playing}>
 	<button
 		type="button"
 		class="gear"
@@ -81,6 +91,7 @@
 		type="button"
 		class="btn btn-mint"
 		data-testid="toys-door"
+		bind:this={doorEl}
 		onclick={() => (roomOpen = true)}
 	>
 		<svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true">
@@ -101,7 +112,7 @@
 </div>
 
 {#if roomOpen}
-	<ToysRoom items={game.state.owned} onplay={playToy} onexit={() => (roomOpen = false)} />
+	<ToysRoom items={game.state.owned} onplay={playToy} onexit={closeRoom} covered={playing} />
 {/if}
 
 {#if playing}

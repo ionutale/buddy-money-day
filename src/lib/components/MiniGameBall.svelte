@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { sounds } from '$lib/game/sounds';
 	import GoalItem from './GoalItem.svelte';
+	import HouseButton from './HouseButton.svelte';
 
 	/**
 	 * Keepy-uppy, no-fail: the ball waits on the floor until the first tap,
@@ -15,6 +16,13 @@
 	};
 
 	let { onexit }: Props = $props();
+
+	let house = $state<ReturnType<typeof HouseButton> | undefined>();
+
+	// Keyboard entry: the house takes focus as the game opens.
+	$effect(() => {
+		house?.focus();
+	});
 
 	const GRAVITY = 2400; // px/s² pulling the ball down
 	const AUTO_BOUNCE = 950; // px/s the floor kicks the ball back up with
@@ -131,32 +139,12 @@
 		</span>
 	{/each}
 
-	<button
-		type="button"
-		class="game-exit"
-		data-testid="mini-game-exit"
-		aria-label="Back to my toys"
-		onclick={onexit}
-	>
-		<svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true">
-			<path
-				d="M6 19 L20 7 L34 19"
-				fill="none"
-				stroke="#4a3728"
-				stroke-width="4"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-			/>
-			<path
-				d="M11 16.5 V33 H29 V16.5"
-				fill="#ffd35c"
-				stroke="#4a3728"
-				stroke-width="4"
-				stroke-linejoin="round"
-			/>
-			<rect x="17.5" y="24" width="5" height="9" rx="2" fill="#4a3728" />
-		</svg>
-	</button>
+	<HouseButton
+		testid="mini-game-exit"
+		label="Back to my toys"
+		onexit={onexit}
+		bind:this={house}
+	/>
 </div>
 
 <style>
@@ -273,31 +261,4 @@
 		}
 	}
 
-	.game-exit {
-		position: absolute;
-		top: max(14px, env(safe-area-inset-top, 0px));
-		left: 14px;
-		z-index: 5;
-		width: 68px;
-		height: 68px;
-		border: none;
-		border-radius: 50%;
-		background: rgba(255, 253, 248, 0.9);
-		box-shadow:
-			0 4px 0 rgba(74, 55, 40, 0.12),
-			0 10px 20px rgba(74, 55, 40, 0.12);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		cursor: pointer;
-	}
-
-	.game-exit:active {
-		transform: scale(0.94);
-	}
-
-	.game-exit:focus-visible {
-		outline: 4px solid var(--sky);
-		outline-offset: 2px;
-	}
 </style>

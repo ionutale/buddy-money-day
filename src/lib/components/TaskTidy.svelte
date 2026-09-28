@@ -19,13 +19,24 @@
 		{ x: 32, y: 40 }
 	] as const;
 
-	/** The day's trio, seeded by the day alone: the same three all day long. */
-	const TOYS: { id: ToyId; kind: TidyKind; x: number; y: number }[] = pickTidyToys(
-		game.state.day
-	).map((kind, index) => {
-		const id = index as ToyId;
-		return { id, kind, x: SPOTS[id].x, y: SPOTS[id].y };
-	});
+	/**
+	 * The day's trio, seeded by the day alone: the same three all day long.
+	 * Zipped over SPOTS, so the spot list is the length source: a trio that
+	 * outgrew the spots is trimmed rather than indexed past their end (which
+	 * used to throw), and a shrunken one renders only the toys it has. The
+	 * dev note makes a drift between TIDY_TOYS and SPOTS loud while it is
+	 * still a code change, not a broken room.
+	 */
+	const TOYS: { id: ToyId; kind: TidyKind; x: number; y: number }[] = (() => {
+		const trio = pickTidyToys(game.state.day);
+		if (import.meta.env.DEV && trio.length !== SPOTS.length) {
+			console.warn(`TaskTidy: ${trio.length} tidy toys scattered for ${SPOTS.length} spots`);
+		}
+		return SPOTS.flatMap((spot, index) => {
+			const kind = trio[index];
+			return kind === undefined ? [] : [{ id: index as ToyId, kind, x: spot.x, y: spot.y }];
+		});
+	})();
 
 	let boxEl: HTMLButtonElement | undefined = $state();
 

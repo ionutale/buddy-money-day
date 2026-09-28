@@ -42,9 +42,10 @@ describe('the tidy pool', () => {
 	});
 
 	it('varies across days: every week offers at least two different trios', () => {
+		// Seven-day windows starting on each of the 40 days.
 		for (let start = 1; start <= 40; start++) {
-			const week = DAYS.slice(0, 7).map((offset) =>
-				pickTidyToys(start + offset - 1).join(',')
+			const week = Array.from({ length: 7 }, (_, offset) =>
+				pickTidyToys(start + offset).join(',')
 			);
 			expect(new Set(week).size).toBeGreaterThan(1);
 		}

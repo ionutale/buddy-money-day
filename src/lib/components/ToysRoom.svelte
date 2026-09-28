@@ -4,6 +4,7 @@
 	import { lines } from '$lib/game/lines';
 	import { speak } from '$lib/game/speech';
 	import GoalItem from './GoalItem.svelte';
+	import HouseButton from './HouseButton.svelte';
 
 	/**
 	 * The room behind the title's "My Toys" door. Owned toys sit on the rug,
@@ -18,13 +19,23 @@
 		onplay: (id: ToyId) => void;
 		/** The house button: back to the title screen. */
 		onexit: () => void;
+		/** A scene sits on top: the room must take neither input nor focus. */
+		covered?: boolean;
 	};
 
-	let { items, onplay, onexit }: Props = $props();
+	let { items, onplay, onexit, covered = false }: Props = $props();
 
-	/** A tap on a toy whose game is still coming (slice 2) makes it hop. */
-	let tapped = $state<ToyId | null>(null);
+	/** The tile mid-hop, by rug position — so each repeated toy hops alone. */
+	let tapped = $state<number | null>(null);
 	let hops = $state(0);
+
+	let house = $state<ReturnType<typeof HouseButton> | undefined>();
+
+	// Keyboard entry: the house takes focus when the room opens, and gets it
+	// back when a mini-game sitting on top of the room closes.
+	$effect(() => {
+		if (!covered) house?.focus();
+	});
 
 	let spoke = $state(false);
 	$effect(() => {
@@ -33,43 +44,31 @@
 		speak(lines.toysEmpty(game.state));
 	});
 
-	function tapToy(id: ToyId): void {
+	function tapToy(id: ToyId, index: number): void {
 		if (id === 'ball') {
 			onplay(id);
 			return;
 		}
-		tapped = id;
+		tapped = index;
 		hops += 1;
+	}
+
+	/** A repeated toy gets its copy number; a lone one keeps its plain name. */
+	function tileLabel(id: ToyId, index: number): string {
+		const copies = items.filter((item) => item === id).length;
+		if (copies <= 1) return TOY_LABELS[id];
+		const copy = items.slice(0, index + 1).filter((item) => item === id).length;
+		return `${TOY_LABELS[id]} (${copy})`;
 	}
 </script>
 
-<div class="toys-room" data-testid="toys-room">
-	<button
-		type="button"
-		class="room-exit"
-		data-testid="toys-exit"
-		aria-label="Back to my Money Day"
-		onclick={onexit}
-	>
-		<svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true">
-			<path
-				d="M6 19 L20 7 L34 19"
-				fill="none"
-				stroke="#4a3728"
-				stroke-width="4"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-			/>
-			<path
-				d="M11 16.5 V33 H29 V16.5"
-				fill="#ffd35c"
-				stroke="#4a3728"
-				stroke-width="4"
-				stroke-linejoin="round"
-			/>
-			<rect x="17.5" y="24" width="5" height="9" rx="2" fill="#4a3728" />
-		</svg>
-	</button>
+<div class="toys-room" data-testid="toys-room" inert={covered}>
+	<HouseButton
+		testid="toys-exit"
+		label="Back to my Money Day"
+		onexit={onexit}
+		bind:this={house}
+	/>
 
 	<div class="room-rug">
 		<!-- Keyed by position, not by id: the dream list cycles, so `owned`
@@ -81,11 +80,11 @@
 				class="room-toy"
 				data-testid="toy-{id}"
 				data-index={i}
-				aria-label={TOY_LABELS[id]}
-				onclick={() => tapToy(id)}
+				aria-label={tileLabel(id, i)}
+				onclick={() => tapToy(id, i)}
 			>
-				{#key tapped === id ? hops : 0}
-					<span class="toy-art" class:wiggle={tapped === id}>
+				{#key tapped === i ? hops : 0}
+					<span class="toy-art" class:wiggle={tapped === i}>
 						<GoalItem kind={id} size={104} />
 					</span>
 				{/key}
@@ -114,34 +113,6 @@
 			linear-gradient(180deg, #ddf2fc 0%, #fff6e5 58%, #ffe9c9 100%);
 		background-size: 30px 30px, auto;
 		animation: scene-in 0.4s ease both;
-	}
-
-	.room-exit {
-		position: absolute;
-		top: max(14px, env(safe-area-inset-top, 0px));
-		left: 14px;
-		z-index: 5;
-		width: 68px;
-		height: 68px;
-		border: none;
-		border-radius: 50%;
-		background: rgba(255, 253, 248, 0.9);
-		box-shadow:
-			0 4px 0 rgba(74, 55, 40, 0.12),
-			0 10px 20px rgba(74, 55, 40, 0.12);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		cursor: pointer;
-	}
-
-	.room-exit:active {
-		transform: scale(0.94);
-	}
-
-	.room-exit:focus-visible {
-		outline: 4px solid var(--sky);
-		outline-offset: 2px;
 	}
 
 	.room-rug {
