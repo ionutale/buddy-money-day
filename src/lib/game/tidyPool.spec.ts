@@ -35,6 +35,10 @@ describe('the tidy pool', () => {
 		}
 	});
 
+	it('pins day 1: an algorithm or seed change is a deliberate, reviewed edit', () => {
+		expect(pickTidyToys(1)).toEqual(['ball', 'boat', 'blocks']);
+	});
+
 	it('picks without disturbing the pool', () => {
 		const before = [...TIDY_POOL];
 		for (const day of DAYS) pickTidyToys(day);

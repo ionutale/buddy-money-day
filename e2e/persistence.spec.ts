@@ -44,11 +44,10 @@ test.describe('per-device saves and grown-up reset', () => {
 			(save: { key: string; value: string }) => localStorage.setItem(save.key, save.value),
 			{ key: SAVE_KEY, value: JSON.stringify(V1_SAVE) }
 		);
-		await page.goto('/?mute=1');
+		await openGame(page);
 
 		// Setup is done, the child and the day are still known, and the banner
 		// shows the new dream (the wagon) with five of its twelve slots saved.
-		await expect(page.getByTestId('name-input')).toHaveCount(0);
 		await expect(page.getByText('Day 3', { exact: true })).toBeVisible();
 		await expect(page.getByTestId('goal-banner')).toHaveAttribute('aria-label', /wagon/);
 		await expect(page.locator('[data-testid^="goal-slot-"]')).toHaveCount(12);
@@ -78,16 +77,17 @@ test.describe('per-device saves and grown-up reset', () => {
 	});
 
 	test('a corrupt save boots fresh instead of crashing', async ({ page }) => {
-		await page.addInitScript(() => localStorage.setItem('money-day-save', '{not json'));
-		await page.goto('/?mute=1');
+		await page.addInitScript((key: string) => localStorage.setItem(key, '{not json'), SAVE_KEY);
+		await openGame(page);
 		await expect(page.getByTestId('name-input')).toBeVisible();
 	});
 
 	test('a save from an unknown schema boots fresh', async ({ page }) => {
-		await page.addInitScript(() =>
-			localStorage.setItem('money-day-save', JSON.stringify({ schemaVersion: 999, hello: 'world' }))
+		await page.addInitScript(
+			(save: { key: string; value: string }) => localStorage.setItem(save.key, save.value),
+			{ key: SAVE_KEY, value: JSON.stringify({ schemaVersion: 999, hello: 'world' }) }
 		);
-		await page.goto('/?mute=1');
+		await openGame(page);
 		await expect(page.getByTestId('name-input')).toBeVisible();
 		await expect(page.getByTestId('start-button')).toHaveCount(0);
 	});

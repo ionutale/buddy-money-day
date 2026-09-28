@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { completeSetup, doChore, dragLocator, openGame, startMoneyDay } from './helpers';
+import { completeSetup, doChore, dragLocator, openGame, seedSave, startMoneyDay } from './helpers';
 
 /**
  * The job board is the day's hub: three jobs, any order, each once.
@@ -140,13 +140,28 @@ test.describe('the job board', () => {
 
 /**
  * The tidy floor is seeded by the day number: six kinds in the pool, three
- * scattered each day. A reload mid-day must show the child the same trio.
+ * scattered each day. A reload mid-day must show the child the same trio —
+ * so the day under test is day 2, where a day-reset bug would deal day 1's
+ * trio instead and the "different seed" would be caught.
  */
+const DAY_TWO_SAVE = {
+	schemaVersion: 2,
+	childName: 'Sam',
+	nameSkipped: false,
+	day: 2,
+	goal: 'wagon',
+	jarCoins: 0,
+	owned: []
+};
+
 test.describe('the daily tidy trio', () => {
 	test('shows three toys, and a mid-day reload keeps the same trio', async ({ page }) => {
+		// Start on day 2, as if yesterday had been tucked in.
+		await seedSave(page, DAY_TWO_SAVE);
 		await openGame(page);
 		await completeSetup(page);
 		await startMoneyDay(page);
+		await expect(page.getByTestId('day-badge')).toContainText('Day 2');
 		await page.getByTestId('job-card-tidy').click();
 
 		// Exactly three toys, each tagged with the kind it was picked as.
@@ -160,6 +175,7 @@ test.describe('the daily tidy trio', () => {
 		await page.reload();
 		await completeSetup(page);
 		await startMoneyDay(page);
+		await expect(page.getByTestId('day-badge')).toContainText('Day 2');
 		await page.getByTestId('job-card-tidy').click();
 
 		await expect(toys).toHaveCount(3);

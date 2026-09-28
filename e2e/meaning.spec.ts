@@ -59,13 +59,19 @@ test.describe('the meaning layer', () => {
 		await expect(page.getByText('Today we can earn 4 coins for your wagon!')).toBeVisible();
 		await page.getByTestId('greeting-start').click({ force: true });
 
-		// Each card offers its job and its pay.
-		await expect(page.getByTestId('job-card-tidy')).toContainText('Tidy the toys');
-		await expect(page.getByTestId('job-card-tidy')).toContainText('2');
-		await expect(page.getByTestId('job-card-water')).toContainText('Water the tree');
-		await expect(page.getByTestId('job-card-water')).toContainText('1');
-		await expect(page.getByTestId('job-card-feed')).toContainText('Feed the bear');
-		await expect(page.getByTestId('job-card-feed')).toContainText('1');
+		// Each card offers its job and its pay. The price is the `.job-pay`
+		// node alone — the coin icon plus one number — so it is asserted as the
+		// whole node text, not "any digit somewhere on the card".
+		const deals: [string, string, number][] = [
+			['tidy', 'Tidy the toys', 2],
+			['water', 'Water the tree', 1],
+			['feed', 'Feed the bear', 1]
+		];
+		for (const [chore, name, price] of deals) {
+			const card = page.getByTestId(`job-card-${chore}`);
+			await expect(card).toContainText(name);
+			await expect(card.locator('.job-pay')).toHaveText(new RegExp(`^${price}$`));
+		}
 		await expect(page.getByTestId('cap-line')).toHaveCount(0);
 
 		// Any order works: feed, tidy, water. The cap line and the store door

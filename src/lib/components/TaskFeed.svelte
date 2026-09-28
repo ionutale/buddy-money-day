@@ -195,7 +195,9 @@
 				class:selected={selected === snack.id}
 				class:accepted={accepted[snack.id]}
 				data-testid="feed-snack-{snack.id}"
-				aria-label="A berry for Buddy"
+				aria-label="Berry {snack.id + 1} of {SNACK_COUNT}"
+				aria-disabled={accepted[snack.id] ? 'true' : undefined}
+				tabindex={accepted[snack.id] ? -1 : undefined}
 				style="left: min({snack.x}%, calc(100% - 104px)); top: {snack.y}%; --dx: {offsets[snack.id]
 					.x}px; --dy: {offsets[snack.id].y}px"
 				onpointerdown={(event) => onSnackDown(event, snack.id)}

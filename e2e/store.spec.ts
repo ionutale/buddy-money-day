@@ -1,5 +1,13 @@
 import { expect, test, type Page } from '@playwright/test';
-import { completeSetup, finishChores, openGame, openStore, startMoneyDay } from './helpers';
+import {
+	completeSetup,
+	finishChores,
+	openGame,
+	openStore,
+	saveDay,
+	startMoneyDay,
+	tuckIn
+} from './helpers';
 
 /**
  * The store is the day's decision beat: buy the ball now, or save the rest
@@ -80,6 +88,25 @@ test.describe('the store', () => {
 		await expect(ball).toHaveAttribute('data-owned', 'true');
 		await expect(ball).toContainText('In your room!');
 		await expect(page.getByTestId('coin-count')).toHaveText('2');
+	});
+
+	test('buying the ball then saving still lands the rest in the jar', async ({ page }) => {
+		await walkToStore(page);
+
+		// Buy first: the beat plays out and two of the four coins leave the hand.
+		await page.getByTestId('store-toy-ball').click();
+		await expect(page.getByTestId('store-buy-beat')).toBeVisible();
+		await expect(page.getByTestId('store-buy-beat')).toHaveCount(0);
+		await expect(page.getByTestId('coin-count')).toHaveText('2');
+
+		// Then save what is left: the jar takes the remainder, never the day's
+		// full pay, and the recap tells the day's truth through to tuck-in.
+		await saveDay(page);
+		await expect(page.getByTestId('recap-text')).toContainText('Today you earned 4 coins.');
+		await expect(page.getByTestId('recap-text')).toContainText('Your wagon has 2 of 12');
+		await expect(page.getByTestId('recap-text')).toContainText('10 more chores tomorrow!');
+		await expect(page.getByTestId('jar-progress')).toHaveText('2 / 12');
+		await tuckIn(page);
 	});
 
 	test('saving flies the coins to the dream slots and tucks the day in', async ({ page }) => {

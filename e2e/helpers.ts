@@ -6,6 +6,21 @@ import { expect, type Locator, type Page } from '@playwright/test';
  * speech synthesis out of the test runs.
  */
 
+/** The one localStorage entry the game saves under. */
+export const SAVE_KEY = 'money-day-save';
+
+/**
+ * Seed a save before the app boots, exactly as the family phone would carry
+ * it. The init script runs before every navigation on this page, so a reload
+ * re-reads the same durable fields.
+ */
+export async function seedSave(page: Page, save: Record<string, unknown>): Promise<void> {
+	await page.addInitScript(
+		(seed: { key: string; value: string }) => localStorage.setItem(seed.key, seed.value),
+		{ key: SAVE_KEY, value: JSON.stringify(save) }
+	);
+}
+
 export async function openGame(page: Page): Promise<void> {
 	await page.goto('/?mute=1');
 	await expect(page.getByTestId('name-input').or(page.getByTestId('start-button'))).toBeVisible();

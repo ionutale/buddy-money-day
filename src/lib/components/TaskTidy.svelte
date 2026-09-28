@@ -25,7 +25,9 @@
 	 * outgrew the spots is trimmed rather than indexed past their end (which
 	 * used to throw), and a shrunken one renders only the toys it has. The
 	 * dev note makes a drift between TIDY_TOYS and SPOTS loud while it is
-	 * still a code change, not a broken room.
+	 * still a code change, not a broken room. The payout still counts
+	 * TIDY_TOYS, though: a `TIDY_TOYS` larger than SPOTS would render but
+	 * never finish.
 	 */
 	const TOYS: { id: ToyId; kind: TidyKind; x: number; y: number }[] = (() => {
 		const trio = pickTidyToys(game.state.day);
@@ -175,7 +177,9 @@
 				class:accepted={accepted[toy.id]}
 				data-testid="toy-{toy.id}"
 				data-kind={toy.kind}
-				aria-label="A toy to tidy up"
+				aria-label="Toy {toy.id + 1} of {TOYS.length} to tidy up"
+				aria-disabled={accepted[toy.id] ? 'true' : undefined}
+				tabindex={accepted[toy.id] ? -1 : undefined}
 				style="left: min({toy.x}%, calc(100% - 122px)); top: {toy.y}%; --dx: {offsets[toy.id]
 					.x}px; --dy: {offsets[toy.id].y}px"
 				onpointerdown={(event) => onToyDown(event, toy.id)}

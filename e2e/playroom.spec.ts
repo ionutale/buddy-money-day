@@ -5,6 +5,7 @@ import {
 	openGame,
 	openStore,
 	saveDay,
+	seedSave,
 	startMoneyDay,
 	tuckIn
 } from './helpers';
@@ -27,8 +28,6 @@ function watchForThrows(page: Page): Error[] {
 	page.on('pageerror', (error) => errors.push(error));
 	return errors;
 }
-
-const SAVE_KEY = 'money-day-save';
 
 /**
  * A v2 save from after the dream list has wrapped: wagon → teddy → wagon.
@@ -97,12 +96,21 @@ test.describe('My Toys', () => {
 		await expect(page.getByTestId('toys-room')).toBeVisible();
 		await expect(page.getByTestId('toy-ball')).toBeVisible();
 
+		// Opening the room moves the keyboard in: the room's house owns focus
+		// and the title behind it is inert.
+		await expect(page.getByTestId('toys-exit')).toBeFocused();
+		await expect(page.locator('.start-screen')).toHaveAttribute('inert');
+
 		// Its mini-game fills the screen; the exit stays put the whole time.
 		await page.getByTestId('toy-ball').click();
 		const ball = page.getByTestId('mini-game-ball');
 		await expect(ball).toBeVisible();
 		await expect(page.getByTestId('mini-game-exit')).toBeVisible();
 		await expect(ball).toHaveAttribute('data-bounces', '0');
+
+		// The mini-game takes the keyboard in turn; the room below is covered.
+		await expect(page.getByTestId('mini-game-exit')).toBeFocused();
+		await expect(page.getByTestId('toys-room')).toHaveAttribute('inert');
 
 		// The ball keeps moving by design, so taps skip Playwright's stability
 		// gate — exactly like the bobbing water drops.
@@ -116,18 +124,21 @@ test.describe('My Toys', () => {
 		await expect(ball).toHaveAttribute('data-bounces', '9');
 		await expect(page.getByTestId('mini-game-exit')).toBeVisible();
 
-		// The house button comes back to the room.
+		// The house button comes back to the room, which takes the keyboard back.
 		await page.getByTestId('mini-game-exit').click();
 		await expect(page.getByTestId('mini-game-ball')).toHaveCount(0);
 		await expect(page.getByTestId('toys-room')).toBeVisible();
+		await expect(page.getByTestId('toys-exit')).toBeFocused();
 
 		// Play mode wrote nothing: the save is byte-identical.
 		expect(await saveSnapshot(page)).toEqual(before);
 
-		// And the room's house button returns to the title.
+		// And the room's house button returns to the title, handing focus
+		// back to the door that opened the room.
 		await page.getByTestId('toys-exit').click();
 		await expect(page.getByTestId('toys-room')).toHaveCount(0);
 		await expect(page.getByTestId('start-button')).toBeVisible();
+		await expect(page.getByTestId('toys-door')).toBeFocused();
 		expect(await saveSnapshot(page)).toEqual(before);
 		expect(errors).toEqual([]);
 	});
@@ -137,12 +148,8 @@ test.describe('My Toys', () => {
 
 		// Seed the post-cycle save before the app boots, exactly as the
 		// family phone would carry it after wagon → teddy → wagon.
-		await page.addInitScript(
-			(save: { key: string; value: string }) => localStorage.setItem(save.key, save.value),
-			{ key: SAVE_KEY, value: JSON.stringify(CYCLED_SAVE) }
-		);
-		await page.goto('/?mute=1');
-		await expect(page.getByTestId('start-button')).toBeVisible();
+		await seedSave(page, CYCLED_SAVE);
+		await openGame(page);
 
 		// The title's strip shows every acquisition, the second wagon included.
 		const stripWagons = page.getByTestId('owned-toy-wagon');

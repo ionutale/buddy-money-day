@@ -4,7 +4,7 @@
 
 A 5-minute phone game that teaches a 4-year-old the first principles of money: work earns coins, saving is for a dream you chose, buying is a choice, and caring for Buddy is never a cost.
 
-Every Money Day: three helping tasks — tidy the toys (2 coins), water the tree (1), feed the bear (1) — then the store, where he can buy a toy or save the rest for a dream toy (the wagon first, then the big teddy). Bought toys live in My Toys, each with something to play — the ball's keepy-uppy is in.
+Every Money Day: three helping tasks — tidy the toys (2 coins), water the tree (1), feed the bear (1) — then the store, where the child can buy a toy or save the rest for a dream toy (the wagon first, then the big teddy). Bought toys live in My Toys, each with something to play — the ball's keepy-uppy is in.
 
 - **Design language:** [CONTEXT.md](./CONTEXT.md) (glossary) and [docs/adr](./docs/adr) (decisions)
 - **Privacy:** completely static SPA — no backend, no accounts, no network calls; progress lives in `localStorage` (per device)
