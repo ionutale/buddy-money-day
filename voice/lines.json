@@ -1,0 +1,506 @@
+[
+  {
+    "id": "50d9464c54",
+    "text": "10 more chores tomorrow!"
+  },
+  {
+    "id": "ba45ba5693",
+    "text": "11 more chores tomorrow!"
+  },
+  {
+    "id": "7322c38e2f",
+    "text": "12 more chores tomorrow!"
+  },
+  {
+    "id": "d26d6668bc",
+    "text": "3 more chores tomorrow!"
+  },
+  {
+    "id": "ff77a641dc",
+    "text": "4 more chores tomorrow!"
+  },
+  {
+    "id": "4c8d18fede",
+    "text": "5 more chores tomorrow!"
+  },
+  {
+    "id": "057fa50c4a",
+    "text": "6 more chores tomorrow!"
+  },
+  {
+    "id": "8cf4e39c63",
+    "text": "7 more chores tomorrow!"
+  },
+  {
+    "id": "98527d1c17",
+    "text": "8 more chores tomorrow!"
+  },
+  {
+    "id": "f14583470c",
+    "text": "9 more chores tomorrow!"
+  },
+  {
+    "id": "7afe748255",
+    "text": "All chores done! More tomorrow."
+  },
+  {
+    "id": "84daf27b2c",
+    "text": "Drag the toy all the way into the box!"
+  },
+  {
+    "id": "33e8886999",
+    "text": "Good morning!"
+  },
+  {
+    "id": "0f04dfd049",
+    "text": "Hello again!"
+  },
+  {
+    "id": "29fa512e8f",
+    "text": "Hello! A grown-up can type a name, or skip."
+  },
+  {
+    "id": "7d8b171a1c",
+    "text": "Hi there! This is how Buddy will sound."
+  },
+  {
+    "id": "903f495d16",
+    "text": "Hi! Buddy is ready for a Money Day."
+  },
+  {
+    "id": "dbc5fbad93",
+    "text": "I'm hungry! Feed me and I'll pay you a coin!"
+  },
+  {
+    "id": "d3209ca74a",
+    "text": "In your room!"
+  },
+  {
+    "id": "bb007efbc7",
+    "text": "It's in your room!"
+  },
+  {
+    "id": "4842f9317b",
+    "text": "Look at this mess! Tidy the toys — I'll pay you two coins!"
+  },
+  {
+    "id": "e1588a1e3b",
+    "text": "More chores tomorrow!"
+  },
+  {
+    "id": "951ae522d7",
+    "text": "No toys yet! Do chores, then visit the store."
+  },
+  {
+    "id": "a495aad66d",
+    "text": "One coin earned!"
+  },
+  {
+    "id": "b3c6df5b13",
+    "text": "One more chore tomorrow!"
+  },
+  {
+    "id": "ea2cd76e2b",
+    "text": "Save the rest for your big teddy."
+  },
+  {
+    "id": "0519c7c260",
+    "text": "Save the rest for your wagon."
+  },
+  {
+    "id": "3077cbc521",
+    "text": "That's 12 coins — you have 0."
+  },
+  {
+    "id": "8f9b266047",
+    "text": "That's 12 coins — you have 1."
+  },
+  {
+    "id": "45e8890578",
+    "text": "That's 12 coins — you have 10."
+  },
+  {
+    "id": "730613c25f",
+    "text": "That's 12 coins — you have 11."
+  },
+  {
+    "id": "108cb24538",
+    "text": "That's 12 coins — you have 12."
+  },
+  {
+    "id": "f4d0733e64",
+    "text": "That's 12 coins — you have 2."
+  },
+  {
+    "id": "ff27375eec",
+    "text": "That's 12 coins — you have 3."
+  },
+  {
+    "id": "af5ff728d8",
+    "text": "That's 12 coins — you have 4."
+  },
+  {
+    "id": "6168c74cb8",
+    "text": "That's 12 coins — you have 5."
+  },
+  {
+    "id": "457f84a971",
+    "text": "That's 12 coins — you have 6."
+  },
+  {
+    "id": "78e13590f5",
+    "text": "That's 12 coins — you have 7."
+  },
+  {
+    "id": "70c2fae2bf",
+    "text": "That's 12 coins — you have 8."
+  },
+  {
+    "id": "5721c937e3",
+    "text": "That's 12 coins — you have 9."
+  },
+  {
+    "id": "4d8d3ef043",
+    "text": "That's 2 coins — you have 0."
+  },
+  {
+    "id": "120f8179cc",
+    "text": "That's 2 coins — you have 1."
+  },
+  {
+    "id": "fa6e195fb2",
+    "text": "That's 2 coins — you have 10."
+  },
+  {
+    "id": "64878b4cf2",
+    "text": "That's 2 coins — you have 11."
+  },
+  {
+    "id": "33f775ed19",
+    "text": "That's 2 coins — you have 12."
+  },
+  {
+    "id": "ed67b8548d",
+    "text": "That's 2 coins — you have 2."
+  },
+  {
+    "id": "3467083da3",
+    "text": "That's 2 coins — you have 3."
+  },
+  {
+    "id": "6e85868eac",
+    "text": "That's 2 coins — you have 4."
+  },
+  {
+    "id": "f59ce5c159",
+    "text": "That's 2 coins — you have 5."
+  },
+  {
+    "id": "63222780cf",
+    "text": "That's 2 coins — you have 6."
+  },
+  {
+    "id": "ced18ec689",
+    "text": "That's 2 coins — you have 7."
+  },
+  {
+    "id": "d992efe6ca",
+    "text": "That's 2 coins — you have 8."
+  },
+  {
+    "id": "bbd820854f",
+    "text": "That's 2 coins — you have 9."
+  },
+  {
+    "id": "1033810370",
+    "text": "That's 4 coins — you have 0."
+  },
+  {
+    "id": "a334f45818",
+    "text": "That's 4 coins — you have 1."
+  },
+  {
+    "id": "1bd5a32b0e",
+    "text": "That's 4 coins — you have 10."
+  },
+  {
+    "id": "a22d5123b2",
+    "text": "That's 4 coins — you have 11."
+  },
+  {
+    "id": "dc7cd6da48",
+    "text": "That's 4 coins — you have 12."
+  },
+  {
+    "id": "ade48315c8",
+    "text": "That's 4 coins — you have 2."
+  },
+  {
+    "id": "5f2e1b7c49",
+    "text": "That's 4 coins — you have 3."
+  },
+  {
+    "id": "5684ea0bc0",
+    "text": "That's 4 coins — you have 4."
+  },
+  {
+    "id": "2a1cac39da",
+    "text": "That's 4 coins — you have 5."
+  },
+  {
+    "id": "98d3f40d8f",
+    "text": "That's 4 coins — you have 6."
+  },
+  {
+    "id": "52fcaabc37",
+    "text": "That's 4 coins — you have 7."
+  },
+  {
+    "id": "e75856105b",
+    "text": "That's 4 coins — you have 8."
+  },
+  {
+    "id": "6c2169d2da",
+    "text": "That's 4 coins — you have 9."
+  },
+  {
+    "id": "76b49afa01",
+    "text": "That's 6 coins — you have 0."
+  },
+  {
+    "id": "0b13fd5727",
+    "text": "That's 6 coins — you have 1."
+  },
+  {
+    "id": "5f957a08c4",
+    "text": "That's 6 coins — you have 10."
+  },
+  {
+    "id": "da85ce9b36",
+    "text": "That's 6 coins — you have 11."
+  },
+  {
+    "id": "6515e9ef2e",
+    "text": "That's 6 coins — you have 12."
+  },
+  {
+    "id": "a308c6a740",
+    "text": "That's 6 coins — you have 2."
+  },
+  {
+    "id": "536ecc0392",
+    "text": "That's 6 coins — you have 3."
+  },
+  {
+    "id": "f02722ab74",
+    "text": "That's 6 coins — you have 4."
+  },
+  {
+    "id": "369fd50f7b",
+    "text": "That's 6 coins — you have 5."
+  },
+  {
+    "id": "54f6486718",
+    "text": "That's 6 coins — you have 6."
+  },
+  {
+    "id": "49fbbdcce0",
+    "text": "That's 6 coins — you have 7."
+  },
+  {
+    "id": "e5ac4f1fd9",
+    "text": "That's 6 coins — you have 8."
+  },
+  {
+    "id": "f42df6d74b",
+    "text": "That's 6 coins — you have 9."
+  },
+  {
+    "id": "36f6d04bd2",
+    "text": "The big teddy is yours."
+  },
+  {
+    "id": "64906e9846",
+    "text": "The little tree is thirsty! Water it — one coin!"
+  },
+  {
+    "id": "ebd48fa7d7",
+    "text": "The wagon is yours."
+  },
+  {
+    "id": "b1c9f1f1ca",
+    "text": "Time to choose! A toy now, or save for your big teddy?"
+  },
+  {
+    "id": "2253afc812",
+    "text": "Time to choose! A toy now, or save for your wagon?"
+  },
+  {
+    "id": "16766d5f52",
+    "text": "Today we can earn 4 coins for your big teddy!"
+  },
+  {
+    "id": "f0e6684da3",
+    "text": "Today we can earn 4 coins for your wagon!"
+  },
+  {
+    "id": "988d079ec1",
+    "text": "Today you earned 0 coins."
+  },
+  {
+    "id": "9aa2da8f91",
+    "text": "Today you earned 1 coin."
+  },
+  {
+    "id": "f3977842b4",
+    "text": "Today you earned 2 coins."
+  },
+  {
+    "id": "1135cca81b",
+    "text": "Today you earned 3 coins."
+  },
+  {
+    "id": "63c08d588d",
+    "text": "Today you earned 4 coins."
+  },
+  {
+    "id": "f99f6d18b5",
+    "text": "Tomorrow we can earn more!"
+  },
+  {
+    "id": "862258dc6f",
+    "text": "Two coins earned!"
+  },
+  {
+    "id": "9601b03567",
+    "text": "Two more chores tomorrow!"
+  },
+  {
+    "id": "f1f75d6deb",
+    "text": "Voice on!"
+  },
+  {
+    "id": "559b1abf4a",
+    "text": "You did it!"
+  },
+  {
+    "id": "ba039917ac",
+    "text": "You did it! You saved 12 coins for your very own big teddy!"
+  },
+  {
+    "id": "bf07d438ad",
+    "text": "You did it! You saved 12 coins for your very own wagon!"
+  },
+  {
+    "id": "66aee7f970",
+    "text": "Your big teddy has 0 of 12."
+  },
+  {
+    "id": "edf2f28dec",
+    "text": "Your big teddy has 1 of 12."
+  },
+  {
+    "id": "4ffec92810",
+    "text": "Your big teddy has 10 of 12."
+  },
+  {
+    "id": "201cd6a967",
+    "text": "Your big teddy has 11 of 12."
+  },
+  {
+    "id": "b6459832f6",
+    "text": "Your big teddy has 2 of 12."
+  },
+  {
+    "id": "0c609b202d",
+    "text": "Your big teddy has 3 of 12."
+  },
+  {
+    "id": "bbd298ccf3",
+    "text": "Your big teddy has 4 of 12."
+  },
+  {
+    "id": "cf157ecaca",
+    "text": "Your big teddy has 5 of 12."
+  },
+  {
+    "id": "fbc48b84c1",
+    "text": "Your big teddy has 6 of 12."
+  },
+  {
+    "id": "af01bb7ed3",
+    "text": "Your big teddy has 7 of 12."
+  },
+  {
+    "id": "be0fb6ec3b",
+    "text": "Your big teddy has 8 of 12."
+  },
+  {
+    "id": "eeefb34038",
+    "text": "Your big teddy has 9 of 12."
+  },
+  {
+    "id": "5cb0f65a44",
+    "text": "Your big teddy is yours!"
+  },
+  {
+    "id": "9a86452cdf",
+    "text": "Your big teddy needs 12 coins — we can start tomorrow!"
+  },
+  {
+    "id": "6e4cc1b303",
+    "text": "Your wagon has 0 of 12."
+  },
+  {
+    "id": "4123d902a6",
+    "text": "Your wagon has 1 of 12."
+  },
+  {
+    "id": "07e2ef339c",
+    "text": "Your wagon has 10 of 12."
+  },
+  {
+    "id": "4b665f9694",
+    "text": "Your wagon has 11 of 12."
+  },
+  {
+    "id": "b08d46ee9e",
+    "text": "Your wagon has 2 of 12."
+  },
+  {
+    "id": "c836463916",
+    "text": "Your wagon has 3 of 12."
+  },
+  {
+    "id": "0991a7bf6f",
+    "text": "Your wagon has 4 of 12."
+  },
+  {
+    "id": "3ae902d5f6",
+    "text": "Your wagon has 5 of 12."
+  },
+  {
+    "id": "fd30c0d358",
+    "text": "Your wagon has 6 of 12."
+  },
+  {
+    "id": "f75ef7bc00",
+    "text": "Your wagon has 7 of 12."
+  },
+  {
+    "id": "bd4a7017cc",
+    "text": "Your wagon has 8 of 12."
+  },
+  {
+    "id": "4a8749550b",
+    "text": "Your wagon has 9 of 12."
+  },
+  {
+    "id": "517829c354",
+    "text": "Your wagon is yours!"
+  },
+  {
+    "id": "3175cd6647",
+    "text": "Your wagon needs 12 coins — we can start tomorrow!"
+  }
+]
