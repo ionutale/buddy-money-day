@@ -1,4 +1,4 @@
-import { DREAMS, TOYS } from './economy';
+import { DREAMS, TOY_PRICES } from './economy';
 import { spoken, TOGGLE_ON } from './spoken';
 import { newGame } from './state';
 import type { GameState } from './types';
@@ -8,9 +8,10 @@ import type { GameState } from './types';
  * writes these to disk; the drift test compares them to the committed map.
  */
 
+/** A dream costs 12 coins — the deepest jar the dream-state and recap describe. */
 const MAX_JAR = 12;
+/** TIDY 2 + WATER 1 + FEED 1 — the most a single day can pay. */
 const MAX_EARNED = 4;
-const MAX_HAND = 12;
 
 function s(patch: Partial<GameState> = {}): GameState {
 	return { ...newGame(), ...patch };
@@ -59,10 +60,10 @@ export function collectFragments(): string[] {
 		})));
 	}
 
-	for (const toy of TOYS) {
-		for (let coins = 0; coins <= MAX_HAND; coins++) {
-			add(spoken.storeCompare(toy, s({ coins })));
-		}
+	// The store sells only the ball (slice 1); a compare fires only when the
+	// child cannot afford it, so only coins < its price are sayable.
+	for (let coins = 0; coins < TOY_PRICES.ball; coins++) {
+		add(spoken.storeCompare('ball', s({ coins })));
 	}
 
 	return [...texts].sort();
