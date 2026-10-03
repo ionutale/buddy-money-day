@@ -8,7 +8,9 @@ Every Money Day: three helping tasks — tidy the toys (2 coins), water the tree
 
 - **Design language:** [CONTEXT.md](./CONTEXT.md) (glossary) and [docs/adr](./docs/adr) (decisions)
 - **Privacy:** completely static SPA — no backend, no accounts, no network calls; progress lives in `localStorage` (per device)
-- **Voice:** optional English TTS via the Web Speech API — **off by default**; a grown-up turns it on in Grown-up Setup (the gear), where Buddy's actor can also be chosen. Every line is mirrored on screen as text; append `?mute=1` to force silence
+- **Voice:** optional — Buddy speaks from bundled audio clips in one pre-recorded voice (the Qwen3-TTS "Uncle Fu" preset), **off by default**; a grown-up turns it on in Grown-up Setup (the gear) and can hear a sample there. Every line is mirrored on screen as text; append `?mute=1` to force silence
+
+  **Voice pack:** `pnpm voice:generate` renders any missing clips via the local studio at `$STUDIO_DIR` (default `/Users/ionutale/developer-playground/qwen3-tts-mlx-studio`); `pnpm voice:verify` checks completeness against the manifest; `pnpm voice:review` writes `voice/review/index.html` + `reel.mp3`.
 - **No reading needed to play:** the child answers pictures, not text. Every line appears on screen so a grown-up can read along — and with voice on, it is read aloud
 
 ## Develop

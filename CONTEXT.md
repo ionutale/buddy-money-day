@@ -49,5 +49,5 @@ The tuck-in line that closes every Money Day: what was earned today and where th
 _Avoid_: summary, report card, stats
 
 **Grown-up Setup**:
-The only text screen: first-run name entry, the Voice switch and Buddy's actor choice (voice is off until a grown-up turns it on), and game reset. Exists for the parent, never required for play.
+The only text screen: first-run name entry, the Voice switch and a "Hear Buddy" sample (voice is off until a grown-up turns it on; Buddy's voice is one pre-recorded voice, the Qwen3-TTS "Uncle Fu" preset), and game reset. Exists for the parent, never required for play.
 _Avoid_: parent mode, settings, menu, dashboard
