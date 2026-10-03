@@ -1,14 +1,8 @@
 <script lang="ts">
 	import { actions, game } from '$lib/game/game.svelte';
-	import { lines } from '$lib/game/lines';
-	import {
-		refreshVoices,
-		settings,
-		setVoiceURI,
-		toggleVoice,
-		voiceOptions
-	} from '$lib/game/settings.svelte';
-	import { cancelSpeech, speak } from '$lib/game/speech';
+	import { settings, toggleVoice } from '$lib/game/settings.svelte';
+	import { cancelSpeech, speakFragments } from '$lib/game/speech';
+	import { spoken, TOGGLE_ON } from '$lib/game/spoken';
 	import Buddy from './Buddy.svelte';
 
 	type Props = {
@@ -28,25 +22,9 @@
 	$effect(() => {
 		if (spoke) return;
 		spoke = true;
-		speak(lines.setup(game.state));
+		speakFragments(spoken.setup(game.state));
 	});
 
-	// Voice lists arrive asynchronously on phones (and can change when the OS
-	// installs voices), so refresh now and then on `voiceschanged`.
-	$effect(() => {
-		refreshVoices();
-		try {
-			if (typeof window === 'undefined') return;
-			const synth = window.speechSynthesis;
-			if (!synth?.addEventListener) return;
-			const onChange = () => refreshVoices();
-			synth.addEventListener('voiceschanged', onChange);
-			return () => synth.removeEventListener('voiceschanged', onChange);
-		} catch {
-			/* voices are optional, never fatal */
-			return;
-		}
-	});
 
 	$effect(() => {
 		if (mode === 'name') nameInput?.focus({ preventScroll: true });
@@ -66,13 +44,12 @@
 
 	function onToggleVoice(): void {
 		const nowOn = toggleVoice();
-		if (nowOn) speak('Voice on!');
+		if (nowOn) speakFragments([TOGGLE_ON]);
 		else cancelSpeech();
 	}
 
-	function pickVoice(uri: string | null): void {
-		setVoiceURI(uri);
-		speak(lines.voiceSample(game.state));
+	function previewVoice(): void {
+		speakFragments(spoken.voiceSample(game.state));
 	}
 
 	function confirmReset(): void {
@@ -111,40 +88,14 @@
 	</div>
 	<p class="setup-hint">Text bubbles always stay on.</p>
 	{#if settings.voiceEnabled}
-		{#if voiceOptions.list.length > 0}
-			<div class="voice-picker" role="radiogroup" aria-label="Buddy's voice">
-				<span class="picker-label">Buddy's voice</span>
-				<div class="voice-list">
-					<button
-						type="button"
-						class="voice-option"
-						class:selected={settings.voiceURI === null}
-						role="radio"
-						aria-checked={settings.voiceURI === null}
-						data-testid="voice-option-default"
-						onclick={() => pickVoice(null)}
-					>
-						<span>System default</span>
-					</button>
-					{#each voiceOptions.list as voice, index (voice.uri)}
-						<button
-							type="button"
-							class="voice-option"
-							class:selected={settings.voiceURI === voice.uri}
-							role="radio"
-							aria-checked={settings.voiceURI === voice.uri}
-							data-testid="voice-option-{index}"
-							onclick={() => pickVoice(voice.uri)}
-						>
-							<span>{voice.name}</span>
-							<span class="voice-lang">{voice.lang}</span>
-						</button>
-					{/each}
-				</div>
-			</div>
-		{:else}
-			<p class="setup-hint">No extra voices found on this device — the system voice will speak.</p>
-		{/if}
+		<button
+			type="button"
+			class="btn btn-ghost"
+			data-testid="voice-preview"
+			onclick={previewVoice}
+		>
+			Hear Buddy
+		</button>
 	{/if}
 {/snippet}
 
@@ -154,8 +105,7 @@
 			<Buddy mood="happy" size={116} />
 			<h1 class="setup-title">Grown-up Setup</h1>
 			<p class="setup-copy">
-				What should Buddy call your child? The name stays on this phone and is only ever spoken
-				aloud.
+				What should Buddy call your child? The name stays on this phone and only ever appears on screen.
 			</p>
 			{@render voiceSection()}
 			<input
@@ -316,61 +266,12 @@
 		color: var(--ink-soft);
 	}
 
-	.voice-picker {
-		width: 100%;
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-	}
 
-	.picker-label {
-		font-size: 17px;
-		font-weight: 700;
-		text-align: left;
-	}
 
-	.voice-list {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-		max-height: 216px;
-		overflow-y: auto;
-		padding: 2px;
-	}
 
-	.voice-option {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 10px;
-		width: 100%;
-		min-height: 60px;
-		padding: 10px 16px;
-		border-radius: 18px;
-		border: 3px solid transparent;
-		background: #fffdf8;
-		box-shadow: 0 3px 0 rgba(74, 55, 40, 0.1);
-		font-size: 17px;
-		font-weight: 600;
-		text-align: left;
-		cursor: pointer;
-	}
 
-	.voice-option.selected {
-		border-color: #7cbcd9;
-		background: rgba(191, 227, 245, 0.45);
-	}
 
-	.voice-option:focus-visible {
-		outline: 4px solid var(--sky);
-		outline-offset: 2px;
-	}
 
-	.voice-lang {
-		font-size: 14px;
-		font-weight: 500;
-		color: var(--ink-soft);
-	}
 
 	.name-input {
 		width: 100%;

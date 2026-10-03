@@ -2,7 +2,8 @@
 	import { TOY_PRICES } from '$lib/game/economy';
 	import { actions, game } from '$lib/game/game.svelte';
 	import { lines } from '$lib/game/lines';
-	import { speak } from '$lib/game/speech';
+	import { spoken } from '$lib/game/spoken';
+	import { speakFragments } from '$lib/game/speech';
 	import { sounds } from '$lib/game/sounds';
 	import Buddy from './Buddy.svelte';
 	import Bubble from './Bubble.svelte';
@@ -20,7 +21,7 @@
 	$effect(() => {
 		if (spoke) return;
 		spoke = true;
-		speak(lines.dreamReached(game.state));
+		speakFragments(spoken.dreamReached(game.state));
 		sounds.chime();
 		// The item arcs from the reveal into its place on the strip.
 		timer = setTimeout(() => {

@@ -2,8 +2,8 @@
 	import type { ToyId } from '$lib/game/economy';
 	import { tick } from 'svelte';
 	import { actions, game } from '$lib/game/game.svelte';
-	import { lines } from '$lib/game/lines';
-	import { speak } from '$lib/game/speech';
+	import { spoken } from '$lib/game/spoken';
+	import { speakFragments } from '$lib/game/speech';
 	import { unlock } from '$lib/game/sounds';
 	import Buddy from './Buddy.svelte';
 	import GoalBanner from './GoalBanner.svelte';
@@ -35,7 +35,7 @@
 	$effect(() => {
 		if (spoke) return;
 		spoke = true;
-		speak(lines.start(game.state));
+		speakFragments(spoken.start(game.state));
 	});
 
 	function play(): void {

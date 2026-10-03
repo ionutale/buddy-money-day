@@ -1,14 +1,15 @@
 <script lang="ts">
 	import { actions, game } from '$lib/game/game.svelte';
 	import { buddyName, lines } from '$lib/game/lines';
-	import { speak } from '$lib/game/speech';
+	import { spoken } from '$lib/game/spoken';
+	import { speakFragments } from '$lib/game/speech';
 	import Buddy from './Buddy.svelte';
 
 	let spoke = $state(false);
 	$effect(() => {
 		if (spoke) return;
 		spoke = true;
-		speak(lines.recapLine(game.state));
+		speakFragments(spoken.recapLine(game.state));
 	});
 </script>
 

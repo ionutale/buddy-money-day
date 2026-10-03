@@ -3,9 +3,10 @@
 	import { banner } from '$lib/game/banner.svelte';
 	import { flyCoins, goalSlotPoint, hudCoinPoint } from '$lib/game/flights.svelte';
 	import { actions, game } from '$lib/game/game.svelte';
-	import { lines, storeCompare } from '$lib/game/lines';
+	import { lines } from '$lib/game/lines';
+	import { spoken } from '$lib/game/spoken';
 	import { savePreview } from '$lib/game/state';
-	import { speak } from '$lib/game/speech';
+	import { speakFragments } from '$lib/game/speech';
 	import { sounds } from '$lib/game/sounds';
 	import { toast } from '$lib/game/toasts.svelte';
 	import Bubble from './Bubble.svelte';
@@ -43,7 +44,7 @@
 	$effect(() => {
 		if (spoke) return;
 		spoke = true;
-		speak(lines.store(game.state));
+		speakFragments(spoken.store(game.state));
 	});
 
 	$effect(() => () => clearTimeout(timer));
@@ -52,7 +53,7 @@
 	function celebrateBuy(): void {
 		buying = true;
 		sounds.pop();
-		speak(lines.storeBought(game.state));
+		speakFragments(spoken.storeBought(game.state));
 		toast(`${lines.storeBought(game.state)} ${lines.dreamStands(game.state)}`);
 		const rect = ballEl?.getBoundingClientRect();
 		flyCoins({
@@ -71,12 +72,12 @@
 	function tapBall(): void {
 		if (saving || buying) return;
 		if (ownsBall) {
-			speak(lines.storeOwned(game.state));
+			speakFragments(spoken.storeOwned(game.state));
 			return;
 		}
 		if (!canAffordBall) {
-			compare = storeCompare('ball', game.state);
-			speak(compare);
+			compare = spoken.storeCompare('ball', game.state).join(' ');
+			speakFragments(spoken.storeCompare('ball', game.state));
 			return;
 		}
 		compare = null;
@@ -87,7 +88,7 @@
 		if (saving || buying) return;
 		saving = true;
 		sounds.coin();
-		speak(lines.storeSave(game.state));
+		speakFragments(spoken.storeSave(game.state));
 		toast(lines.storeSave(game.state));
 		const rect = saveEl?.getBoundingClientRect();
 		const from = rect

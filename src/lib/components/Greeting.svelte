@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { actions, game } from '$lib/game/game.svelte';
 	import { lines } from '$lib/game/lines';
-	import { speak } from '$lib/game/speech';
+	import { spoken } from '$lib/game/spoken';
+	import { speakFragments } from '$lib/game/speech';
 	import Buddy from './Buddy.svelte';
 	import Bubble from './Bubble.svelte';
 
@@ -11,7 +12,7 @@
 	$effect(() => {
 		if (spoke) return;
 		spoke = true;
-		speak(lines.greetingPlan(game.state));
+		speakFragments(spoken.greetingPlan(game.state));
 	});
 </script>
 

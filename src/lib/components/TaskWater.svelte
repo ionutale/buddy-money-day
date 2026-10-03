@@ -3,7 +3,8 @@
 	import { flyCoins, hudCoinPoint } from '$lib/game/flights.svelte';
 	import { actions, game } from '$lib/game/game.svelte';
 	import { lines } from '$lib/game/lines';
-	import { speak } from '$lib/game/speech';
+	import { spoken } from '$lib/game/spoken';
+	import { speakFragments } from '$lib/game/speech';
 	import { sounds } from '$lib/game/sounds';
 	import { toast } from '$lib/game/toasts.svelte';
 	import Bubble from './Bubble.svelte';
@@ -23,7 +24,7 @@
 	$effect(() => {
 		if (spoke) return;
 		spoke = true;
-		speak(lines.water(game.state));
+		speakFragments(spoken.water(game.state));
 	});
 
 	$effect(() => () => clearTimeout(timer));
@@ -39,7 +40,7 @@
 		} else {
 			bloom = true;
 			sounds.chime();
-			speak(lines.waterPaid(game.state));
+			speakFragments(spoken.waterPaid(game.state));
 			toast(lines.waterPaid(game.state));
 			const rect = treeEl?.getBoundingClientRect();
 			flyCoins({

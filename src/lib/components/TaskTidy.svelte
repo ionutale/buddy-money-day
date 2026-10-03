@@ -3,7 +3,8 @@
 	import { flyCoins, hudCoinPoint } from '$lib/game/flights.svelte';
 	import { actions, game } from '$lib/game/game.svelte';
 	import { lines } from '$lib/game/lines';
-	import { speak } from '$lib/game/speech';
+	import { spoken } from '$lib/game/spoken';
+	import { speakFragments } from '$lib/game/speech';
 	import { sounds } from '$lib/game/sounds';
 	import { toast } from '$lib/game/toasts.svelte';
 	import { pickTidyToys, type TidyKind } from '$lib/game/tidyPool';
@@ -62,7 +63,7 @@
 	$effect(() => {
 		if (spoke) return;
 		spoke = true;
-		speak(lines.tidy(game.state));
+		speakFragments(spoken.tidy(game.state));
 	});
 
 	$effect(() => () => clearTimeout(timer));
@@ -140,7 +141,7 @@
 		advancing = true;
 		paying = true;
 		sounds.coin();
-		speak(lines.tidyPaid(game.state));
+		speakFragments(spoken.tidyPaid(game.state));
 		toast(lines.tidyPaid(game.state));
 		const rect = boxEl?.getBoundingClientRect();
 		flyCoins({

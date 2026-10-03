@@ -14,19 +14,9 @@ export type Settings = {
 	 * preference always wins over this default.
 	 */
 	voiceEnabled: boolean;
-	/**
-	 * voiceURI of the chosen speech-synthesis actor; null = the device's
-	 * default voice. Actors are device-provided, so the choice is stored by
-	 * URI and silently falls back to the default if that voice disappears.
-	 */
-	voiceURI: string | null;
 };
 
-export const DEFAULT_SETTINGS: Settings = { voiceEnabled: false, voiceURI: null };
-
-function isVoiceURI(value: unknown): value is string | null {
-	return value === null || typeof value === 'string';
-}
+export const DEFAULT_SETTINGS: Settings = { voiceEnabled: false };
 
 export function loadSettings(storage: StorageLike = defaultStorage()): Settings {
 	try {
@@ -36,10 +26,8 @@ export function loadSettings(storage: StorageLike = defaultStorage()): Settings 
 		if (typeof parsed !== 'object' || parsed === null) return { ...DEFAULT_SETTINGS };
 		const stored = parsed as Record<string, unknown>;
 		if (typeof stored.voiceEnabled !== 'boolean') return { ...DEFAULT_SETTINGS };
-		return {
-			voiceEnabled: stored.voiceEnabled,
-			voiceURI: isVoiceURI(stored.voiceURI) ? stored.voiceURI : null
-		};
+		// Older saves may carry `voiceURI` (the retired actor picker); ignored.
+		return { voiceEnabled: stored.voiceEnabled };
 	} catch {
 		return { ...DEFAULT_SETTINGS };
 	}

@@ -2,7 +2,8 @@
 	import { FEED_REWARD, TIDY_REWARD, WATER_REWARD } from '$lib/game/economy';
 	import { actions, game } from '$lib/game/game.svelte';
 	import { lines } from '$lib/game/lines';
-	import { speak } from '$lib/game/speech';
+	import { spoken } from '$lib/game/spoken';
+	import { speakFragments } from '$lib/game/speech';
 	import { allChoresDone, openFeed, openTidy, openWater } from '$lib/game/state';
 	import Bubble from './Bubble.svelte';
 	import Coin from './Coin.svelte';
@@ -27,7 +28,7 @@
 	$effect(() => {
 		if (!cap || spokeCap) return;
 		spokeCap = true;
-		speak(lines.cap(game.state));
+		speakFragments(spoken.cap(game.state));
 	});
 </script>
 

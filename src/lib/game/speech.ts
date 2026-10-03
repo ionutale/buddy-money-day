@@ -1,11 +1,22 @@
+import { base } from '$app/paths';
 import { settings } from './settings.svelte';
+import { voiceMap } from './voice-map';
 
 /**
- * Buddy's voice. Fire-and-forget: every call cancels the previous line and
- * speaks the new one — nothing ever awaits. Silent when the grown-up turned
- * Voice off in Grown-up Setup, when `?mute=1` is in the URL, or in browsers
- * without speech synthesis. Text bubbles always keep the words.
+ * Buddy's voice, played from bundled audio. Fire-and-forget: every call cancels
+ * the previous line and plays the new one's fragments in order. Silent when the
+ * grown-up turned Voice off, when `?mute=1` is in the URL, or when a clip is
+ * missing or blocked. Text bubbles always keep the words.
  */
+
+type AudioLike = {
+	src: string;
+	preload: string;
+	onended: (() => void) | null;
+	onerror: (() => void) | null;
+	play: () => Promise<void> | void;
+	pause: () => void;
+};
 
 function isMutedByQuery(): boolean {
 	try {
@@ -15,45 +26,75 @@ function isMutedByQuery(): boolean {
 	}
 }
 
-function hasSpeech(): boolean {
-	return (
-		typeof window !== 'undefined' &&
-		'speechSynthesis' in window &&
-		typeof SpeechSynthesisUtterance !== 'undefined'
-	);
-}
-
 function voiceAllowed(): boolean {
-	return settings.voiceEnabled && !isMutedByQuery() && hasSpeech();
+	return settings.voiceEnabled && !isMutedByQuery();
 }
 
+function urlFor(text: string): string | null {
+	const id = voiceMap[text];
+	return id ? `${base}/voice/${id}.mp3` : null;
+}
+
+let playing: AudioLike[] | null = null;
+
+/** Stop whatever is speaking. Never throws. */
 export function cancelSpeech(): void {
-	if (!hasSpeech()) return;
+	if (!playing) return;
+	for (const clip of playing) {
+		try {
+			clip.onended = null;
+			clip.onerror = null;
+			clip.pause();
+		} catch {
+			/* voice is optional, never fatal */
+		}
+	}
+	playing = null;
+}
+
+function makeAudio(url: string): AudioLike | null {
 	try {
-		window.speechSynthesis.cancel();
+		if (typeof Audio === 'undefined') return null;
+		const clip = new Audio(url) as unknown as AudioLike;
+		clip.preload = 'auto';
+		return clip;
 	} catch {
-		/* voice is optional, never fatal */
+		return null;
 	}
 }
 
-/** Cancel-then-speak. Never throws, never blocks. */
-export function speak(text: string): void {
-	if (!voiceAllowed() || text === '') return;
-	try {
-		const synth = window.speechSynthesis;
-		synth.cancel();
-		const line = new SpeechSynthesisUtterance(text);
-		line.rate = 0.92;
-		line.pitch = 1.12;
-		const chosen = settings.voiceURI;
-		if (chosen) {
-			// The chosen actor may have vanished (another phone, an OS update):
-			// fall back to the device default instead of failing.
-			const voice = synth.getVoices().find((v) => v.voiceURI === chosen);
-			if (voice) line.voice = voice;
-		}
-		synth.speak(line);
-	} catch {
-		/* voice is optional, never fatal */
+/** Cancel-then-speak a sequence of fragments. Never throws, never blocks. */
+export function speakFragments(texts: string[]): void {
+	if (!voiceAllowed()) return;
+	const clips: AudioLike[] = [];
+	for (const text of texts) {
+		const url = urlFor(text);
+		if (!url) continue;
+		const clip = makeAudio(url);
+		if (clip) clips.push(clip);
 	}
+	if (clips.length === 0) return;
+	cancelSpeech();
+	playing = clips;
+
+	let index = 0;
+	const playNext = (): void => {
+		const clip = clips[index++];
+		if (!clip) {
+			playing = null;
+			return;
+		}
+		clip.onended = playNext;
+		clip.onerror = playNext;
+		try {
+			const started = clip.play();
+			if (started && typeof started.catch === 'function') {
+				// Autoplay blocked (pre-gesture) or decode error: stay silent.
+				started.catch(() => undefined);
+			}
+		} catch {
+			/* voice is optional, never fatal */
+		}
+	};
+	playNext();
 }

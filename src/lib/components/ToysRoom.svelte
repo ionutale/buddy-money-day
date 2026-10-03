@@ -2,7 +2,8 @@
 	import { TOY_LABELS, type ToyId } from '$lib/game/economy';
 	import { game } from '$lib/game/game.svelte';
 	import { lines } from '$lib/game/lines';
-	import { speak } from '$lib/game/speech';
+	import { spoken } from '$lib/game/spoken';
+	import { speakFragments } from '$lib/game/speech';
 	import GoalItem from './GoalItem.svelte';
 	import HouseButton from './HouseButton.svelte';
 
@@ -41,7 +42,7 @@
 	$effect(() => {
 		if (spoke || items.length > 0) return;
 		spoke = true;
-		speak(lines.toysEmpty(game.state));
+		speakFragments(spoken.toysEmpty(game.state));
 	});
 
 	function tapToy(id: ToyId, index: number): void {

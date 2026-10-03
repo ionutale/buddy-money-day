@@ -3,7 +3,8 @@
 	import { flyCoins, hudCoinPoint } from '$lib/game/flights.svelte';
 	import { actions, game } from '$lib/game/game.svelte';
 	import { lines } from '$lib/game/lines';
-	import { speak } from '$lib/game/speech';
+	import { spoken } from '$lib/game/spoken';
+	import { speakFragments } from '$lib/game/speech';
 	import { sounds } from '$lib/game/sounds';
 	import { toast } from '$lib/game/toasts.svelte';
 	import Buddy from './Buddy.svelte';
@@ -50,7 +51,7 @@
 	$effect(() => {
 		if (spoke) return;
 		spoke = true;
-		speak(lines.feed(game.state));
+		speakFragments(spoken.feed(game.state));
 	});
 
 	$effect(() => () => clearTimeout(timer));
@@ -130,7 +131,7 @@
 		advancing = true;
 		paying = true;
 		sounds.coin();
-		speak(lines.feedPaid(game.state));
+		speakFragments(spoken.feedPaid(game.state));
 		toast(lines.feedPaid(game.state));
 		const rect = bowlEl?.getBoundingClientRect();
 		flyCoins({
