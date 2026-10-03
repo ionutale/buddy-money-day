@@ -14,7 +14,10 @@
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"test:e2e": "playwright test",
-		"voice:lines": "tsx scripts/build-voice-lines.ts"
+		"voice:lines": "tsx scripts/build-voice-lines.ts",
+		"voice:generate": "bash scripts/generate-voice.sh",
+		"voice:verify": "tsx scripts/verify-voice.ts",
+		"voice:review": "tsx scripts/build-voice-review.ts"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.63.0",

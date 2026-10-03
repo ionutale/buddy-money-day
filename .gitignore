@@ -30,3 +30,6 @@ blob-report
 # Vercel
 .vercel
 .env*
+
+# Voice review artifacts
+/voice/review/
