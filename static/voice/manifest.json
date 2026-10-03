@@ -1,0 +1,527 @@
+[
+  {
+    "id": "50d9464c54",
+    "text": "10 more chores tomorrow!",
+    "bytes": 28269,
+    "duration": 2.272208,
+    "sha256": "ef52649e6053645124b62b362b460fcb3b54408991c2a9bd4a2646c7ce77b4d5"
+  },
+  {
+    "id": "ba45ba5693",
+    "text": "11 more chores tomorrow!",
+    "bytes": 21357,
+    "duration": 1.682833,
+    "sha256": "f4747bcc1029b7eb68dc51c5229240b2d37c257ae7eadb049ad46199a92de3a2"
+  },
+  {
+    "id": "d26d6668bc",
+    "text": "3 more chores tomorrow!",
+    "bytes": 29421,
+    "duration": 2.358958,
+    "sha256": "e5d80574c78586940daee7f3cd039a6969279828deae3dd4023766f694fccceb"
+  },
+  {
+    "id": "ff77a641dc",
+    "text": "4 more chores tomorrow!",
+    "bytes": 28845,
+    "duration": 2.32175,
+    "sha256": "fa10756dbd4c8409867c24ddd68cab8101373ed4dfdef9ca69a40cac657441ae"
+  },
+  {
+    "id": "4c8d18fede",
+    "text": "5 more chores tomorrow!",
+    "bytes": 19917,
+    "duration": 1.574083,
+    "sha256": "354cae1f0d55db639a4855b54d5e9edec2888d3fe37f001e8b0c82f49548cd1c"
+  },
+  {
+    "id": "057fa50c4a",
+    "text": "6 more chores tomorrow!",
+    "bytes": 51597,
+    "duration": 4.205875,
+    "sha256": "3fa618eeeca63c79f6e9289de8be1582703e101d72c41407052f8f6cce86f97d"
+  },
+  {
+    "id": "8cf4e39c63",
+    "text": "7 more chores tomorrow!",
+    "bytes": 28845,
+    "duration": 2.319417,
+    "sha256": "1d3a66d03bdc76752b92648a62957eb3fd26f194bb477991055567da1aa00ffd"
+  },
+  {
+    "id": "98527d1c17",
+    "text": "8 more chores tomorrow!",
+    "bytes": 19341,
+    "duration": 1.535875,
+    "sha256": "b86609260c9050d55081f2728f95cc2c36bcf2aee0b58640bc4875caa68d072f"
+  },
+  {
+    "id": "f14583470c",
+    "text": "9 more chores tomorrow!",
+    "bytes": 29133,
+    "duration": 2.339667,
+    "sha256": "ae500938f8d80e44a677178c4b25ee645d0df9a27713024959de2c995f4bd276"
+  },
+  {
+    "id": "7afe748255",
+    "text": "All chores done! More tomorrow.",
+    "bytes": 42669,
+    "duration": 3.460542,
+    "sha256": "c03cc85bb9e6bc2278cdbdea7a4b2be71992b3767b03d52ea1dc8706eff95ac4"
+  },
+  {
+    "id": "84daf27b2c",
+    "text": "Drag the toy all the way into the box!",
+    "bytes": 36621,
+    "duration": 2.968208,
+    "sha256": "e3dd8c9c0d725939d99537f6d66395e14301dc4d02816382440076bfd64fc940"
+  },
+  {
+    "id": "33e8886999",
+    "text": "Good morning!",
+    "bytes": 54189,
+    "duration": 4.432208,
+    "sha256": "2ec6c70a173713d24c3b45ddffefc3d31e5b82dc2b660b8e3570aa822a64a1c3"
+  },
+  {
+    "id": "0f04dfd049",
+    "text": "Hello again!",
+    "bytes": 13581,
+    "duration": 1.046125,
+    "sha256": "29f55facac3c56d6197803d854a0bb416615ddb18d60e7df02a1ec9cfe33e9ba"
+  },
+  {
+    "id": "29fa512e8f",
+    "text": "Hello! A grown-up can type a name, or skip.",
+    "bytes": 53613,
+    "duration": 4.389417,
+    "sha256": "e597a13d6ac0835690292bf47ee9e664ff31c01a57e5a2bd5d43ea413936d1c0"
+  },
+  {
+    "id": "7d8b171a1c",
+    "text": "Hi there! This is how Buddy will sound.",
+    "bytes": 29709,
+    "duration": 2.39125,
+    "sha256": "7d54364a0bbdb43e60e3a4a1e09cefc5b3dc52e59cbb6347e2fbdd436af7f8ea"
+  },
+  {
+    "id": "903f495d16",
+    "text": "Hi! Buddy is ready for a Money Day.",
+    "bytes": 34605,
+    "duration": 2.795875,
+    "sha256": "66cc72eb66bb6fa67ab3c3d46f642e20382c927e60694ae03b117c7e275bfaf1"
+  },
+  {
+    "id": "dbc5fbad93",
+    "text": "I'm hungry! Feed me and I'll pay you a coin!",
+    "bytes": 44973,
+    "duration": 3.671792,
+    "sha256": "8ec977326690dd7a6d511a0ba415e0ad1f7ca5a2f74cc55150530989febcb6d7"
+  },
+  {
+    "id": "d3209ca74a",
+    "text": "In your room!",
+    "bytes": 13293,
+    "duration": 1.020542,
+    "sha256": "feb59243b80b30e3a1cc26b721664ad213f4bc690d0e47126486db5fbd7695b4"
+  },
+  {
+    "id": "bb007efbc7",
+    "text": "It's in your room!",
+    "bytes": 16173,
+    "duration": 1.253667,
+    "sha256": "27c0f1fea0988591e391f1669f09b574bfe2856556ac1f1d6560782abf56177b"
+  },
+  {
+    "id": "4842f9317b",
+    "text": "Look at this mess! Tidy the toys \u2014 I'll pay you two coins!",
+    "bytes": 102573,
+    "duration": 8.455875,
+    "sha256": "6bc9e7564d87a15cae48213e0018d6a2452e3e84f538515d28923fe8ce7e9c13"
+  },
+  {
+    "id": "e1588a1e3b",
+    "text": "More chores tomorrow!",
+    "bytes": 126189,
+    "duration": 10.424458,
+    "sha256": "be0cbab641cff67a8a602de5c975cceba5e494431877b24161b2b134de4cd400"
+  },
+  {
+    "id": "951ae522d7",
+    "text": "No toys yet! Do chores, then visit the store.",
+    "bytes": 53613,
+    "duration": 4.373083,
+    "sha256": "95d783a4e4d1538d4cada12a58d403cd47ee93bd2a74edec7d087426627e3bb7"
+  },
+  {
+    "id": "a495aad66d",
+    "text": "One coin earned!",
+    "bytes": 21069,
+    "duration": 1.668542,
+    "sha256": "7226250dc257e97207a07ca64ca886780fcab0b8ae2360c45c7294c9d2c47d6b"
+  },
+  {
+    "id": "b3c6df5b13",
+    "text": "One more chore tomorrow!",
+    "bytes": 23949,
+    "duration": 1.904542,
+    "sha256": "0055a362e26c9fdecfd68c26cbfc1661317d542753c558db1db9001ccbeeb60a"
+  },
+  {
+    "id": "ea2cd76e2b",
+    "text": "Save the rest for your big teddy.",
+    "bytes": 31149,
+    "duration": 2.516083,
+    "sha256": "5a1a2961d59dfb3663d0102f3ac1fa635850e5ed1754cc3785677939346971bd"
+  },
+  {
+    "id": "0519c7c260",
+    "text": "Save the rest for your wagon.",
+    "bytes": 27405,
+    "duration": 2.185958,
+    "sha256": "ab71fe27510557d7b2b1c0d74f917404b71d6e5fde269c0a2dce72d2bb8946a5"
+  },
+  {
+    "id": "4d8d3ef043",
+    "text": "That's 2 coins \u2014 you have 0.",
+    "bytes": 79245,
+    "duration": 6.515792,
+    "sha256": "2469ae969ac870d05f94402d44217b1a555685bcf42eacd27f65eaa5da34ebc6"
+  },
+  {
+    "id": "120f8179cc",
+    "text": "That's 2 coins \u2014 you have 1.",
+    "bytes": 49293,
+    "duration": 4.026417,
+    "sha256": "42c4ced47989d08f549b0c75831b46e0dda75c2bbc9c8907b5b7da652d62ade5"
+  },
+  {
+    "id": "36f6d04bd2",
+    "text": "The big teddy is yours.",
+    "bytes": 71757,
+    "duration": 5.883125,
+    "sha256": "630a98224170a762b8ec6ec3f5abfe3a35543257835dee592c9b03f9a49b9b9f"
+  },
+  {
+    "id": "64906e9846",
+    "text": "The little tree is thirsty! Water it \u2014 one coin!",
+    "bytes": 61677,
+    "duration": 5.048833,
+    "sha256": "88badbb974750d7d995180405fdedf8cb3f19d5a6fddb573cc453262ea82ab1b"
+  },
+  {
+    "id": "ebd48fa7d7",
+    "text": "The wagon is yours.",
+    "bytes": 16173,
+    "duration": 1.249958,
+    "sha256": "4582dd437f951e0234b2218124a996d699c2c120371fcf8a5b0587bec5983f69"
+  },
+  {
+    "id": "b1c9f1f1ca",
+    "text": "Time to choose! A toy now, or save for your big teddy?",
+    "bytes": 68301,
+    "duration": 5.603167,
+    "sha256": "1525ed2a567bcb3471de32c4622df9b23caaa6db29e487bd83fece60d5766703"
+  },
+  {
+    "id": "2253afc812",
+    "text": "Time to choose! A toy now, or save for your wagon?",
+    "bytes": 44397,
+    "duration": 3.602458,
+    "sha256": "1591053843998dfb6fe05c79d7f326a94f33e312d0c064eacab8ad3075e39243"
+  },
+  {
+    "id": "16766d5f52",
+    "text": "Today we can earn 4 coins for your big teddy!",
+    "bytes": 42957,
+    "duration": 3.489792,
+    "sha256": "cbc01d056597c22f411d3dbf93b09242064348c030cc51a4ac3d94a25dc21769"
+  },
+  {
+    "id": "f0e6684da3",
+    "text": "Today we can earn 4 coins for your wagon!",
+    "bytes": 35469,
+    "duration": 2.873042,
+    "sha256": "796af11910cacba0d00f0cea09294a852ebbc371905b48a93f6bed23873eff30"
+  },
+  {
+    "id": "988d079ec1",
+    "text": "Today you earned 0 coins.",
+    "bytes": 30573,
+    "duration": 2.464083,
+    "sha256": "ba77ae1ba9e21415ef94bf06b6dd4e0595277874bd236cc6a34f8f0c3d34e30c"
+  },
+  {
+    "id": "9aa2da8f91",
+    "text": "Today you earned 1 coin.",
+    "bytes": 23373,
+    "duration": 1.849958,
+    "sha256": "e426b94881b66cccb15ad84c73857667232ac0411ccfc4bec7f018bdd0764a5d"
+  },
+  {
+    "id": "f3977842b4",
+    "text": "Today you earned 2 coins.",
+    "bytes": 22221,
+    "duration": 1.7665,
+    "sha256": "e423fb781ece6e7218a6ea1f90e8f41ab1d421e1135ed46a67dd19bc8804bc28"
+  },
+  {
+    "id": "1135cca81b",
+    "text": "Today you earned 3 coins.",
+    "bytes": 33165,
+    "duration": 2.666208,
+    "sha256": "03b89d409afdd418b0a9ea3ffa7ca0f46aa89cea3459f5115adc9b8a3a745dd1"
+  },
+  {
+    "id": "63c08d588d",
+    "text": "Today you earned 4 coins.",
+    "bytes": 34029,
+    "duration": 2.749958,
+    "sha256": "f0864b43de27198a431efc2c64f26e86a7f8a2978c4dc57774063ff6c8b06149"
+  },
+  {
+    "id": "f99f6d18b5",
+    "text": "Tomorrow we can earn more!",
+    "bytes": 25389,
+    "duration": 2.03,
+    "sha256": "0cd0d74f6625ec1e75594c870b54644c44035b35143ad6e7871ebf85e0514fcc"
+  },
+  {
+    "id": "862258dc6f",
+    "text": "Two coins earned!",
+    "bytes": 17613,
+    "duration": 1.378208,
+    "sha256": "3dbde83a2ef5fe99cd5b3ede602dbbe24751761bbbd1c6493b1b21cd073c8291"
+  },
+  {
+    "id": "9601b03567",
+    "text": "Two more chores tomorrow!",
+    "bytes": 22797,
+    "duration": 1.807375,
+    "sha256": "35caf1b7454f3822671a65e8d1b49ee32f52f2e594c5ff236d1ba4b5ec8dd972"
+  },
+  {
+    "id": "f1f75d6deb",
+    "text": "Voice on!",
+    "bytes": 12717,
+    "duration": 0.961958,
+    "sha256": "13731b1530dace74eb92387fb9f4443dcf94ff77588577eb97c03ac0de303a24"
+  },
+  {
+    "id": "559b1abf4a",
+    "text": "You did it!",
+    "bytes": 14733,
+    "duration": 1.137625,
+    "sha256": "3274829cafd1bd2a4a34f108260dc11671b0653735daf2a75c6acd3f3ed9dbd9"
+  },
+  {
+    "id": "ba039917ac",
+    "text": "You did it! You saved 12 coins for your very own big teddy!",
+    "bytes": 52173,
+    "duration": 4.252958,
+    "sha256": "58b8016eb21dcacb3fdb9c8b1e6cfb3d003d62db7ebeb12a6af8e07401f53b45"
+  },
+  {
+    "id": "bf07d438ad",
+    "text": "You did it! You saved 12 coins for your very own wagon!",
+    "bytes": 61389,
+    "duration": 5.035542,
+    "sha256": "2ef40518b437cf7b8dc04667743e5740c9dd427e0d8950ed6c815d20c97f96b1"
+  },
+  {
+    "id": "66aee7f970",
+    "text": "Your big teddy has 0 of 12.",
+    "bytes": 34893,
+    "duration": 2.823875,
+    "sha256": "1841351cc2d5bc7815842a091eb79bb49290308a820342dcf3d262f8c191fc1c"
+  },
+  {
+    "id": "edf2f28dec",
+    "text": "Your big teddy has 1 of 12.",
+    "bytes": 34893,
+    "duration": 2.813375,
+    "sha256": "7b84aef73e81440c66b4d29e06f379503bc999a210bd7bd36297a041d2cb9160"
+  },
+  {
+    "id": "4ffec92810",
+    "text": "Your big teddy has 10 of 12.",
+    "bytes": 30285,
+    "duration": 2.446792,
+    "sha256": "a9eb74abef142ba8674f822510cda13db1ae1d8551efe566680dd6df90209500"
+  },
+  {
+    "id": "201cd6a967",
+    "text": "Your big teddy has 11 of 12.",
+    "bytes": 40941,
+    "duration": 3.327042,
+    "sha256": "1ac83eb14745bb1a6bd3053f74e4b73c5fa2df751ea15f605ac2847940234f3a"
+  },
+  {
+    "id": "b6459832f6",
+    "text": "Your big teddy has 2 of 12.",
+    "bytes": 27405,
+    "duration": 2.204083,
+    "sha256": "e7643db68478bd9fc25a9166cd81c5cb7bd28d47340a9805561de0f73e225fbc"
+  },
+  {
+    "id": "0c609b202d",
+    "text": "Your big teddy has 3 of 12.",
+    "bytes": 30285,
+    "duration": 2.434292,
+    "sha256": "e7ec1e544876cb3d57c957b6d07efef65638963519523a8a10559f5b33c36cba"
+  },
+  {
+    "id": "bbd298ccf3",
+    "text": "Your big teddy has 4 of 12.",
+    "bytes": 38637,
+    "duration": 3.125458,
+    "sha256": "6df4b029b90d7dd846de2f43148ea9b49e51587eb444a716098a1af155bd80c1"
+  },
+  {
+    "id": "cf157ecaca",
+    "text": "Your big teddy has 5 of 12.",
+    "bytes": 36045,
+    "duration": 2.924625,
+    "sha256": "7ae1b766a6884a5a620e710e7a8859c2ecf0787b0ab55f0adbe2f3516a2194fb"
+  },
+  {
+    "id": "fbc48b84c1",
+    "text": "Your big teddy has 6 of 12.",
+    "bytes": 28269,
+    "duration": 2.279667,
+    "sha256": "218f834aa897912d0339e1173a19bcf79c4a107179e5ef0a501ab46eb0294cd1"
+  },
+  {
+    "id": "af01bb7ed3",
+    "text": "Your big teddy has 7 of 12.",
+    "bytes": 37773,
+    "duration": 3.065625,
+    "sha256": "3e6cff277343b38ae8a78bf3876fb93aec7dd1e66ffa4f990d35466cd9c782d6"
+  },
+  {
+    "id": "be0fb6ec3b",
+    "text": "Your big teddy has 8 of 12.",
+    "bytes": 33453,
+    "duration": 2.704458,
+    "sha256": "c1559a7e636bbd6023a63f12ec1ff97fa9f9ff5aa80502dc40a01a7a87df4467"
+  },
+  {
+    "id": "eeefb34038",
+    "text": "Your big teddy has 9 of 12.",
+    "bytes": 34029,
+    "duration": 2.738958,
+    "sha256": "14b113b1d50482537d71fb72314fd232dcab0e822f4f780dda958e844e043f2f"
+  },
+  {
+    "id": "5cb0f65a44",
+    "text": "Your big teddy is yours!",
+    "bytes": 29421,
+    "duration": 2.375458,
+    "sha256": "85b112e5bef511118c4630b376a6af17a2e5bff85c67904f92f043de00cf02c1"
+  },
+  {
+    "id": "9a86452cdf",
+    "text": "Your big teddy needs 12 coins \u2014 we can start tomorrow!",
+    "bytes": 64557,
+    "duration": 5.287667,
+    "sha256": "fdc25b6ce8709f1ca09a4e1b359c8b21a6514c3df1996ecd165150172f36160a"
+  },
+  {
+    "id": "6e4cc1b303",
+    "text": "Your wagon has 0 of 12.",
+    "bytes": 33741,
+    "duration": 2.734917,
+    "sha256": "5a2c59dc56ae72fc1b850e802f5bc87952d977f901c7761e6dbfff625cde97e6"
+  },
+  {
+    "id": "4123d902a6",
+    "text": "Your wagon has 1 of 12.",
+    "bytes": 26541,
+    "duration": 2.135208,
+    "sha256": "c3733d4ba340242e93cc9d80dc2931d6034a006ecf8b24e523289240098ac56e"
+  },
+  {
+    "id": "07e2ef339c",
+    "text": "Your wagon has 10 of 12.",
+    "bytes": 25101,
+    "duration": 2.014167,
+    "sha256": "ac20a79eaaa0de61c3bb660ddf6535091e2dba6b3ab02203b1fd767a8627b432"
+  },
+  {
+    "id": "4b665f9694",
+    "text": "Your wagon has 11 of 12.",
+    "bytes": 27117,
+    "duration": 2.178625,
+    "sha256": "2d155adbb554b50891c3234eb8ca97bda13a9bd8e8fa17c92eef8e1d2998c23a"
+  },
+  {
+    "id": "b08d46ee9e",
+    "text": "Your wagon has 2 of 12.",
+    "bytes": 23949,
+    "duration": 1.91975,
+    "sha256": "090844387b4f43b963b022b191e3b959f9b0754a291aa59942c529bec6485025"
+  },
+  {
+    "id": "c836463916",
+    "text": "Your wagon has 3 of 12.",
+    "bytes": 34029,
+    "duration": 2.742208,
+    "sha256": "6768829fed2a5f63bdb26fa6b38e77c7b6484a4df3b3ee8a403faae5533c3367"
+  },
+  {
+    "id": "0991a7bf6f",
+    "text": "Your wagon has 4 of 12.",
+    "bytes": 36333,
+    "duration": 2.93175,
+    "sha256": "50d1a37771c5039c394ff2985b5fd2958fc8107b38921c0c63f644edc12ff8b4"
+  },
+  {
+    "id": "3ae902d5f6",
+    "text": "Your wagon has 5 of 12.",
+    "bytes": 26541,
+    "duration": 2.133458,
+    "sha256": "4454f4da56cd4371c261724c0bc32133aadf688d4b352e193dad3556c85649fd"
+  },
+  {
+    "id": "fd30c0d358",
+    "text": "Your wagon has 6 of 12.",
+    "bytes": 30285,
+    "duration": 2.442292,
+    "sha256": "602fb71a3447810c6bbb5eab5be7013fc004a730d417d92674724eb1b463e8d4"
+  },
+  {
+    "id": "f75ef7bc00",
+    "text": "Your wagon has 7 of 12.",
+    "bytes": 30285,
+    "duration": 2.446583,
+    "sha256": "c7cb100fb3a17d612dd680467183484dd2ee25a51e6262f2a073ca56769fbced"
+  },
+  {
+    "id": "bd4a7017cc",
+    "text": "Your wagon has 8 of 12.",
+    "bytes": 26829,
+    "duration": 2.150208,
+    "sha256": "03b3dc6be319f7bba5cc5335de06ad15e8ed175ca54a401bcb2497c3ce14b4c3"
+  },
+  {
+    "id": "4a8749550b",
+    "text": "Your wagon has 9 of 12.",
+    "bytes": 27693,
+    "duration": 2.220792,
+    "sha256": "44be93672f59a8eab705a6e4dabad7f19bd2df9cb5af8bb0dbed740fc7532caf"
+  },
+  {
+    "id": "517829c354",
+    "text": "Your wagon is yours!",
+    "bytes": 17613,
+    "duration": 1.385292,
+    "sha256": "cb74d00a501e6c5450e452823d97f3d4d47fd9c3d9395b1dc5206e60203c7bfe"
+  },
+  {
+    "id": "3175cd6647",
+    "text": "Your wagon needs 12 coins \u2014 we can start tomorrow!",
+    "bytes": 57645,
+    "duration": 4.727417,
+    "sha256": "ee388b04496388e73e8a6ce6b08905e767fa86aa82f73ad8cb80cec38a628bbc"
+  }
+]
